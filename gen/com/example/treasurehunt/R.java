@@ -31,8 +31,10 @@ public final class R {
         public static final int rankingbg=0x7f020007;
         public static final int record=0x7f020008;
         public static final int recordbg=0x7f020009;
-        public static final int treasurechest=0x7f02000a;
-        public static final int treasurehunt=0x7f02000b;
+        public static final int square_blue=0x7f02000a;
+        public static final int square_grey=0x7f02000b;
+        public static final int treasurechest=0x7f02000c;
+        public static final int treasurehunt=0x7f02000d;
     }
     public static final class id {
         public static final int action_settings=0x7f080004;

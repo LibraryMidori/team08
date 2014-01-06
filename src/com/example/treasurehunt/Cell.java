@@ -1,22 +1,23 @@
 package com.example.treasurehunt;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.widget.Button;
+import android.graphics.Typeface;
+import android.util.AttributeSet;
 
-/*
- * This class controls each cell in the field
- * @author group 8
- */
-
-public class Cell extends Button {
-
+public class Cell extends Button 
+{
 	/*
 	 * Properties
 	 */
-	private boolean isTraped; // The cell is trap or not
+	private boolean isTrapped; // The cell is trap or not
 	private boolean isTreasure; // The cell is treasure or not
-	private boolean isFlaged; // The cell is flag
+	private boolean isFlagged; // The cell is flag
 	private boolean isDoubt; // The cell is marked as doubt
+	private boolean isCovered; // is cell covered yet
+	private boolean isClickable; // can cell accept click events
+	private int numberOfTrapInSurrounding; // number of traps in nearby cells
 
 	/*
 	 * Constructor
@@ -25,8 +26,390 @@ public class Cell extends Button {
 	 * 
 	 * @param context context
 	 */
-	public Cell(Context context) {
+	public Cell(Context context) 
+	{
 		super(context);
 	}
+	
+	public Cell(Context context, AttributeSet attrs)
+	{
+		super(context, attrs);
+	}
 
+	public Cell(Context context, AttributeSet attrs, int defStyle)
+	{
+		super(context, attrs, defStyle);
+	}
+	
+	/*
+	 * Set default properties for the Cell
+	 * 
+	 * @author 8A Tran Trong Viet
+	 * 
+	 * @param
+	 */
+	public void setDefaults()
+	{
+		isCovered = true;
+		isTrapped = false;
+		isFlagged = false;
+		isDoubt = false;
+		isClickable = true;
+		numberOfTrapInSurrounding = 0;
+
+		this.setBackgroundResource(R.drawable.square_blue);
+		setBoldFont();
+	}
+	
+	/*
+	 * Is cell covered?
+	 * 
+	 * @author 8A Tran Trong Viet
+	 * 
+	 * @param
+	 */
+	public boolean isCovered()
+	{
+		return isCovered;
+	}
+
+	/*
+	 * Is cell a treasure
+	 * 
+	 * @author 8A Tran Trong Viet
+	 * 
+	 * @param
+	 */
+	public boolean hasTreasure()
+	{
+		return isTreasure;
+	}
+		
+	/*
+	 * Is cell a trap
+	 * 
+	 * @author 8A Tran Trong Viet
+	 * 
+	 * @param
+	 */
+	public boolean hasTrap()
+	{
+		return isTrapped;
+	}
+	
+	/*
+	 * Is cell flagged
+	 * 
+	 * @author 8A Tran Trong Viet
+	 * 
+	 * @param
+	 */
+	public boolean isFlagged()
+	{
+		return isFlagged;
+	}
+	
+	/*
+	 * Is cell marked as doubt
+	 * 
+	 * @author 8A Tran Trong Viet
+	 * 
+	 * @param
+	 */
+	public boolean isDoubted()
+	{
+		return isDoubt;
+	}
+
+	/*
+	 * Can cell receive click event
+	 * 
+	 * @author 8A Tran Trong Viet
+	 * 
+	 * @param
+	 */
+	public boolean isClickable()
+	{
+		return isClickable;
+	}
+		
+	/*
+	 * Mark cell as flagged
+	 * 
+	 * @author 8A Tran Trong Viet
+	 * 
+	 * @param flagged boolean variable
+	 */
+	public void setFlag(boolean flagged)
+	{
+		isFlagged = flagged;
+	}
+
+	/*
+	 * Set question mark for the cell
+	 * 
+	 * @author 8A Tran Trong Viet
+	 * 
+	 * @param questionMarked boolean variable
+	 */
+	public void setDoubt(boolean questionMarked)
+	{
+		isDoubt = questionMarked;
+	}
+	
+	/*
+	 * Mark the cell as disabled/opened and update the number of nearby traps
+	 * 
+	 * @author 8A Tran Trong Viet
+	 * 
+	 * @param number number of traps surrounded this cell
+	 */
+	public void setNumberOfSurroundingTraps(int number)
+	{
+		this.setBackgroundResource(R.drawable.square_grey);
+		updateNumber(number);
+	}
+	
+	/*
+	 * Set treasure icon for cell
+	 * 
+	 * @author 8A Tran Trong Viet
+	 * 
+	 * @param enabled boolean variable
+	 */
+	public void setTreasureIcon(boolean enabled)
+	{
+		this.setText("T");
+	}
+	
+	/*
+	 * Set trap icon for cell and set cell as disabled/opened if false is passed
+	 * 
+	 * @author 8A Tran Trong Viet
+	 * 
+	 * @param enabled boolean variable
+	 */
+	public void setTrapIcon(boolean enabled)
+	{
+		this.setText("M");
+
+		if (!enabled)
+		{
+			this.setBackgroundResource(R.drawable.square_grey);
+			this.setTextColor(Color.RED);
+		}
+		else
+		{
+			this.setTextColor(Color.BLACK);
+		}
+	}
+	
+	/*
+	 * Set trap as flagged and set cell as disabled/opened if false is passed
+	 * 
+	 * @author 8A Tran Trong Viet
+	 * 
+	 * @param enabled boolean variable
+	 */
+	public void setFlagIcon(boolean enabled)
+	{
+		this.setText("F");
+
+		if (!enabled)
+		{
+			this.setBackgroundResource(R.drawable.square_grey);
+			this.setTextColor(Color.RED);
+		}
+		else
+		{
+			this.setTextColor(Color.BLACK);
+		}
+	}
+	
+	/*
+	 * Set trap as doubt and set cell as disabled/opened if false is passed
+	 * 
+	 * @author 8A Tran Trong Viet
+	 * 
+	 * @param enabled boolean variable
+	 */
+	public void setDoubtIcon(boolean enabled)
+	{
+		this.setText("?");
+		
+		if (!enabled)
+		{
+			this.setBackgroundResource(R.drawable.square_grey);
+			this.setTextColor(Color.RED);
+		}
+		else
+		{
+			this.setTextColor(Color.BLACK);
+		}
+	}
+	
+	/*
+	 * Clear all icons/text
+	 * 
+	 * @author 8A Tran Trong Viet
+	 * 
+	 * @param
+	 */
+	public void clearAllIcons()
+	{
+		this.setText("");
+	}
+	
+	/*
+	 * Set cell as disabled/opened if false is passed else enable/close it
+	 * 
+	 * @author 8A Tran Trong Viet
+	 * 
+	 * @param enabled boolean variable
+	 */
+	public void setCellAsDisabled(boolean enabled)
+	{
+		if (!enabled)
+		{
+			this.setBackgroundResource(R.drawable.square_grey);
+		}
+		else
+		{
+			this.setBackgroundResource(R.drawable.square_blue);
+		}
+	}
+	
+	/*
+	 * Set cell as a treasure
+	 * 
+	 * @author 8A Tran Trong Viet
+	 * 
+	 * @param
+	 */
+	public void setTreasure()
+	{
+		isTreasure = true;
+	}
+
+	/*
+	 * Set cell as a trap underneath
+	 * 
+	 * @author 8A Tran Trong Viet
+	 * 
+	 * @param
+	 */
+	public void setTrap()
+	{
+		isTrapped = true;
+	}
+	
+	/*
+	 * Set font as bold
+	 * 
+	 * @author 8A Tran Trong Viet
+	 * 
+	 * @param
+	 */
+	private void setBoldFont() // Delete later
+	{
+		this.setTypeface(null, Typeface.BOLD);
+	}
+	
+	/*
+	 * Uncover this cell
+	 * 
+	 * @author 8A Tran Trong Viet
+	 * 
+	 * @param
+	 */
+	public void OpenCell()
+	{
+		// cannot uncover a trap which is not covered
+		if (!isCovered)
+			return;
+
+		setCellAsDisabled(false);
+		isCovered = false;
+
+		// check if it has trap
+		if (hasTrap())
+		{
+			setTrapIcon(false);
+		}
+		// update with the nearby trap count
+		else
+		{
+			setNumberOfSurroundingTraps(numberOfTrapInSurrounding);
+		}
+	}
+
+	/*
+	 * Set text as nearby trap count
+	 * 
+	 * @author 8A Tran Trong Viet
+	 * 
+	 * @param text number of trap surrounding
+	 */
+	public void updateNumber(int text)
+	{
+		if (text != 0)
+		{
+			this.setText(Integer.toString(text));
+
+			// select different color for each number
+			// we have 1 - 8 trap count
+			switch (text)
+			{
+				case 1:
+					this.setTextColor(Color.BLUE);
+					break;
+				case 2:
+					this.setTextColor(Color.rgb(0, 100, 0));
+					break;
+				case 3:
+					this.setTextColor(Color.RED);
+					break;
+				case 4:
+					this.setTextColor(Color.rgb(85, 26, 139));
+					break;
+				case 5:
+					this.setTextColor(Color.rgb(139, 28, 98));
+					break;
+				case 6:
+					this.setTextColor(Color.rgb(238, 173, 14));
+					break;
+				case 7:
+					this.setTextColor(Color.rgb(47, 79, 79));
+					break;
+				case 8:
+					this.setTextColor(Color.rgb(71, 71, 71));
+					break;
+			}
+		}
+	}
+	 
+	/*
+	 * Change the cell icon and color of opened cell
+	 * 
+	 * @author 8A Tran Trong Viet
+	 * 
+	 * @param
+	 */
+	public void triggerTrap()
+	{
+		setTrapIcon(true);
+		this.setTextColor(Color.RED);
+	}
+
+	/*
+	 * Get number of nearby traps
+	 * 
+	 * @author 8A Tran Trong Viet
+	 * 
+	 * @param
+	 */
+	public int getNumberOfTrapsInSorrounding()
+	{
+		return numberOfTrapInSurrounding;
+	}
 }
