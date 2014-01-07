@@ -4,5 +4,39 @@
     android:layout_height="match_parent"
     android:background="@drawable/gamebg"
     tools:context=".Game" >
+    
+    <TextView
+        android:id="@+id/levelText"
+        android:textStyle="bold"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="98dp"
+        android:layout_marginLeft="300dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="40dp"
+        android:text="5" />
+    
+    <TextView
+        android:id="@+id/timeText"
+        android:textStyle="bold"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="98dp"    
+        android:layout_marginLeft="435dp"   
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" 
+        android:textSize="40dp"
+        android:text="30 s" />
+    
+    <TextView 
+        android:id="@+id/livesText"
+        android:textStyle="bold"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="98dp"
+        android:layout_marginLeft="610dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="40dp"
+        android:text="3" />
+    
 
 </RelativeLayout>
