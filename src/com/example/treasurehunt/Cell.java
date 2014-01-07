@@ -6,8 +6,7 @@ import android.widget.Button;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
 
-public class Cell extends Button 
-{
+public class Cell extends Button {
 	/*
 	 * Properties
 	 */
@@ -26,21 +25,18 @@ public class Cell extends Button
 	 * 
 	 * @param context context
 	 */
-	public Cell(Context context) 
-	{
+	public Cell(Context context) {
 		super(context);
 	}
-	
-	public Cell(Context context, AttributeSet attrs)
-	{
+
+	public Cell(Context context, AttributeSet attrs) {
 		super(context, attrs);
 	}
 
-	public Cell(Context context, AttributeSet attrs, int defStyle)
-	{
+	public Cell(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 	}
-	
+
 	/*
 	 * Set default properties for the Cell
 	 * 
@@ -48,8 +44,7 @@ public class Cell extends Button
 	 * 
 	 * @param
 	 */
-	public void setDefaults()
-	{
+	public void setDefaults() {
 		isCovered = true;
 		isTrapped = false;
 		isFlagged = false;
@@ -60,7 +55,7 @@ public class Cell extends Button
 		this.setBackgroundResource(R.drawable.square_blue);
 		setBoldFont();
 	}
-	
+
 	/*
 	 * Is cell covered?
 	 * 
@@ -68,8 +63,7 @@ public class Cell extends Button
 	 * 
 	 * @param
 	 */
-	public boolean isCovered()
-	{
+	public boolean isCovered() {
 		return isCovered;
 	}
 
@@ -80,11 +74,10 @@ public class Cell extends Button
 	 * 
 	 * @param
 	 */
-	public boolean hasTreasure()
-	{
+	public boolean hasTreasure() {
 		return isTreasure;
 	}
-		
+
 	/*
 	 * Is cell a trap
 	 * 
@@ -92,11 +85,10 @@ public class Cell extends Button
 	 * 
 	 * @param
 	 */
-	public boolean hasTrap()
-	{
+	public boolean hasTrap() {
 		return isTrapped;
 	}
-	
+
 	/*
 	 * Is cell flagged
 	 * 
@@ -104,11 +96,10 @@ public class Cell extends Button
 	 * 
 	 * @param
 	 */
-	public boolean isFlagged()
-	{
+	public boolean isFlagged() {
 		return isFlagged;
 	}
-	
+
 	/*
 	 * Is cell marked as doubt
 	 * 
@@ -116,8 +107,7 @@ public class Cell extends Button
 	 * 
 	 * @param
 	 */
-	public boolean isDoubted()
-	{
+	public boolean isDoubted() {
 		return isDoubt;
 	}
 
@@ -128,11 +118,10 @@ public class Cell extends Button
 	 * 
 	 * @param
 	 */
-	public boolean isClickable()
-	{
+	public boolean isClickable() {
 		return isClickable;
 	}
-		
+
 	/*
 	 * Mark cell as flagged
 	 * 
@@ -140,8 +129,7 @@ public class Cell extends Button
 	 * 
 	 * @param flagged boolean variable
 	 */
-	public void setFlag(boolean flagged)
-	{
+	public void setFlag(boolean flagged) {
 		isFlagged = flagged;
 	}
 
@@ -152,11 +140,10 @@ public class Cell extends Button
 	 * 
 	 * @param questionMarked boolean variable
 	 */
-	public void setDoubt(boolean questionMarked)
-	{
+	public void setDoubt(boolean questionMarked) {
 		isDoubt = questionMarked;
 	}
-	
+
 	/*
 	 * Mark the cell as disabled/opened and update the number of nearby traps
 	 * 
@@ -164,12 +151,11 @@ public class Cell extends Button
 	 * 
 	 * @param number number of traps surrounded this cell
 	 */
-	public void setNumberOfSurroundingTraps(int number)
-	{
+	public void setNumberOfSurroundingTraps(int number) {
 		this.setBackgroundResource(R.drawable.square_grey);
 		updateNumber(number);
 	}
-	
+
 	/*
 	 * Set treasure icon for cell
 	 * 
@@ -177,11 +163,10 @@ public class Cell extends Button
 	 * 
 	 * @param enabled boolean variable
 	 */
-	public void setTreasureIcon(boolean enabled)
-	{
+	public void setTreasureIcon(boolean enabled) {
 		this.setText("T");
 	}
-	
+
 	/*
 	 * Set trap icon for cell and set cell as disabled/opened if false is passed
 	 * 
@@ -189,21 +174,17 @@ public class Cell extends Button
 	 * 
 	 * @param enabled boolean variable
 	 */
-	public void setTrapIcon(boolean enabled)
-	{
+	public void setTrapIcon(boolean enabled) {
 		this.setText("M");
 
-		if (!enabled)
-		{
+		if (!enabled) {
 			this.setBackgroundResource(R.drawable.square_grey);
 			this.setTextColor(Color.RED);
-		}
-		else
-		{
+		} else {
 			this.setTextColor(Color.BLACK);
 		}
 	}
-	
+
 	/*
 	 * Set trap as flagged and set cell as disabled/opened if false is passed
 	 * 
@@ -211,21 +192,17 @@ public class Cell extends Button
 	 * 
 	 * @param enabled boolean variable
 	 */
-	public void setFlagIcon(boolean enabled)
-	{
+	public void setFlagIcon(boolean enabled) {
 		this.setText("F");
 
-		if (!enabled)
-		{
+		if (!enabled) {
 			this.setBackgroundResource(R.drawable.square_grey);
 			this.setTextColor(Color.RED);
-		}
-		else
-		{
+		} else {
 			this.setTextColor(Color.BLACK);
 		}
 	}
-	
+
 	/*
 	 * Set trap as doubt and set cell as disabled/opened if false is passed
 	 * 
@@ -233,21 +210,17 @@ public class Cell extends Button
 	 * 
 	 * @param enabled boolean variable
 	 */
-	public void setDoubtIcon(boolean enabled)
-	{
+	public void setDoubtIcon(boolean enabled) {
 		this.setText("?");
-		
-		if (!enabled)
-		{
+
+		if (!enabled) {
 			this.setBackgroundResource(R.drawable.square_grey);
 			this.setTextColor(Color.RED);
-		}
-		else
-		{
+		} else {
 			this.setTextColor(Color.BLACK);
 		}
 	}
-	
+
 	/*
 	 * Clear all icons/text
 	 * 
@@ -255,11 +228,10 @@ public class Cell extends Button
 	 * 
 	 * @param
 	 */
-	public void clearAllIcons()
-	{
+	public void clearAllIcons() {
 		this.setText("");
 	}
-	
+
 	/*
 	 * Set cell as disabled/opened if false is passed else enable/close it
 	 * 
@@ -267,18 +239,14 @@ public class Cell extends Button
 	 * 
 	 * @param enabled boolean variable
 	 */
-	public void setCellAsDisabled(boolean enabled)
-	{
-		if (!enabled)
-		{
+	public void setCellAsDisabled(boolean enabled) {
+		if (!enabled) {
 			this.setBackgroundResource(R.drawable.square_grey);
-		}
-		else
-		{
+		} else {
 			this.setBackgroundResource(R.drawable.square_blue);
 		}
 	}
-	
+
 	/*
 	 * Set cell as a treasure
 	 * 
@@ -286,8 +254,7 @@ public class Cell extends Button
 	 * 
 	 * @param
 	 */
-	public void setTreasure()
-	{
+	public void setTreasure() {
 		isTreasure = true;
 	}
 
@@ -298,11 +265,10 @@ public class Cell extends Button
 	 * 
 	 * @param
 	 */
-	public void setTrap()
-	{
+	public void setTrap() {
 		isTrapped = true;
 	}
-	
+
 	/*
 	 * Set font as bold
 	 * 
@@ -314,7 +280,7 @@ public class Cell extends Button
 	{
 		this.setTypeface(null, Typeface.BOLD);
 	}
-	
+
 	/*
 	 * Uncover this cell
 	 * 
@@ -322,8 +288,7 @@ public class Cell extends Button
 	 * 
 	 * @param
 	 */
-	public void OpenCell()
-	{
+	public void OpenCell() {
 		// cannot uncover a trap which is not covered
 		if (!isCovered)
 			return;
@@ -332,13 +297,11 @@ public class Cell extends Button
 		isCovered = false;
 
 		// check if it has trap
-		if (hasTrap())
-		{
+		if (hasTrap()) {
 			setTrapIcon(false);
 		}
 		// update with the nearby trap count
-		else
-		{
+		else {
 			setNumberOfSurroundingTraps(numberOfTrapInSurrounding);
 		}
 	}
@@ -350,44 +313,41 @@ public class Cell extends Button
 	 * 
 	 * @param text number of trap surrounding
 	 */
-	public void updateNumber(int text)
-	{
-		if (text != 0)
-		{
+	public void updateNumber(int text) {
+		if (text != 0) {
 			this.setText(Integer.toString(text));
 
 			// select different color for each number
 			// we have 1 - 8 trap count
-			switch (text)
-			{
-				case 1:
-					this.setTextColor(Color.BLUE);
-					break;
-				case 2:
-					this.setTextColor(Color.rgb(0, 100, 0));
-					break;
-				case 3:
-					this.setTextColor(Color.RED);
-					break;
-				case 4:
-					this.setTextColor(Color.rgb(85, 26, 139));
-					break;
-				case 5:
-					this.setTextColor(Color.rgb(139, 28, 98));
-					break;
-				case 6:
-					this.setTextColor(Color.rgb(238, 173, 14));
-					break;
-				case 7:
-					this.setTextColor(Color.rgb(47, 79, 79));
-					break;
-				case 8:
-					this.setTextColor(Color.rgb(71, 71, 71));
-					break;
+			switch (text) {
+			case 1:
+				this.setTextColor(Color.BLUE);
+				break;
+			case 2:
+				this.setTextColor(Color.rgb(0, 100, 0));
+				break;
+			case 3:
+				this.setTextColor(Color.RED);
+				break;
+			case 4:
+				this.setTextColor(Color.rgb(85, 26, 139));
+				break;
+			case 5:
+				this.setTextColor(Color.rgb(139, 28, 98));
+				break;
+			case 6:
+				this.setTextColor(Color.rgb(238, 173, 14));
+				break;
+			case 7:
+				this.setTextColor(Color.rgb(47, 79, 79));
+				break;
+			case 8:
+				this.setTextColor(Color.rgb(71, 71, 71));
+				break;
 			}
 		}
 	}
-	 
+
 	/*
 	 * Change the cell icon and color of opened cell
 	 * 
@@ -395,8 +355,7 @@ public class Cell extends Button
 	 * 
 	 * @param
 	 */
-	public void triggerTrap()
-	{
+	public void triggerTrap() {
 		setTrapIcon(true);
 		this.setTextColor(Color.RED);
 	}
@@ -408,8 +367,7 @@ public class Cell extends Button
 	 * 
 	 * @param
 	 */
-	public int getNumberOfTrapsInSorrounding()
-	{
+	public int getNumberOfTrapsInSorrounding() {
 		return numberOfTrapInSurrounding;
 	}
 }
