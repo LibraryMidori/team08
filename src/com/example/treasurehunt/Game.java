@@ -100,7 +100,11 @@ public class Game extends Activity {
 		isMapGen = false;
 	}
 
-	
+	/*
+	 * Start the game
+	 * 
+	 * @author 8C Pham Duy Hung
+	 */
 	private void startNewGame() {
 		// TODO: generate the initial information
 
@@ -108,6 +112,11 @@ public class Game extends Activity {
 		showMap();
 	}
 
+	/*
+	 * Create new map
+	 * 
+	 * @author 8C Pham Duy Hung
+	 */
 	private void createMap() {
 
 		cells = new Cell[numberOfRows + 2][numberOfColumns + 2];
@@ -155,7 +164,7 @@ public class Game extends Activity {
 						.setOnLongClickListener(new OnLongClickListener() {
 							public boolean onLongClick(View view) {
 								// simulate a left-right (middle) click
-								// if it is a long click on an opened mine then
+								// if it is a long click on an opened trap then
 								// open all surrounding blocks
 								if (!cells[currentRow][currentColumn]
 										.isCovered()
@@ -174,7 +183,7 @@ public class Game extends Activity {
 									}
 
 									// if flagged block count is equal to nearby
-									// mine count
+									// trap count
 									// then open nearby blocks
 									if (nearbyFlaggedBlocks == cells[currentRow][currentColumn]
 											.getNumberOfTrapsInSorrounding()) {
@@ -193,7 +202,7 @@ public class Game extends Activity {
 															currentColumn
 																	+ previousColumn);
 
-													// did we clicked a mine
+													// did we clicked a trap
 													if (cells[currentRow
 															+ previousRow][currentColumn
 															+ previousColumn]
@@ -250,7 +259,7 @@ public class Game extends Activity {
 												.setFlagIcon(true);
 										cells[currentRow][currentColumn]
 												.setFlag(true);
-										trapsRemain--; // reduce mine count
+										trapsRemain--; // reduce trap count
 									}
 									// case 2. set flagged to question mark
 									else if (!cells[currentRow][currentColumn]
@@ -263,7 +272,7 @@ public class Game extends Activity {
 												.setFlag(false);
 										cells[currentRow][currentColumn]
 												.setDoubt(true);
-										trapsRemain++; // increase mine count
+										trapsRemain++; // increase trap count
 									}
 									// case 3. change to blank square
 									else {
@@ -273,11 +282,11 @@ public class Game extends Activity {
 												.clearAllIcons();
 										cells[currentRow][currentColumn]
 												.setDoubt(false);
-										// if it is flagged then increment mine
+										// if it is flagged then increment trap
 										// count
 										if (cells[currentRow][currentColumn]
 												.isFlagged()) {
-											trapsRemain++; // increase mine
+											trapsRemain++; // increase trap
 															// count
 										}
 										// remove flagged status
@@ -294,6 +303,11 @@ public class Game extends Activity {
 		}
 	}
 
+	/*
+	 * Show map procedure
+	 * 
+	 * @author 8C Pham Duy Hung
+	 */
 	private void showMap() {
 		// remember we will not show 0th and last Row and Columns
 		// they are used for calculation purposes only
@@ -321,6 +335,8 @@ public class Game extends Activity {
 	 * @author 8A Tran Trong Viet
 	 * 
 	 * @param rowClicked
+	 * 
+	 * @param columnClicked
 	 */
 	private void genMap(int rowClicked, int columnClicked) {
 		Random rand = new Random();
@@ -352,7 +368,7 @@ public class Game extends Activity {
 
 		// End modify
 
-		// set mines excluding the location where user clicked
+		// set traps excluding the location where user clicked
 		for (int row = 0; row < totalTraps - 8; row++) {
 			trapRow = rand.nextInt(numberOfColumns);
 			trapColumn = rand.nextInt(numberOfRows);
@@ -367,9 +383,9 @@ public class Game extends Activity {
 					&& ((trapRow + 2 != columnClicked) || (trapColumn + 2 != rowClicked))) {
 				if (cells[trapColumn + 1][trapRow + 1].hasTrap()
 						|| cells[trapColumn + 1][trapRow + 1].hasTreasure()) {
-					row--; // mine is already there, don't repeat for same block
+					row--; // trap is already there, don't repeat for same block
 				}
-				// plant mine at this location
+				// plant trap at this location
 				cells[trapColumn + 1][trapRow + 1].setTrap();
 			}
 			// exclude the user clicked location
@@ -379,10 +395,10 @@ public class Game extends Activity {
 		}
 
 		int nearByTrapCount;
-		// count number of mines in surrounding blocks
+		// count number of traps in surrounding blocks
 		for (int row = 0; row < numberOfRows + 2; row++) {
 			for (int column = 0; column < numberOfColumns + 2; column++) {
-				// for each block find nearby mine count
+				// for each block find nearby trap count
 				nearByTrapCount = 0;
 				if ((row != 0) && (row != (numberOfRows + 1)) && (column != 0)
 						&& (column != (numberOfColumns + 1))) {
@@ -391,7 +407,7 @@ public class Game extends Activity {
 						for (int previousColumn = -1; previousColumn < 2; previousColumn++) {
 							if (cells[row + previousRow][column
 									+ previousColumn].hasTrap()) {
-								// a mine was found so increment the counter
+								// a trap was found so increment the counter
 								nearByTrapCount++;
 							}
 						}
@@ -445,26 +461,31 @@ public class Game extends Activity {
 		}
 	}
 
+	/*
+	 * Finish the game
+	 * 
+	 * @author 8B Pham Hung Cuong
+	 */
 	private void finishGame(int currentRow, int currentColumn) {
 		isGameOver = true; // mark game as over
 		stopTimer(); // stop timer
 		isGameStart = false;
 
-		// show all mines
+		// show all traps
 		// disable all blocks
 		for (int row = 1; row < numberOfRows + 1; row++) {
 			for (int column = 1; column < numberOfColumns + 1; column++) {
 				// disable block
 				cells[row][column].setCellAsDisabled(false);
 
-				// block has mine and is not flagged
+				// block has trap and is not flagged
 				if (cells[row][column].hasTrap()
 						&& !cells[row][column].isFlagged()) {
-					// set mine icon
+					// set trap icon
 					cells[row][column].setTrapIcon(false);
 				}
 
-				// block is flagged and doesn't not have mine
+				// block is flagged and doesn't not have trap
 				if (!cells[row][column].hasTrap()
 						&& cells[row][column].isFlagged()) {
 					// set flag icon
@@ -479,10 +500,15 @@ public class Game extends Activity {
 			}
 		}
 
-		// trigger mine
+		// trigger trap
 		cells[currentRow][currentColumn].triggerTrap();
 	}
 
+	/*
+	 * Start time time
+	 * 
+	 * @author: 8B Pham Hung Cuong
+	 */
 	private void startTimer() {
 		clock.removeCallbacks(updateTimeElasped);
 		// delay clock for a second
@@ -495,7 +521,9 @@ public class Game extends Activity {
 	}
 
 	/*
+	 * This properties must be set up for handling the clock
 	 * 
+	 * @author 8B Pham Hung Cuong
 	 */
 	private Runnable updateTimeElasped = new Runnable() {
 
