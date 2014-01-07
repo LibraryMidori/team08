@@ -1,14 +1,23 @@
 package com.example.treasurehunt;
 
-import android.os.Bundle;
 import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
 import android.view.Menu;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 
 /*
- * @author: group 8 
+ * This is a main menu of this game
+ * @author group 8
  */
+public class MainMenu extends Activity implements OnClickListener {
 
-public class MainMenu extends Activity {
+	/*
+	 * Properties
+	 */
+	Button newGameBtn, loadGameBtn, rankingBtn, recordBtn;
 
 	/*
 	 * (non-Javadoc)
@@ -19,6 +28,9 @@ public class MainMenu extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main_menu);
+
+		// @author 8B Pham Hung Cuong
+		initView();
 	}
 
 	/*
@@ -33,4 +45,39 @@ public class MainMenu extends Activity {
 		return true;
 	}
 
+	/*
+	 * Initial View
+	 * 
+	 * @author 8B Pham Hung Cuong
+	 */
+	public void initView() {
+		newGameBtn = (Button) findViewById(R.id.newGameBtn);
+		loadGameBtn = (Button) findViewById(R.id.loadGameBtn);
+		rankingBtn = (Button) findViewById(R.id.rankingBtn);
+		recordBtn = (Button) findViewById(R.id.recordBtn);
+	}
+
+	/*
+	 * This code handle the activity
+	 * @author 8C Pham Duy Hung
+	 */
+	@Override
+	public void onClick(View v) {
+		// TODO Auto-generated method stub
+		switch (v.getId()) {
+		case R.id.newGameBtn:
+			Intent openNewGame = new Intent(MainMenu.this, Game.class);
+			startActivity(openNewGame);
+			break;
+		case R.id.loadGameBtn:
+
+			break;
+		case R.id.rankingBtn:
+
+			break;
+		case R.id.recordBtn:
+
+			break;
+		}
+	}
 }

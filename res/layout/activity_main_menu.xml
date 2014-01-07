@@ -1,12 +1,62 @@
+<!-- @author 8-B Pham Hung Cuong -->
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
+    android:background="@drawable/background1"
     tools:context=".MainMenu" >
 
-    
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="170dp"
+        android:background="@drawable/treasurechest" />
+
+    <ImageView
+        android:layout_width="380dp"
+        android:layout_height="110dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="80dp"
+        android:background="@drawable/treasurehunt" />
+
+    <Button
+        android:id="@+id/rankingBtn"
+        android:layout_width="180dp"
+        android:layout_height="42dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="550dp"
+        android:background="@drawable/rankingbg"
+        android:onClick="onClick" />
+
+    <Button
+        android:id="@+id/recordBtn"
+        android:layout_width="180dp"
+        android:layout_height="42dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="480dp"
+        android:background="@drawable/recordbg"
+        android:onClick="onClick" />
+
+    <Button
+        android:id="@+id/loadGameBtn"
+        android:layout_width="180dp"
+        android:layout_height="42dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="410dp"
+        android:background="@drawable/loadgamebg"
+        android:onClick="onClick" />
+
+    <Button
+        android:id="@+id/newGameBtn"
+        android:layout_width="180dp"
+        android:layout_height="42dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="340dp"
+        android:background="@drawable/newgamebg"
+        android:onClick="onClick" />
+
 </RelativeLayout>
