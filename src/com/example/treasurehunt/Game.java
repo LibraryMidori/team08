@@ -4,6 +4,10 @@ import android.os.Bundle;
 import android.app.Activity;
 import android.view.Menu;
 
+/*
+ * @author group 8
+ */
+
 public class Game extends Activity {
 
 	/*

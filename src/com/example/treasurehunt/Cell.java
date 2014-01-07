@@ -3,6 +3,11 @@ package com.example.treasurehunt;
 import android.content.Context;
 import android.widget.Button;
 
+/*
+ * This class controls each cell in the field
+ * @author group 8
+ */
+
 public class Cell extends Button {
 
 	/*
