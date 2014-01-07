@@ -9,6 +9,9 @@ import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
+import android.widget.TableLayout;
+import android.widget.TableRow;
+import android.widget.TableRow.LayoutParams;
 
 /*
  * @author group 8
@@ -19,6 +22,7 @@ public class Game extends Activity {
 	/*
 	 * Properties
 	 */
+	private TableLayout map;
 	private Cell cells[][];
 	private int numberOfRows = 0;
 	private int numberOfColumns = 0;
@@ -53,6 +57,7 @@ public class Game extends Activity {
 
 		// @author 8C Pham Duy Hung
 		initView();
+		startNewGame();
 	}
 
 	/*
@@ -73,6 +78,8 @@ public class Game extends Activity {
 	 * @author 8C Pham Duy Hung
 	 */
 	private void initView() {
+		map = (TableLayout) findViewById(R.id.Map);
+
 		level++;
 		totalTraps = minTraps + level;
 
@@ -81,7 +88,7 @@ public class Game extends Activity {
 		numberOfColumns = 30;
 		trapsRemain = totalTraps;
 
-		cellWidth = 24;
+		cellWidth = 27;
 		cellPadding = 2;
 
 		// Tracking time
@@ -93,6 +100,7 @@ public class Game extends Activity {
 		isMapGen = false;
 	}
 
+	
 	private void startNewGame() {
 		// TODO: generate the initial information
 
@@ -128,7 +136,7 @@ public class Game extends Activity {
 						}
 
 						if (!cells[currentRow][currentColumn].isFlagged()) {
-							rippleUncover(currentRow, currentColumn);
+							// rippleUncover(currentRow, currentColumn);
 
 							// if(cells[currentRow][currentColumn].hasTrap()) {
 							// finishGame(currentRow, currentColumn);
@@ -287,7 +295,25 @@ public class Game extends Activity {
 	}
 
 	private void showMap() {
+		// remember we will not show 0th and last Row and Columns
+		// they are used for calculation purposes only
+		for (int row = 1; row < numberOfRows + 1; row++) {
+			TableRow tableRow = new TableRow(this);
+			tableRow.setLayoutParams(new LayoutParams(
+					(cellWidth + 2 * cellPadding) * numberOfColumns, cellWidth
+							+ 2 * cellPadding));
 
+			for (int column = 1; column < numberOfColumns + 1; column++) {
+				cells[row][column].setLayoutParams(new LayoutParams(cellWidth
+						+ 2 * cellPadding, cellWidth + 2 * cellPadding));
+				cells[row][column].setPadding(cellPadding, cellPadding,
+						cellPadding, cellPadding);
+				tableRow.addView(cells[row][column]);
+			}
+			map.addView(tableRow, new TableLayout.LayoutParams(
+					(cellWidth + 2 * cellPadding) * numberOfColumns, cellWidth
+							+ 2 * cellPadding));
+		}
 	}
 
 	/*
@@ -300,7 +326,8 @@ public class Game extends Activity {
 		Random rand = new Random();
 		int trapRow, trapColumn;
 
-		// set Treasure
+		// Modify: set treasure
+		// @author 8A Tran Trong Viet
 		int treasureRow = rand.nextInt(numberOfRows - 1) + 2;
 		if (treasureRow == numberOfRows) {
 			treasureRow--;
@@ -322,6 +349,8 @@ public class Game extends Activity {
 				}
 			}
 		}
+
+		// End modify
 
 		// set mines excluding the location where user clicked
 		for (int row = 0; row < totalTraps - 8; row++) {

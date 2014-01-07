@@ -344,6 +344,9 @@ public class Cell extends Button {
 			case 8:
 				this.setTextColor(Color.rgb(71, 71, 71));
 				break;
+			case 9: 
+				this.setTextColor(Color.rgb(205, 205, 0));
+				break;
 			}
 		}
 	}

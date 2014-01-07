@@ -4,39 +4,48 @@
     android:layout_height="match_parent"
     android:background="@drawable/gamebg"
     tools:context=".Game" >
-    
+
     <TextView
         android:id="@+id/levelText"
-        android:textStyle="bold"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="98dp"
-        android:layout_marginLeft="300dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="300dp"
+        android:layout_marginTop="98dp"
+        android:text="5"
         android:textSize="40dp"
-        android:text="5" />
-    
+        android:textStyle="bold" />
+
     <TextView
         android:id="@+id/timeText"
-        android:textStyle="bold"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="98dp"    
-        android:layout_marginLeft="435dp"   
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" 
-        android:textSize="40dp"
-        android:text="30 s" />
-    
-    <TextView 
-        android:id="@+id/livesText"
-        android:textStyle="bold"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="98dp"
-        android:layout_marginLeft="610dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="435dp"
+        android:layout_marginTop="98dp"
+        android:text="30 s"
         android:textSize="40dp"
-        android:text="3" />
-    
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/livesText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="610dp"
+        android:layout_marginTop="98dp"
+        android:text="3"
+        android:textSize="40dp"
+        android:textStyle="bold" />
+
+    <TableLayout
+        android:id="@+id/Map"
+        android:layout_width="1000dp"
+        android:layout_height="1000dp"
+        android:layout_span="3"
+        android:gravity="bottom"
+        android:padding="5dp"
+        android:stretchColumns="*" >
+    </TableLayout>
 
 </RelativeLayout>
