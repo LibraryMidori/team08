@@ -22,19 +22,20 @@ public final class R {
     }
     public static final class drawable {
         public static final int background1=0x7f020000;
-        public static final int ic_launcher=0x7f020001;
-        public static final int loadgame=0x7f020002;
-        public static final int loadgamebg=0x7f020003;
-        public static final int newgame=0x7f020004;
-        public static final int newgamebg=0x7f020005;
-        public static final int ranking=0x7f020006;
-        public static final int rankingbg=0x7f020007;
-        public static final int record=0x7f020008;
-        public static final int recordbg=0x7f020009;
-        public static final int square_blue=0x7f02000a;
-        public static final int square_grey=0x7f02000b;
-        public static final int treasurechest=0x7f02000c;
-        public static final int treasurehunt=0x7f02000d;
+        public static final int gamebg=0x7f020001;
+        public static final int ic_launcher=0x7f020002;
+        public static final int loadgame=0x7f020003;
+        public static final int loadgamebg=0x7f020004;
+        public static final int newgame=0x7f020005;
+        public static final int newgamebg=0x7f020006;
+        public static final int ranking=0x7f020007;
+        public static final int rankingbg=0x7f020008;
+        public static final int record=0x7f020009;
+        public static final int recordbg=0x7f02000a;
+        public static final int square_blue=0x7f02000b;
+        public static final int square_grey=0x7f02000c;
+        public static final int treasurechest=0x7f02000d;
+        public static final int treasurehunt=0x7f02000e;
     }
     public static final class id {
         public static final int action_settings=0x7f080004;
