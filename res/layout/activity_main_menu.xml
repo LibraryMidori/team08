@@ -8,5 +8,8 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".MainMenu" >
 
-    
+    <Button
+        android:id="@+id/testBtn"
+        android:visibility="gone" />
+
 </RelativeLayout>
