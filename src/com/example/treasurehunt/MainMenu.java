@@ -79,7 +79,8 @@ public class MainMenu extends Activity implements OnClickListener {
 
 			break;
 		case R.id.recordBtn:
-
+			Intent openRecord = new Intent(MainMenu.this, Record.class);
+			startActivity(openRecord);
 			break;
 		}
 	}
