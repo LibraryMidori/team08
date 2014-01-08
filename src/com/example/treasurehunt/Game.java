@@ -5,6 +5,7 @@ import java.util.Random;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -110,6 +111,10 @@ public class Game extends Activity {
 
 		createMap();
 		showMap();
+
+		isGameOver = false;
+		isTrapHere = false;
+		isGameStart = false;
 	}
 
 	/*
@@ -119,6 +124,8 @@ public class Game extends Activity {
 	 */
 	private void createMap() {
 
+		// We make more 2 row and column, the 0 row/column and the last one are
+		// not showed
 		cells = new Cell[numberOfRows + 2][numberOfColumns + 2];
 
 		for (int row = 0; row < numberOfRows + 2; row++) {
@@ -145,13 +152,13 @@ public class Game extends Activity {
 						}
 
 						if (!cells[currentRow][currentColumn].isFlagged()) {
-							// rippleUncover(currentRow, currentColumn);
+							rippleUncover(currentRow, currentColumn);
 
-							// if(cells[currentRow][currentColumn].hasTrap()) {
-							// finishGame(currentRow, currentColumn);
-							// }
-							//
-							// if(checkGameWin()) {
+							if (cells[currentRow][currentColumn].hasTrap()) {
+								finishGame(currentRow, currentColumn);
+							}
+
+							// if (checkGameWin()) {
 							// winGame();
 							// }
 						}
@@ -169,7 +176,7 @@ public class Game extends Activity {
 								if (!cells[currentRow][currentColumn]
 										.isCovered()
 										&& (cells[currentRow][currentColumn]
-												.getNumberOfTrapsInSorrounding() > 0)
+												.getNumberOfTrapsInSurrounding() > 0)
 										&& !isGameOver) {
 									int nearbyFlaggedBlocks = 0;
 									for (int previousRow = -1; previousRow < 2; previousRow++) {
@@ -186,7 +193,7 @@ public class Game extends Activity {
 									// trap count
 									// then open nearby blocks
 									if (nearbyFlaggedBlocks == cells[currentRow][currentColumn]
-											.getNumberOfTrapsInSorrounding()) {
+											.getNumberOfTrapsInSurrounding()) {
 										for (int previousRow = -1; previousRow < 2; previousRow++) {
 											for (int previousColumn = -1; previousColumn < 2; previousColumn++) {
 												// don't open flagged blocks
@@ -207,7 +214,6 @@ public class Game extends Activity {
 															+ previousRow][currentColumn
 															+ previousColumn]
 															.hasTrap()) {
-														// oops game over
 														finishGame(
 																currentRow
 																		+ previousRow,
@@ -340,10 +346,8 @@ public class Game extends Activity {
 	 */
 	private void genMap(int rowClicked, int columnClicked) {
 		Random rand = new Random();
-		int trapRow, trapColumn;
 
-		// Modify: set treasure
-		// @author 8A Tran Trong Viet
+		// Set the treasure position
 		int treasureRow = rand.nextInt(numberOfRows - 1) + 2;
 		if (treasureRow == numberOfRows) {
 			treasureRow--;
@@ -366,12 +370,12 @@ public class Game extends Activity {
 			}
 		}
 
-		// End modify
-
+		int trapRow, trapColumn;
 		// set traps excluding the location where user clicked
 		for (int row = 0; row < totalTraps - 8; row++) {
 			trapRow = rand.nextInt(numberOfColumns);
 			trapColumn = rand.nextInt(numberOfRows);
+			// set the 8 surrounded cells of the clicked cell has no trap
 			if (((trapRow != columnClicked) || (trapColumn != rowClicked))
 					&& ((trapRow != columnClicked) || (trapColumn + 1 != rowClicked))
 					&& ((trapRow != columnClicked) || (trapColumn + 2 != rowClicked))
@@ -413,14 +417,17 @@ public class Game extends Activity {
 						}
 					}
 					cells[row][column]
-							.setNumberOfSurroundingTraps(nearByTrapCount);
+							.setNumberOfTrapsInSurrounding(nearByTrapCount);
 				}
 				// for side rows (0th and last row/column)
 				// set count as 9 and mark it as opened
 				else {
-					cells[row][column].setNumberOfSurroundingTraps(9);
+					cells[row][column].setNumberOfTrapsInSurrounding(9);
 					cells[row][column].OpenCell();
 				}
+
+				// debugging
+				Log.v(">>>8C Debugging: ", cells[row][column].toString());
 			}
 		}
 	}
@@ -440,8 +447,13 @@ public class Game extends Activity {
 				|| cells[rowClicked][columnClicked].isFlagged()) {
 			return;
 		}
+
+		if (!cells[rowClicked][columnClicked].isClickable()) {
+			return;
+		}
+
 		cells[rowClicked][columnClicked].OpenCell();
-		if (cells[rowClicked][columnClicked].getNumberOfTrapsInSorrounding() != 0) {
+		if (cells[rowClicked][columnClicked].getNumberOfTrapsInSurrounding() != 0) {
 			return;
 		}
 		for (int row = 0; row < 3; row++) {
@@ -472,7 +484,7 @@ public class Game extends Activity {
 		isGameStart = false;
 
 		// show all traps
-		// disable all blocks
+		// disable all traps
 		for (int row = 1; row < numberOfRows + 1; row++) {
 			for (int column = 1; column < numberOfColumns + 1; column++) {
 				// disable block
@@ -481,7 +493,7 @@ public class Game extends Activity {
 				// block has trap and is not flagged
 				if (cells[row][column].hasTrap()
 						&& !cells[row][column].isFlagged()) {
-					// set trap icon
+					// set trap iconasdasd
 					cells[row][column].setTrapIcon(false);
 				}
 
@@ -497,6 +509,12 @@ public class Game extends Activity {
 					// disable the block
 					cells[row][column].setClickable(false);
 				}
+
+				// set treasure icon
+				if (cells[row][column].hasTreasure()) {
+					// set trap icon
+					cells[row][column].setTreasureIcon(false);
+				}
 			}
 		}
 
@@ -509,13 +527,13 @@ public class Game extends Activity {
 	 * 
 	 * @author: 8B Pham Hung Cuong
 	 */
-	private void startTimer() {
+	public void startTimer() {
 		clock.removeCallbacks(updateTimeElasped);
 		// delay clock for a second
 		clock.postDelayed(updateTimeElasped, 1000);
 	}
 
-	private void stopTimer() {
+	public void stopTimer() {
 		// disable call backs
 		clock.removeCallbacks(updateTimeElasped);
 	}

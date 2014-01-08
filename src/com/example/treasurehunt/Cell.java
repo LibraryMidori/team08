@@ -29,10 +29,20 @@ public class Cell extends Button {
 		super(context);
 	}
 
+	/*
+	 * Constructor
+	 * 
+	 * @author 8A Tran Trong Viet
+	 */
 	public Cell(Context context, AttributeSet attrs) {
 		super(context, attrs);
 	}
 
+	/*
+	 * Constructor
+	 * 
+	 * @author 8A Tran Trong Viet
+	 */
 	public Cell(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 	}
@@ -245,6 +255,7 @@ public class Cell extends Button {
 		} else {
 			this.setBackgroundResource(R.drawable.square_blue);
 		}
+		isClickable = false;
 	}
 
 	/*
@@ -344,7 +355,7 @@ public class Cell extends Button {
 			case 8:
 				this.setTextColor(Color.rgb(71, 71, 71));
 				break;
-			case 9: 
+			case 9:
 				this.setTextColor(Color.rgb(205, 205, 0));
 				break;
 			}
@@ -363,6 +374,8 @@ public class Cell extends Button {
 		this.setTextColor(Color.RED);
 	}
 
+
+
 	/*
 	 * Get number of nearby traps
 	 * 
@@ -370,7 +383,25 @@ public class Cell extends Button {
 	 * 
 	 * @param
 	 */
-	public int getNumberOfTrapsInSorrounding() {
+	public int getNumberOfTrapsInSurrounding() {
 		return numberOfTrapInSurrounding;
+	}
+
+	@Override
+	public String toString() {
+		if (this.isTrapped) {
+			return "This is a trap " + numberOfTrapInSurrounding;
+		} else {
+			return "This is not a trap " + numberOfTrapInSurrounding;
+		}
+	}
+	
+	/*
+	 * Set the numberOfTrapInSurrounding
+	 * 
+	 * @author 8C Pham Duy Hung
+	 */
+	public void setNumberOfTrapsInSurrounding(int number) {
+		numberOfTrapInSurrounding = number;
 	}
 }
