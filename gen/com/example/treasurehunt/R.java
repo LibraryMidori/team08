@@ -39,13 +39,14 @@ public final class R {
     }
     public static final class id {
         public static final int Map=0x7f090003;
-        public static final int action_settings=0x7f090008;
+        public static final int action_settings=0x7f090009;
         public static final int levelText=0x7f090000;
         public static final int livesText=0x7f090002;
-        public static final int loadGameBtn=0x7f090006;
-        public static final int newGameBtn=0x7f090007;
-        public static final int rankingBtn=0x7f090004;
-        public static final int recordBtn=0x7f090005;
+        public static final int loadGameBtn=0x7f090007;
+        public static final int newGameBtn=0x7f090008;
+        public static final int rankingBtn=0x7f090005;
+        public static final int recordBtn=0x7f090006;
+        public static final int testBtn=0x7f090004;
         public static final int timeText=0x7f090001;
     }
     public static final class layout {

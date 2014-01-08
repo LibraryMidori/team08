@@ -7,6 +7,9 @@
     android:background="@drawable/background1"
     tools:context=".MainMenu" >
 
+    <Button
+        android:id="@+id/testBtn"
+        android:visibility="gone" />
     <ImageView
         android:layout_width="100dp"
         android:layout_height="100dp"
