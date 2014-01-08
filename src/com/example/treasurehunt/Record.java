@@ -1,57 +1,110 @@
 package com.example.treasurehunt;
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+/*
+ * Class Score
+ * 
+ * @author 8A Tran Trong Viet
+ * 
+ */
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import com.example.treasurehunt.Score;
 
 import android.app.Activity;
-import android.content.Context;
-import android.widget.Toast;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.widget.TextView;
 
 public class Record extends Activity {
-//	private String playerName;
-//	private Integer score;
-//	private Integer level;
 
-	public String loadRecord() {
+	public final String GAME_PREFS = "ArithmeticFile";
+	private SharedPreferences gamePrefs;
 
-		InputStream inputStream = getResources().openRawResource(R.raw.test);
-		System.out.println(inputStream);
-		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+	/*
+	 * Show high score
+	 * 
+	 * @author 8A Tran Trong Viet
+	 * 
+	 * @param sc: savedInstanceState: the state of previous game
+	 */
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_record);
 
-		int i;
-		try {
-			i = inputStream.read();
-			while (i != -1) {
-				byteArrayOutputStream.write(i);
-				i = inputStream.read();
-			}
-			inputStream.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		return byteArrayOutputStream.toString();
+		// get text view
+		TextView scoreView = (TextView) findViewById(R.id.high_scores_list);
+//		// get shared prefs
+//		SharedPreferences gamePrefs = getSharedPreferences(GAME_PREFS, 0);
+//		// get scores
+//		String[] savedScores = gamePrefs.getString("highScores", "").split("\\|");
+//		// build string
+//		StringBuilder scoreBuild = new StringBuilder("");
+//		for (String score : savedScores) {
+//			scoreBuild.append(score + "\n");
+//		}
+//		// display scores
+//		if (scoreBuild.toString() != "") {
+//			scoreView.setText(scoreBuild.toString());
+//		}
+//		else {
+			scoreView.setText("None");
+		//}
+		
 	}
 
-	public boolean saveRecord(String playerName, Integer score, Integer level) {
-		try {
-			FileOutputStream out = openFileOutput("dulieu.txt",
-					Context.MODE_PRIVATE);
+	/*
+	 * Set high score
+	 * 
+	 * @author 8A Tran Trong Viet
+	 * 
+	 * @param sc: savedInstanceState: the state of previous game
+	 */
+	private void setHighScore(String playerName, int exScore, int level) {
+		if (exScore > 0) {
+			// we have a valid score
+			SharedPreferences.Editor scoreEdit = gamePrefs.edit();
+			// get existing scores
+			String scores = gamePrefs.getString("highScores", "");
+			// check for scores
+			if (scores.length() > 0) {
+				// we have existing scores
+				List<Score> scoreStrings = new ArrayList<Score>();
+				// split scores
+				String[] exScores = scores.split("\\|");
+				// add score object for each
+				for (String eSc : exScores) {
+					String[] parts = eSc.split(" - ");
+					scoreStrings.add(new Score(parts[0], Integer
+							.parseInt(parts[1]), Integer.parseInt(parts[2])));
+				}
+				// new score
+				Score newScore = new Score(playerName, exScore, level);
+				scoreStrings.add(newScore);
+				// sort
+				Collections.sort(scoreStrings);
+				// get top ten
+				StringBuilder scoreBuild = new StringBuilder("");
+				for (int s = 0; s < scoreStrings.size(); s++) {
+					if (s >= 10)
+						break;
+					if (s > 0)
+						scoreBuild.append("|");
+					scoreBuild.append(scoreStrings.get(s).getScoreText());
+				}
+				// write to prefs
+				scoreEdit.putString("highScores", scoreBuild.toString());
+				scoreEdit.commit();
 
-			String pos = playerName;
-			pos += ":";
-			pos += score;
-			pos += ":";
-			pos += level;
-
-			out.write(pos.getBytes());
-			out.close();
-		} catch (Exception e) {
-			Toast.makeText(getApplicationContext(),
-					"Can't write record file!!!", Toast.LENGTH_SHORT).show();
+			} else {
+				// no existing scores
+				scoreEdit.putString("highScores", "" + playerName + " - "
+						+ exScore + "-" + level);
+				scoreEdit.commit();
+			}
 		}
-		return true;
 	}
 }
