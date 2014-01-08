@@ -1,10 +1,12 @@
 package com.example.treasurehunt;
 
+import java.util.Random;
+
 import android.content.Context;
 import android.graphics.Color;
-import android.widget.Button;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
+import android.widget.Button;
 
 public class Cell extends Button {
 	/*
@@ -61,8 +63,22 @@ public class Cell extends Button {
 		isDoubt = false;
 		isClickable = true;
 		numberOfTrapInSurrounding = 0;
+		
+		Random r = new Random();
+		switch (r.nextInt() % 2) {
+		case 1:
+			this.setBackgroundResource(R.drawable.cell1);
+			break;
+			
+		case 2:
+			this.setBackgroundResource(R.drawable.cell2);
+			break;
+		default:
+			this.setBackgroundResource(R.drawable.cell1);
+			break;
+		}
 
-		this.setBackgroundResource(R.drawable.square_blue);
+		// this.setBackgroundResource(R.drawable.square_blue);
 		setBoldFont();
 	}
 
@@ -165,7 +181,8 @@ public class Cell extends Button {
 	 * @param number number of traps surrounded this cell
 	 */
 	public void setNumberOfSurroundingTraps(int number) {
-		this.setBackgroundResource(R.drawable.square_grey);
+		// this.setBackgroundResource(R.drawable.square_grey);
+		this.setBackgroundResource(R.drawable.empty);
 		updateNumber(number);
 	}
 
@@ -177,7 +194,8 @@ public class Cell extends Button {
 	 * @param enabled boolean variable
 	 */
 	public void setTreasureIcon(boolean enabled) {
-		this.setText("T");
+		// this.setText("T");
+		this.setBackgroundResource(R.drawable.treasure);
 	}
 
 	/*
@@ -188,10 +206,11 @@ public class Cell extends Button {
 	 * @param enabled boolean variable
 	 */
 	public void setTrapIcon(boolean enabled) {
-		this.setText("M");
+		// this.setText("M");
 
 		if (!enabled) {
-			this.setBackgroundResource(R.drawable.square_grey);
+			// this.setBackgroundResource(R.drawable.square_grey);
+			this.setBackgroundResource(R.drawable.trap);
 			this.setTextColor(Color.RED);
 		} else {
 			this.setTextColor(Color.BLACK);
@@ -206,10 +225,11 @@ public class Cell extends Button {
 	 * @param enabled boolean variable
 	 */
 	public void setFlagIcon(boolean enabled) {
-		this.setText("F");
+		// this.setText("F");
 
 		if (!enabled) {
-			this.setBackgroundResource(R.drawable.square_grey);
+			// this.setBackgroundResource(R.drawable.square_grey);
+			this.setBackgroundResource(R.drawable.flag);
 			this.setTextColor(Color.RED);
 		} else {
 			this.setTextColor(Color.BLACK);
@@ -224,10 +244,11 @@ public class Cell extends Button {
 	 * @param enabled boolean variable
 	 */
 	public void setDoubtIcon(boolean enabled) {
-		this.setText("?");
+		// this.setText("?");
+		// this.setBackgroundResource(R.drawable.square_blue);
+		this.setBackgroundResource(R.drawable.doubt);
 
 		if (!enabled) {
-			this.setBackgroundResource(R.drawable.square_blue);
 			this.setTextColor(Color.RED);
 		} else {
 			this.setTextColor(Color.BLACK);
@@ -238,8 +259,6 @@ public class Cell extends Button {
 	 * Clear all icons/text
 	 * 
 	 * @author 8A Tran Trong Viet
-	 * 
-	 * @param
 	 */
 	public void clearAllIcons() {
 		this.setText("");
@@ -254,17 +273,30 @@ public class Cell extends Button {
 	 */
 	public void setCellAsDisabled(boolean enabled) {
 		if (!enabled) {
-			this.setBackgroundResource(R.drawable.square_grey);
+			// this.setBackgroundResource(R.drawable.square_grey);
+			this.setBackgroundResource(R.drawable.empty);
+
 		} else {
-			this.setBackgroundResource(R.drawable.square_blue);
+			// this.setBackgroundResource(R.drawable.square_blue);
+			this.setBackgroundResource(R.drawable.empty);
 		}
 
 	}
 
+	/*
+	 * Disable this cell
+	 * 
+	 * @author 8C Pham Duy Hung
+	 */
 	public void disableCell() {
 		isClickable = false;
 	}
 
+	/*
+	 * Enable this cell
+	 * 
+	 * @author 8C Pham Duy Hung
+	 */
 	public void enableCell() {
 		isClickable = false;
 	}
@@ -347,31 +379,40 @@ public class Cell extends Button {
 			// we have 1 - 8 trap count
 			switch (text) {
 			case 1:
-				this.setTextColor(Color.BLUE);
+				this.setBackgroundResource(R.drawable.c1);
+				// this.setTextColor(Color.BLUE);
 				break;
 			case 2:
-				this.setTextColor(Color.rgb(0, 100, 0));
+				this.setBackgroundResource(R.drawable.c2);
+				// this.setTextColor(Color.rgb(0, 100, 0));
 				break;
 			case 3:
-				this.setTextColor(Color.RED);
+				this.setBackgroundResource(R.drawable.c3);
+				// this.setTextColor(Color.RED);
 				break;
 			case 4:
-				this.setTextColor(Color.rgb(85, 26, 139));
+				this.setBackgroundResource(R.drawable.c4);
+				// this.setTextColor(Color.rgb(85, 26, 139));
 				break;
 			case 5:
-				this.setTextColor(Color.rgb(139, 28, 98));
+				this.setBackgroundResource(R.drawable.c5);
+				// this.setTextColor(Color.rgb(139, 28, 98));
 				break;
 			case 6:
-				this.setTextColor(Color.rgb(238, 173, 14));
+				this.setBackgroundResource(R.drawable.c6);
+//				this.setTextColor(Color.rgb(238, 173, 14));
 				break;
 			case 7:
-				this.setTextColor(Color.rgb(47, 79, 79));
+				this.setBackgroundResource(R.drawable.c7);
+//				this.setTextColor(Color.rgb(47, 79, 79));
 				break;
 			case 8:
-				this.setTextColor(Color.rgb(71, 71, 71));
+				this.setBackgroundResource(R.drawable.c8);
+//				this.setTextColor(Color.rgb(71, 71, 71));
 				break;
 			case 9:
-				this.setTextColor(Color.rgb(205, 205, 0));
+				// this.setBackgroundResource(R.drawable.empty);
+//				this.setTextColor(Color.rgb(205, 205, 0));
 				break;
 			}
 		}
@@ -400,6 +441,11 @@ public class Cell extends Button {
 		return numberOfTrapInSurrounding;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see android.view.View#toString()
+	 */
 	@Override
 	public String toString() {
 		if (this.isTrapped) {

@@ -1,12 +1,14 @@
 package com.example.treasurehunt;
 
+import java.io.IOException;
+
 import android.app.Activity;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
 
 /*
  * This is a main menu of this game
@@ -17,8 +19,7 @@ public class MainMenu extends Activity implements OnClickListener {
 	/*
 	 * Properties
 	 */
-	// Button newGameBtn, continueBtn, rankingBtn, recordBtn, instructionBtn,
-	// settingBtn;
+	private MediaPlayer mp;
 
 	/*
 	 * (non-Javadoc)
@@ -30,8 +31,10 @@ public class MainMenu extends Activity implements OnClickListener {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main_menu);
 
-		// @author 8B Pham Hung Cuong
-		initView();
+		mp = MediaPlayer.create(MainMenu.this, R.raw.sound1);
+		mp.setLooping(true);
+		mp.start();
+
 	}
 
 	/*
@@ -44,21 +47,6 @@ public class MainMenu extends Activity implements OnClickListener {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main_menu, menu);
 		return true;
-	}
-
-	/*
-	 * Initial View
-	 * 
-	 * @author 8B Pham Hung Cuong
-	 */
-	public void initView() {
-		// newGameBtn = (Button) findViewById(R.id.newGameBtn);
-		// continueBtn = (Button) findViewById(R.id.continueBtn);
-		// instructionBtn = (Button) findViewById(R.id.instructionBtn);
-		// settingBtn = (Button) findViewById(R.id.settingBtn);
-		// rankingBtn = (Button) findViewById(R.id.rankingBtn);
-		// recordBtn = (Button) findViewById(R.id.recordBtn);
-
 	}
 
 	/*
@@ -80,6 +68,25 @@ public class MainMenu extends Activity implements OnClickListener {
 		case R.id.rankingBtn:
 
 			break;
+
+		case R.id.settingBtn:
+			if (mp.isPlaying()) {
+				mp.stop();
+				try {
+					mp.prepare();
+				} catch (IllegalStateException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				mp.seekTo(0);
+			} else {
+				mp.start();
+			}
+			break;
+
 		case R.id.recordBtn:
 			Intent openRecord = new Intent(MainMenu.this, Record.class);
 			startActivity(openRecord);

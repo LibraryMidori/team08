@@ -1,13 +1,16 @@
 package com.example.treasurehunt;
 
 /*
- * Class Score
+ * Class Score: handle the score of this game
  * 
- * @author 8A Tran Trong Viet
+ * @author group 8
  * 
  */
 public class Score implements Comparable<Score> {
 
+	/*
+	 * Properties
+	 */
 	private String playerName;
 	private int level;
 	public int scoreNum;
@@ -43,7 +46,6 @@ public class Score implements Comparable<Score> {
 	 * Return score display text
 	 * 
 	 * @author 8A Tran Trong Viet
-	 * 
 	 */
 	public String getScoreText() {
 		return playerName + " - " + scoreNum + " - " + level;

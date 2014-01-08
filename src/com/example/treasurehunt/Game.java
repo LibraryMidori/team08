@@ -2,16 +2,23 @@ package com.example.treasurehunt;
 
 import java.util.Random;
 
+import javax.crypto.spec.GCMParameterSpec;
+
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.BitmapFactory.Options;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
+import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
+import android.widget.Toast;
 import android.widget.TableRow.LayoutParams;
 
 /*
@@ -55,6 +62,15 @@ public class Game extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_game);
+
+		RelativeLayout layout = (RelativeLayout) findViewById(R.id.layout_root);
+		Options option = new Options();
+		option.inSampleSize = 2;
+		Bitmap bmp = BitmapFactory.decodeResource(getResources(),
+				R.drawable.gamebg, option);
+		if (bmp != null) {
+			layout.setBackgroundDrawable(new BitmapDrawable(getResources(), bmp));
+		}
 
 		// @author 8C Pham Duy Hung
 		initView();
@@ -100,6 +116,16 @@ public class Game extends Activity {
 		isGameStart = false;
 		isMapGen = false;
 	}
+
+	@Override
+	public void onBackPressed() {
+		finish();
+		super.onBackPressed();
+	}
+
+	/*
+	 * private void gameController(int level) { switch(level) { } }
+	 */
 
 	/*
 	 * Start the game
@@ -339,12 +365,13 @@ public class Game extends Activity {
 	}
 
 	/*
+	 * Generate the map
 	 * 
 	 * @author 8A Tran Trong Viet
 	 * 
-	 * @param rowClicked
+	 * @param rowClicked the position of clicked cell
 	 * 
-	 * @param columnClicked
+	 * @param columnClicked the position of clicked cell
 	 */
 	private void genMap(int rowClicked, int columnClicked) {
 		Random rand = new Random();
@@ -361,9 +388,16 @@ public class Game extends Activity {
 			treasureCol--;
 		}
 
+		// Make sure the treasure is not near the clicked cell
 		if (isNearTheClickedCell(treasureRow, treasureCol, rowClicked,
 				columnClicked)) {
-
+			if (treasureRow < numberOfRows / 2) {
+				treasureRow = (numberOfRows - treasureRow) / 2;
+				treasureCol = (numberOfColumns - treasureCol) / 2;
+			} else {
+				treasureRow = (treasureRow) / 2;
+				treasureCol = (treasureCol) / 2;
+			}
 		}
 
 		for (int previousRow = -1; previousRow < 2; previousRow++) {
@@ -486,6 +520,7 @@ public class Game extends Activity {
 		if (cells[rowClicked][columnClicked].getNumberOfTrapsInSurrounding() != 0) {
 			return;
 		}
+
 		for (int row = 0; row < 3; row++) {
 			for (int column = 0; column < 3; column++) {
 				// check all the above checked conditions
@@ -563,6 +598,12 @@ public class Game extends Activity {
 		// delay clock for a second
 		clock.postDelayed(updateTimeElasped, 1000);
 	}
+
+	/*
+	 * Stop the time
+	 * 
+	 * @author 8B Pham Hung Cuong
+	 */
 
 	public void stopTimer() {
 		// disable call backs

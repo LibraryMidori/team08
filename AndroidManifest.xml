@@ -30,7 +30,7 @@
             android:name="com.example.treasurehunt.Game"
             android:label="@string/title_activity_game"
             android:screenOrientation="landscape"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
+            android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen" >
         </activity>
         <activity
             android:name="com.example.treasurehunt.Record"
