@@ -4,7 +4,35 @@
     android:layout_height="match_parent"
     android:background="@drawable/gamebg"
     tools:context=".Game" >
-
+    
+    <ImageView 
+        android:layout_width="160dp"
+        android:layout_height="50dp"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/leveltext"
+        android:layout_marginLeft="280dp"
+        android:layout_marginTop="25dp"
+        />
+    
+    <ImageView 
+        android:layout_width="160dp"
+        android:layout_height="50dp"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/scoretext"
+        android:layout_marginLeft="750dp"
+        android:layout_marginTop="25dp"
+        />
+    
+    <ImageView 
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/clockicon"
+        android:layout_marginLeft="450dp"
+        android:layout_marginTop="38dp"
+        />
+    
+    
     <TextView
         android:id="@+id/levelText"
         android:layout_width="wrap_content"
@@ -12,7 +40,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginLeft="300dp"
         android:layout_marginTop="98dp"
-        android:text="5"
+        android:text=""
         android:textSize="40dp"
         android:textStyle="bold" />
 
@@ -23,7 +51,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginLeft="435dp"
         android:layout_marginTop="98dp"
-        android:text="30 s"
+        android:text=""
         android:textSize="40dp"
         android:textStyle="bold" />
 
@@ -34,17 +62,19 @@
         android:layout_alignParentTop="true"
         android:layout_marginLeft="610dp"
         android:layout_marginTop="98dp"
-        android:text="3"
+        android:text=""
         android:textSize="40dp"
         android:textStyle="bold" />
 
     <TableLayout
         android:id="@+id/Map"
-        android:layout_width="1000dp"
-        android:layout_height="1000dp"
+        android:layout_width="950dp"
+        android:layout_height="600dp"
+        android:layout_marginTop="100dp"
+        android:layout_centerHorizontal="true"
         android:layout_span="3"
         android:gravity="bottom"
-        android:padding="5dp"
+        android:padding="2dp"
         android:stretchColumns="*" >
     </TableLayout>
 

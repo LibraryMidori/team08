@@ -22,31 +22,42 @@ public final class R {
     }
     public static final class drawable {
         public static final int background1=0x7f020000;
-        public static final int gamebg=0x7f020001;
-        public static final int ic_launcher=0x7f020002;
-        public static final int loadgame=0x7f020003;
-        public static final int loadgamebg=0x7f020004;
-        public static final int newgame=0x7f020005;
-        public static final int newgamebg=0x7f020006;
-        public static final int ranking=0x7f020007;
-        public static final int rankingbg=0x7f020008;
-        public static final int record=0x7f020009;
-        public static final int recordbg=0x7f02000a;
-        public static final int square_blue=0x7f02000b;
-        public static final int square_grey=0x7f02000c;
-        public static final int treasurechest=0x7f02000d;
-        public static final int treasurehunt=0x7f02000e;
+        public static final int clockicon=0x7f020001;
+        public static final int continue_button=0x7f020002;
+        public static final int continue_click=0x7f020003;
+        public static final int continuebg=0x7f020004;
+        public static final int gamebg=0x7f020005;
+        public static final int ic_launcher=0x7f020006;
+        public static final int instruction=0x7f020007;
+        public static final int instruction_click=0x7f020008;
+        public static final int instructionbg=0x7f020009;
+        public static final int leveltext=0x7f02000a;
+        public static final int newgame=0x7f02000b;
+        public static final int newgame_click=0x7f02000c;
+        public static final int newgamebg=0x7f02000d;
+        public static final int pause=0x7f02000e;
+        public static final int ranking=0x7f02000f;
+        public static final int rankingbg=0x7f020010;
+        public static final int record=0x7f020011;
+        public static final int recordbg=0x7f020012;
+        public static final int scoretext=0x7f020013;
+        public static final int setting=0x7f020014;
+        public static final int square_blue=0x7f020015;
+        public static final int square_grey=0x7f020016;
+        public static final int treasurechest=0x7f020017;
+        public static final int treasurehunt=0x7f020018;
     }
     public static final class id {
         public static final int Map=0x7f090003;
-        public static final int action_settings=0x7f090009;
+        public static final int action_settings=0x7f09000a;
+        public static final int continueBtn=0x7f090005;
+        public static final int instructionBtn=0x7f090004;
         public static final int levelText=0x7f090000;
         public static final int livesText=0x7f090002;
-        public static final int loadGameBtn=0x7f090007;
-        public static final int newGameBtn=0x7f090008;
-        public static final int rankingBtn=0x7f090005;
-        public static final int recordBtn=0x7f090006;
-        public static final int testBtn=0x7f090004;
+        public static final int newGameBtn=0x7f090006;
+        public static final int rankingBtn=0x7f090008;
+        public static final int recordBtn=0x7f090007;
+        public static final int settingBtn=0x7f090009;
         public static final int timeText=0x7f090001;
     }
     public static final class layout {
