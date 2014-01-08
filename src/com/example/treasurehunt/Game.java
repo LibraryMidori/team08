@@ -260,7 +260,7 @@ public class Game extends Activity {
 											&& !cells[currentRow][currentColumn]
 													.isDoubted()) {
 										cells[currentRow][currentColumn]
-												.setCellAsDisabled(false);
+												.setCellAsDisabled(true);
 										cells[currentRow][currentColumn]
 												.setFlagIcon(true);
 										cells[currentRow][currentColumn]
@@ -275,9 +275,11 @@ public class Game extends Activity {
 										cells[currentRow][currentColumn]
 												.setDoubt(true);
 										cells[currentRow][currentColumn]
-												.setFlag(false);
+												.setFlagIcon(false);
 										cells[currentRow][currentColumn]
-												.setDoubt(true);
+												.setDoubtIcon(true);
+										cells[currentRow][currentColumn]
+												.setFlag(false);
 										trapsRemain++; // increase trap count
 									}
 									// case 3. change to blank square
@@ -361,7 +363,7 @@ public class Game extends Activity {
 
 		if (isNearTheClickedCell(treasureRow, treasureCol, rowClicked,
 				columnClicked)) {
-			
+
 		}
 
 		for (int previousRow = -1; previousRow < 2; previousRow++) {
@@ -425,6 +427,7 @@ public class Game extends Activity {
 					cells[row][column].setNumberOfTrapsInSurrounding(9);
 					cells[row][column].OpenCell();
 				}
+
 			}
 		}
 	}
@@ -516,11 +519,12 @@ public class Game extends Activity {
 			for (int column = 1; column < numberOfColumns + 1; column++) {
 				// disable block
 				cells[row][column].setCellAsDisabled(false);
+				cells[row][column].disableCell();
 
 				// block has trap and is not flagged
 				if (cells[row][column].hasTrap()
 						&& !cells[row][column].isFlagged()) {
-					// set trap iconasdasd
+					// set trap icon
 					cells[row][column].setTrapIcon(false);
 				}
 

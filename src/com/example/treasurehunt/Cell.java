@@ -141,6 +141,9 @@ public class Cell extends Button {
 	 */
 	public void setFlag(boolean flagged) {
 		isFlagged = flagged;
+		if (isFlagged) {
+			isClickable = true;
+		}
 	}
 
 	/*
@@ -224,7 +227,7 @@ public class Cell extends Button {
 		this.setText("?");
 
 		if (!enabled) {
-			this.setBackgroundResource(R.drawable.square_grey);
+			this.setBackgroundResource(R.drawable.square_blue);
 			this.setTextColor(Color.RED);
 		} else {
 			this.setTextColor(Color.BLACK);
@@ -255,6 +258,14 @@ public class Cell extends Button {
 		} else {
 			this.setBackgroundResource(R.drawable.square_blue);
 		}
+
+	}
+
+	public void disableCell() {
+		isClickable = false;
+	}
+
+	public void enableCell() {
 		isClickable = false;
 	}
 
@@ -306,6 +317,10 @@ public class Cell extends Button {
 
 		setCellAsDisabled(false);
 		isCovered = false;
+
+		if (this.numberOfTrapInSurrounding == 0) {
+			isClickable = false;
+		}
 
 		// check if it has trap
 		if (hasTrap()) {
@@ -374,8 +389,6 @@ public class Cell extends Button {
 		this.setTextColor(Color.RED);
 	}
 
-
-
 	/*
 	 * Get number of nearby traps
 	 * 
@@ -395,7 +408,7 @@ public class Cell extends Button {
 			return "This is not a trap " + numberOfTrapInSurrounding;
 		}
 	}
-	
+
 	/*
 	 * Set the numberOfTrapInSurrounding
 	 * 

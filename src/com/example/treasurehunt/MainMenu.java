@@ -17,7 +17,8 @@ public class MainMenu extends Activity implements OnClickListener {
 	/*
 	 * Properties
 	 */
-	// Button newGameBtn, continueBtn, rankingBtn, recordBtn, instructionBtn, settingBtn;
+	// Button newGameBtn, continueBtn, rankingBtn, recordBtn, instructionBtn,
+	// settingBtn;
 
 	/*
 	 * (non-Javadoc)
@@ -51,17 +52,18 @@ public class MainMenu extends Activity implements OnClickListener {
 	 * @author 8B Pham Hung Cuong
 	 */
 	public void initView() {
-//		newGameBtn = (Button) findViewById(R.id.newGameBtn);
-//		continueBtn = (Button) findViewById(R.id.continueBtn);
-//		instructionBtn = (Button) findViewById(R.id.instructionBtn);
-//		settingBtn = (Button) findViewById(R.id.settingBtn);
-//		rankingBtn = (Button) findViewById(R.id.rankingBtn);
-//		recordBtn = (Button) findViewById(R.id.recordBtn);
-		
+		// newGameBtn = (Button) findViewById(R.id.newGameBtn);
+		// continueBtn = (Button) findViewById(R.id.continueBtn);
+		// instructionBtn = (Button) findViewById(R.id.instructionBtn);
+		// settingBtn = (Button) findViewById(R.id.settingBtn);
+		// rankingBtn = (Button) findViewById(R.id.rankingBtn);
+		// recordBtn = (Button) findViewById(R.id.recordBtn);
+
 	}
 
 	/*
 	 * This code handle the activity
+	 * 
 	 * @author 8C Pham Duy Hung
 	 */
 	@Override
