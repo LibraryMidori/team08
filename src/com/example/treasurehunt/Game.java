@@ -241,7 +241,7 @@ public class Game extends Activity {
 									return true;
 								}
 
-								// if clicked block is enabled, clickable or
+								// if clicked cells is enabled, clickable or
 								// flagged
 								if (cells[currentRow][currentColumn]
 										.isClickable()
@@ -346,16 +346,22 @@ public class Game extends Activity {
 	 */
 	private void genMap(int rowClicked, int columnClicked) {
 		Random rand = new Random();
+		int treasureRow = 0, treasureCol = 0;
 
 		// Set the treasure position
-		int treasureRow = rand.nextInt(numberOfRows - 1) + 2;
+		treasureRow = rand.nextInt(numberOfRows - 1) + 2;
 		if (treasureRow == numberOfRows) {
 			treasureRow--;
 		}
 
-		int treasureCol = rand.nextInt(numberOfColumns - 1) + 2;
+		treasureCol = rand.nextInt(numberOfColumns - 1) + 2;
 		if (treasureCol == numberOfColumns) {
 			treasureCol--;
+		}
+
+		if (isNearTheClickedCell(treasureRow, treasureCol, rowClicked,
+				columnClicked)) {
+			
 		}
 
 		for (int previousRow = -1; previousRow < 2; previousRow++) {
@@ -376,15 +382,9 @@ public class Game extends Activity {
 			trapRow = rand.nextInt(numberOfColumns);
 			trapColumn = rand.nextInt(numberOfRows);
 			// set the 8 surrounded cells of the clicked cell has no trap
-			if (((trapRow != columnClicked) || (trapColumn != rowClicked))
-					&& ((trapRow != columnClicked) || (trapColumn + 1 != rowClicked))
-					&& ((trapRow != columnClicked) || (trapColumn + 2 != rowClicked))
-					&& ((trapRow + 1 != columnClicked) || (trapColumn != rowClicked))
-					&& ((trapRow + 1 != columnClicked) || (trapColumn + 1 != rowClicked))
-					&& ((trapRow + 1 != columnClicked) || (trapColumn + 2 != rowClicked))
-					&& ((trapRow + 2 != columnClicked) || (trapColumn != rowClicked))
-					&& ((trapRow + 2 != columnClicked) || (trapColumn + 1 != rowClicked))
-					&& ((trapRow + 2 != columnClicked) || (trapColumn + 2 != rowClicked))) {
+
+			if (isNearTheClickedCell(trapRow, trapColumn, rowClicked,
+					columnClicked)) {
 				if (cells[trapColumn + 1][trapRow + 1].hasTrap()
 						|| cells[trapColumn + 1][trapRow + 1].hasTreasure()) {
 					row--; // trap is already there, don't repeat for same block
@@ -425,10 +425,37 @@ public class Game extends Activity {
 					cells[row][column].setNumberOfTrapsInSurrounding(9);
 					cells[row][column].OpenCell();
 				}
-
-				// debugging
-				Log.v(">>>8C Debugging: ", cells[row][column].toString());
 			}
+		}
+	}
+
+	/*
+	 * Check if this cell is near the clicked cell
+	 * 
+	 * @author 8C Pham Duy Hung
+	 * 
+	 * @param rowCheck the row which want to check
+	 * 
+	 * @param columnCheck the column which want to check
+	 * 
+	 * @param rowClicked the row of the clicked cell
+	 * 
+	 * @param columnClick the column of the clicked cell
+	 */
+	private boolean isNearTheClickedCell(int rowCheck, int columnCheck,
+			int rowClicked, int columnClicked) {
+		if (((rowCheck != columnClicked) || (columnCheck != rowClicked))
+				&& ((rowCheck != columnClicked) || (columnCheck + 1 != rowClicked))
+				&& ((rowCheck != columnClicked) || (columnCheck + 2 != rowClicked))
+				&& ((rowCheck + 1 != columnClicked) || (columnCheck != rowClicked))
+				&& ((rowCheck + 1 != columnClicked) || (columnCheck + 1 != rowClicked))
+				&& ((rowCheck + 1 != columnClicked) || (columnCheck + 2 != rowClicked))
+				&& ((rowCheck + 2 != columnClicked) || (columnCheck != rowClicked))
+				&& ((rowCheck + 2 != columnClicked) || (columnCheck + 1 != rowClicked))
+				&& ((rowCheck + 2 != columnClicked) || (columnCheck + 2 != rowClicked))) {
+			return true;
+		} else {
+			return false;
 		}
 	}
 

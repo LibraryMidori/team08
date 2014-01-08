@@ -32,20 +32,22 @@ public final class R {
         public static final int instruction_click=0x7f020008;
         public static final int instructionbg=0x7f020009;
         public static final int leveltext=0x7f02000a;
-        public static final int newgame=0x7f02000b;
-        public static final int newgame_click=0x7f02000c;
-        public static final int newgamebg=0x7f02000d;
-        public static final int pause=0x7f02000e;
-        public static final int ranking=0x7f02000f;
-        public static final int rankingbg=0x7f020010;
-        public static final int record=0x7f020011;
-        public static final int recordbg=0x7f020012;
-        public static final int scoretext=0x7f020013;
-        public static final int setting=0x7f020014;
-        public static final int square_blue=0x7f020015;
-        public static final int square_grey=0x7f020016;
-        public static final int treasurechest=0x7f020017;
-        public static final int treasurehunt=0x7f020018;
+        public static final int loadgame=0x7f02000b;
+        public static final int loadgamebg=0x7f02000c;
+        public static final int newgame=0x7f02000d;
+        public static final int newgame_click=0x7f02000e;
+        public static final int newgamebg=0x7f02000f;
+        public static final int pause=0x7f020010;
+        public static final int ranking=0x7f020011;
+        public static final int rankingbg=0x7f020012;
+        public static final int record=0x7f020013;
+        public static final int recordbg=0x7f020014;
+        public static final int scoretext=0x7f020015;
+        public static final int setting=0x7f020016;
+        public static final int square_blue=0x7f020017;
+        public static final int square_grey=0x7f020018;
+        public static final int treasurechest=0x7f020019;
+        public static final int treasurehunt=0x7f02001a;
     }
     public static final class id {
         public static final int Map=0x7f090003;
