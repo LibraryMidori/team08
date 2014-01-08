@@ -46,6 +46,6 @@ public class Score implements Comparable<Score> {
 	 * 
 	 */
 	public String getScoreText() {
-		return playerName + " - " + scoreNum + "-" + level;
+		return playerName + " - " + scoreNum + " - " + level;
 	}
 }

@@ -11,12 +11,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.example.treasurehunt.Score;
-
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class Record extends Activity {
 
@@ -35,25 +36,47 @@ public class Record extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_record);
 
-		// get text view
+		initView();
+
+		for (int i = 0; i < 10; i++) {
+			setHighScore("0", i + 1, 0);
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see android.app.Activity#onCreateOptionsMenu(android.view.Menu)
+	 */
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.main_menu, menu);
+		return true;
+	}
+
+	/*
+	 * Initial view
+	 * 
+	 * @author 8A Tran Trong Viet
+	 */
+	private void initView() {
+
 		TextView scoreView = (TextView) findViewById(R.id.high_scores_list);
-//		// get shared prefs
-//		SharedPreferences gamePrefs = getSharedPreferences(GAME_PREFS, 0);
-//		// get scores
-//		String[] savedScores = gamePrefs.getString("highScores", "").split("\\|");
-//		// build string
-//		StringBuilder scoreBuild = new StringBuilder("");
-//		for (String score : savedScores) {
-//			scoreBuild.append(score + "\n");
-//		}
-//		// display scores
-//		if (scoreBuild.toString() != "") {
-//			scoreView.setText(scoreBuild.toString());
-//		}
-//		else {
-			scoreView.setText("None");
-		//}
-		
+
+		// get shared prefs
+		gamePrefs = getSharedPreferences(GAME_PREFS, 0);
+		// get scores
+		String[] savedScores = gamePrefs.getString("highScores", "").split(
+				"\\|");
+
+		// build string
+		StringBuilder scoreBuild = new StringBuilder("");
+		for (String score : savedScores) {
+			scoreBuild.append(score + "\n");
+		}
+
+		scoreView.setText(scoreBuild.toString());
 	}
 
 	/*
@@ -69,23 +92,25 @@ public class Record extends Activity {
 			SharedPreferences.Editor scoreEdit = gamePrefs.edit();
 			// get existing scores
 			String scores = gamePrefs.getString("highScores", "");
+
 			// check for scores
 			if (scores.length() > 0) {
-				// we have existing scores
+
 				List<Score> scoreStrings = new ArrayList<Score>();
-				// split scores
 				String[] exScores = scores.split("\\|");
+
 				// add score object for each
 				for (String eSc : exScores) {
 					String[] parts = eSc.split(" - ");
 					scoreStrings.add(new Score(parts[0], Integer
 							.parseInt(parts[1]), Integer.parseInt(parts[2])));
 				}
+
 				// new score
 				Score newScore = new Score(playerName, exScore, level);
 				scoreStrings.add(newScore);
-				// sort
 				Collections.sort(scoreStrings);
+
 				// get top ten
 				StringBuilder scoreBuild = new StringBuilder("");
 				for (int s = 0; s < scoreStrings.size(); s++) {
@@ -102,7 +127,7 @@ public class Record extends Activity {
 			} else {
 				// no existing scores
 				scoreEdit.putString("highScores", "" + playerName + " - "
-						+ exScore + "-" + level);
+						+ exScore + " - " + level);
 				scoreEdit.commit();
 			}
 		}
