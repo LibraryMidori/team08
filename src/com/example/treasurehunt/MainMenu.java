@@ -62,6 +62,10 @@ public class MainMenu extends Activity implements OnClickListener {
 		// TODO Auto-generated method stub
 		switch (v.getId()) {
 		case R.id.newGameBtn:
+			if (mp.isPlaying() && mp.isLooping()) {
+				btn.setBackgroundResource(R.drawable.mute);
+				mp.pause();
+			}
 			Intent openNewGame = new Intent(MainMenu.this, Game.class);
 			startActivity(openNewGame);
 			break;

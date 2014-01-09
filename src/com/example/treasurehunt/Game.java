@@ -2,13 +2,16 @@ package com.example.treasurehunt;
 
 import java.util.Random;
 
+import android.R.integer;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapFactory.Options;
 import android.graphics.drawable.BitmapDrawable;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -33,15 +36,15 @@ public class Game extends Activity {
 	private int numberOfColumns = 0;
 	private int totalTraps = 0;
 	private int trapsRemain = 0;
-	private static int level = 0;
+	private int level = 1;
 	private int lives = 0;
 	private int totalScore = 0;
 
 	private final int minTraps = 84;
 	private final int maxTime = 480;
 
-	private int cellWidth;
-	private int cellPadding;
+	private int cellWidth = 27;
+	private int cellPadding = 2;
 
 	// Tracking time
 	private Handler clock;
@@ -51,6 +54,8 @@ public class Game extends Activity {
 	private boolean isTrapHere;
 	private boolean isGameStart;
 	private boolean isMapGen;
+
+	private MediaPlayer mp;
 
 	/*
 	 * (non-Javadoc)
@@ -72,7 +77,12 @@ public class Game extends Activity {
 		}
 
 		// @author 8C Pham Duy Hung
-		initView();
+
+		mp = MediaPlayer.create(Game.this, R.raw.flag);
+
+		map = (TableLayout) findViewById(R.id.Map);
+
+		gameController(level, totalScore, lives);
 		startNewGame();
 	}
 
@@ -86,19 +96,6 @@ public class Game extends Activity {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.game, menu);
 		return true;
-	}
-
-	/*
-	 * Initial view
-	 * 
-	 * @author 8C Pham Duy Hung
-	 */
-	private void initView() {
-		map = (TableLayout) findViewById(R.id.Map);
-
-		level++;
-		gameController(level);
-
 	}
 
 	/*
@@ -119,178 +116,91 @@ public class Game extends Activity {
 	 * 
 	 * @param level the current level
 	 */
-	private void gameController(int level) {
-		totalTraps = minTraps + level;
-		switch (level) {
+	private void gameController(int _level, int _score, int _lives) {
+
+		// Default setting
+		isGameOver = false;
+		isTrapHere = false;
+		isGameStart = false;
+		isMapGen = false;
+
+		numberOfRows = 16;
+		numberOfColumns = 30;
+
+		// Tracking time
+		clock = new Handler();
+
+		switch (_level) {
 		case 1:
-			timer = maxTime;
-			numberOfRows = 16;
-			numberOfColumns = 30;
-
-			trapsRemain = totalTraps;
-			totalScore = 0;
-
-			cellWidth = 27;
-			cellPadding = 2;
-
-			// Tracking time
-			clock = new Handler();
-
-			isGameOver = false;
-			isTrapHere = false;
-			isGameStart = false;
-			isMapGen = false;
+			setUpGame(maxTime, minTraps, 0, 3);
 			break;
 		case 2:
-			timer = maxTime;
-			numberOfRows = 16;
-			numberOfColumns = 30;
-
-			trapsRemain = totalTraps;
-			totalScore = 0; // reset after
-
-			cellWidth = 27;
-			cellPadding = 2;
-
-			// Tracking time
-			clock = new Handler();
-
-			isGameOver = false;
-			isTrapHere = false;
-			isGameStart = false;
-			isMapGen = false;
+			setUpGame(maxTime, minTraps, 0, 3);
 			break;
 		case 3:
-			timer = maxTime;
-			numberOfRows = 16;
-			numberOfColumns = 30;
-
-			trapsRemain = totalTraps;
-			totalScore = 0; // reset after
-
-			cellWidth = 27;
-			cellPadding = 2;
-
-			// Tracking time
-			clock = new Handler();
-
-			isGameOver = false;
-			isTrapHere = false;
-			isGameStart = false;
-			isMapGen = false;
+			setUpGame(maxTime, minTraps, 0, 3);
 			break;
 		case 4:
-			timer = maxTime;
-			numberOfRows = 16;
-			numberOfColumns = 30;
-
-			trapsRemain = totalTraps;
-			totalScore = 0; // reset after
-
-			cellWidth = 27;
-			cellPadding = 2;
-
-			// Tracking time
-			clock = new Handler();
-
-			isGameOver = false;
-			isTrapHere = false;
-			isGameStart = false;
-			isMapGen = false;
+			setUpGame(maxTime, minTraps, 0, 3);
 			break;
 		case 5:
-			timer = maxTime;
-			numberOfRows = 16;
-			numberOfColumns = 30;
-
-			trapsRemain = totalTraps;
-			totalScore = 0; // reset after
-
-			cellWidth = 27;
-			cellPadding = 2;
-
-			// Tracking time
-			clock = new Handler();
-
-			isGameOver = false;
-			isTrapHere = false;
-			isGameStart = false;
-			isMapGen = false;
+			setUpGame(maxTime, minTraps, 0, 3);
 			break;
 		case 6:
-			timer = maxTime;
-			numberOfRows = 16;
-			numberOfColumns = 30;
-
-			trapsRemain = totalTraps;
-			totalScore = 0; // reset after
-
-			cellWidth = 27;
-			cellPadding = 2;
-
-			// Tracking time
-			clock = new Handler();
-
-			isGameOver = false;
-			isTrapHere = false;
-			isGameStart = false;
-			isMapGen = false;
+			setUpGame(maxTime, minTraps, 0, 3);
 			break;
 		case 7:
-			timer = maxTime;
-			numberOfRows = 16;
-			numberOfColumns = 30;
-
-			trapsRemain = totalTraps;
-			totalScore = 0; // reset after
-
-			cellWidth = 27;
-			cellPadding = 2;
-
-			// Tracking time
-			clock = new Handler();
-
-			isGameOver = false;
-			isTrapHere = false;
-			isGameStart = false;
-			isMapGen = false;
+			setUpGame(maxTime, minTraps, 0, 3);
 			break;
 		case 8:
-			timer = maxTime;
-			numberOfRows = 16;
-			numberOfColumns = 30;
-
-			trapsRemain = totalTraps;
-			totalScore = 0; // reset after
-
-			cellWidth = 27;
-			cellPadding = 2;
-
-			// Tracking time
-			clock = new Handler();
-
-			isGameOver = false;
-			isTrapHere = false;
-			isGameStart = false;
-			isMapGen = false;
+			setUpGame(maxTime, minTraps, 0, 3);
 			break;
 		case 9:
+			setUpGame(maxTime, minTraps, 0, 3);
 			break;
 		case 10:
+			setUpGame(maxTime, minTraps, 0, 3);
 			break;
 		case 11:
+			setUpGame(maxTime, minTraps, 0, 3);
 			break;
 		case 12:
+			setUpGame(maxTime, minTraps, 0, 3);
 			break;
 		case 13:
+			setUpGame(maxTime, minTraps, 0, 3);
 			break;
 		case 14:
+			setUpGame(maxTime, minTraps, 0, 3);
 			break;
 		case 15:
+			setUpGame(maxTime, minTraps, 0, 3);
 			break;
 		default:
 			break;
 		}
+	}
+
+	/*
+	 * Set up the game properties
+	 * 
+	 * @author 8A Tran Trong Viet
+	 * 
+	 * @param playTime the time of current level
+	 * 
+	 * @numberOfTraps the number of traps in current level
+	 * 
+	 * @score the current score
+	 * 
+	 * @_lives the current lives
+	 */
+	private void setUpGame(int playTime, int numberOfTraps, int score,
+			int _lives) {
+		totalTraps = numberOfTraps;
+		timer = playTime;
+		trapsRemain = numberOfTraps;
+		totalScore = score;
+		lives = _lives;
 	}
 
 	/*
@@ -462,7 +372,7 @@ public class Game extends Activity {
 		if (cells[currentRow][currentColumn].isClickable()
 				&& (cells[currentRow][currentColumn].isEnabled() || cells[currentRow][currentColumn]
 						.isFlagged())) {
-
+			mp.start();
 			// case 1. set blank block to flagged
 			if (!cells[currentRow][currentColumn].isFlagged()
 					&& !cells[currentRow][currentColumn].isDoubted()) {
@@ -560,9 +470,9 @@ public class Game extends Activity {
 			treasureCol = numberOfColumns - 2;
 		}
 
+		Log.e("8A >>>>", "Treasure: " + treasureRow + " " + treasureCol);
 		// Make sure the treasure is not near the clicked cell
-		if (isNearTheClickedCell(treasureRow, treasureCol, rowClicked,
-				columnClicked)) {
+		if (!isTreasureNear(treasureRow, treasureCol, rowClicked, columnClicked)) {
 			if (treasureRow < numberOfRows / 2) {
 				treasureRow = (numberOfRows - treasureRow) / 2;
 				treasureCol = (numberOfColumns - treasureCol) / 2;
@@ -689,6 +599,42 @@ public class Game extends Activity {
 	}
 
 	/*
+	 * Check if the treasure is near the clicked cell
+	 * 
+	 * @author 8A Tran Trong Viet
+	 * 
+	 * @param rowCheck the row which want to check
+	 * 
+	 * @param columnCheck the column which want to check
+	 * 
+	 * @param rowClicked the row of the clicked cell
+	 * 
+	 * @param columnClick the column of the clicked cell
+	 */
+	private boolean isTreasureNear(int rowCheck, int columnCheck,
+			int rowClicked, int columnClicked) {
+		if (((rowCheck != columnClicked) || (columnCheck - 1 != rowClicked))
+				&& ((rowCheck != columnClicked) || (columnCheck != rowClicked))
+				&& ((rowCheck != columnClicked) || (columnCheck + 1 != rowClicked))
+				&& ((rowCheck != columnClicked) || (columnCheck + 2 != rowClicked))
+				&& ((rowCheck != columnClicked) || (columnCheck + 3 != rowClicked))
+				&& ((rowCheck + 1 != columnClicked) || (columnCheck - 1 != rowClicked))
+				&& ((rowCheck + 1 != columnClicked) || (columnCheck != rowClicked))
+				&& ((rowCheck + 1 != columnClicked) || (columnCheck + 1 != rowClicked))
+				&& ((rowCheck + 1 != columnClicked) || (columnCheck + 2 != rowClicked))
+				&& ((rowCheck + 1 != columnClicked) || (columnCheck + 3 != rowClicked))
+				&& ((rowCheck + 2 != columnClicked) || (columnCheck - 1 != rowClicked))
+				&& ((rowCheck + 2 != columnClicked) || (columnCheck != rowClicked))
+				&& ((rowCheck + 2 != columnClicked) || (columnCheck + 1 != rowClicked))
+				&& ((rowCheck + 2 != columnClicked) || (columnCheck + 2 != rowClicked))
+				&& ((rowCheck + 2 != columnClicked) || (columnCheck + 3 != rowClicked))) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/*
 	 * Open the cells which surrounded the no-trap-surrounded cell continuously
 	 * 
 	 * @author 8-B Pham Hung Cuong
@@ -748,7 +694,7 @@ public class Game extends Activity {
 		isGameOver = true;
 		trapsRemain = 0;
 
-		//updateMineCountDisplay(); // update mine count
+		// updateMineCountDisplay(); // update mine count
 
 		// disable all buttons
 		// set flagged all un-flagged blocks
