@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -34,11 +33,8 @@ import android.widget.TableRow.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
 
-/*
- * @author group 8
- */
+public class Quiz extends Game {
 
-public class Game extends Activity {
 
 	/*
 	 * Properties
@@ -103,19 +99,17 @@ public class Game extends Activity {
 				level = Integer.parseInt(val1);
 				val1 = extras.getString("Total Score");
 				totalScore = Integer.parseInt(val1);
-				val1 = extras.getString("Lives");
-				lives = Integer.parseInt(val1);
 
 			} else {
 				Toast.makeText(this, "Cannot load the game", Toast.LENGTH_SHORT)
 						.show();
-				Intent backToMainMenu = new Intent(Game.this, MainMenu.class);
+				Intent backToMainMenu = new Intent(Quiz.this, MainMenu.class);
 				startActivity(backToMainMenu);
 			}
 		} catch (Exception e) {
 			Toast.makeText(this, "Cannot load the game", Toast.LENGTH_SHORT)
 					.show();
-			Intent backToMainMenu = new Intent(Game.this, MainMenu.class);
+			Intent backToMainMenu = new Intent(Quiz.this, MainMenu.class);
 			startActivity(backToMainMenu);
 		}
 
@@ -132,7 +126,7 @@ public class Game extends Activity {
 
 		// @author 8A Tran Trong Viet
 
-		mp = MediaPlayer.create(Game.this, R.raw.flag);
+		mp = MediaPlayer.create(Quiz.this, R.raw.flag);
 
 		map = (TableLayout) findViewById(R.id.Map);
 
@@ -215,49 +209,49 @@ public class Game extends Activity {
 
 		switch (_level) {
 		case 1:
-			setUpGame(maxTime, minTraps - 50, _score, _lives);
+			setUpGame(maxTime, minTraps, _score, _lives);
 			break;
 		case 2:
-			setUpGame(maxTime, minTraps + _level, _score, _lives);
+			setUpGame(maxTime, minTraps, _score, _lives);
 			break;
 		case 3:
-			setUpGame(maxTime, minTraps + _level, _score, _lives);
+			setUpGame(maxTime, minTraps, _score, _lives);
 			break;
 		case 4:
-			setUpGame(maxTime - 60, minTraps + _level, _score, _lives);
+			setUpGame(maxTime, minTraps, _score, _lives);
 			break;
 		case 5:
-			setUpGame(maxTime - 60, minTraps + _level, _score, _lives);
+			setUpGame(maxTime, minTraps, _score, _lives);
 			break;
 		case 6:
-			setUpGame(maxTime - 60, minTraps + _level, _score, _lives);
+			setUpGame(maxTime, minTraps, _score, _lives);
 			break;
 		case 7:
-			setUpGame(maxTime - 60 * 2, minTraps + _level, _score, _lives);
+			setUpGame(maxTime, minTraps, _score, _lives);
 			break;
 		case 8:
-			setUpGame(maxTime - 60 * 2, minTraps + _level, _score, _lives);
+			setUpGame(maxTime, minTraps, _score, _lives);
 			break;
 		case 9:
-			setUpGame(maxTime - 60 * 2, minTraps + _level, _score, _lives);
+			setUpGame(maxTime, minTraps, _score, _lives);
 			break;
 		case 10:
-			setUpGame(maxTime - 60 * 3, minTraps + _level, _score, _lives);
+			setUpGame(maxTime, minTraps, _score, _lives);
 			break;
 		case 11:
-			setUpGame(maxTime - 60 * 3, minTraps + _level, _score, _lives);
+			setUpGame(maxTime, minTraps, _score, _lives);
 			break;
 		case 12:
-			setUpGame(maxTime - 60 * 3, minTraps + _level, _score, _lives);
+			setUpGame(maxTime, minTraps, _score, _lives);
 			break;
 		case 13:
-			setUpGame(maxTime - 60 * 4, minTraps + _level, _score, _lives);
+			setUpGame(maxTime, minTraps, _score, _lives);
 			break;
 		case 14:
-			setUpGame(maxTime - 60 * 4, minTraps + _level, _score, _lives);
+			setUpGame(maxTime, minTraps, _score, _lives);
 			break;
 		case 15:
-			setUpGame(maxTime - 60 * 4, minTraps + _level, _score, _lives);
+			setUpGame(maxTime, minTraps, _score, _lives);
 			break;
 		default:
 			break;
@@ -792,10 +786,8 @@ public class Game extends Activity {
 			for (int column = 1; column < numberOfColumns + 1; column++) {
 				cells[row][column].setClickable(false);
 				if (cells[row][column].hasTrap()) {
-					cells[row][column].setTrapIcon(true);
+					cells[row][column].setFlagIcon(true);
 				}
-				if (cells[row][column].hasTreasure())
-					cells[row][column].setTreasureIcon(true);
 			}
 		}
 
@@ -803,21 +795,11 @@ public class Game extends Activity {
 		level++;
 		totalScore += 1000;
 
-		if (level < 16) {
-			Intent nextLevel = new Intent(Game.this, Game.class);
-			nextLevel.putExtra("Level", "" + level);
-			nextLevel.putExtra("Total Score", "" + totalScore);
-			nextLevel.putExtra("Lives", "" + lives);
-			startActivity(nextLevel);
-			finish();
-		} else {
-			Toast.makeText(this, "Congratulation, you win!!",
-					Toast.LENGTH_SHORT).show();
-			// TODO: save point here
-			// setHighScore(value, totalScore, level);
-			Intent backToMainMenu = new Intent(Game.this, MainMenu.class);
-			startActivity(backToMainMenu);
-		}
+		Intent nextLevel = new Intent(Quiz.this, Game.class);
+		nextLevel.putExtra("Level", "" + level);
+		nextLevel.putExtra("Total Score", "" + totalScore);
+		startActivity(nextLevel);
+		finish();
 	}
 
 	/*
@@ -860,7 +842,7 @@ public class Game extends Activity {
 
 				// set treasure icon
 				if (cells[row][column].hasTreasure()) {
-					// set treasure icon
+					// set trap icon
 					cells[row][column].setTreasureIcon(false);
 				}
 			}
@@ -870,7 +852,7 @@ public class Game extends Activity {
 		cells[currentRow][currentColumn].triggerTrap();
 
 		// clock.postDelayed(updateTimeElasped, 200);
-		Dialog respop = new Dialog(Game.this);
+		Dialog respop = new Dialog(Quiz.this);
 		respop.setContentView(R.layout.result_popup);
 		respop.setCancelable(false);
 		respop.show();
@@ -883,7 +865,7 @@ public class Game extends Activity {
 		if (isGameOver) {
 			isGameOver = true; // mark game as over
 			isPopupShow = true;
-			Dialog popup = new Dialog(Game.this);
+			Dialog popup = new Dialog(Quiz.this);
 			popup.setContentView(R.layout.finish_popup);
 			// Set dialog title
 			// TODO time up
@@ -911,13 +893,13 @@ public class Game extends Activity {
 					isPopupShow = false;
 					// TODO Auto-generated method stub
 					AlertDialog.Builder alert = new AlertDialog.Builder(
-							Game.this);
+							Quiz.this);
 
 					alert.setTitle("Title");
 					alert.setMessage("Message");
 
 					// Set an EditText view to get user input
-					final EditText input = new EditText(Game.this);
+					final EditText input = new EditText(Quiz.this);
 					alert.setView(input);
 
 					alert.setPositiveButton("Ok",
@@ -926,13 +908,13 @@ public class Game extends Activity {
 										int whichButton) {
 									String value = input.getText().toString();
 									// Do something with value!
-									Toast.makeText(Game.this,
+									Toast.makeText(Quiz.this,
 											"Your name is" + value,
 											Toast.LENGTH_SHORT).show();
 
-									setHighScore(value, totalScore, level);
+									setHighScore(value, 3000, level);
 									Intent backToMainMenu = new Intent(
-											Game.this, MainMenu.class);
+											Quiz.this, MainMenu.class);
 									startActivity(backToMainMenu);
 								}
 							});

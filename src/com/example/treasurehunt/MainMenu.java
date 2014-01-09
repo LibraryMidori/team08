@@ -69,6 +69,7 @@ public class MainMenu extends Activity implements OnClickListener {
 			Intent openNewGame = new Intent(MainMenu.this, Game.class);
 			openNewGame.putExtra("Level", "1");
 			openNewGame.putExtra("Total Score", "0");
+			openNewGame.putExtra("Lives", "3");
 			startActivity(openNewGame);
 			break;
 		case R.id.continueBtn:
