@@ -18,6 +18,13 @@
             android:layout_height="55dp"
             android:layout_marginTop="200dp"
             android:text="Save record"  />
+        
+        <Button
+            android:id="@+id/next_level"
+            android:layout_width="160dp"
+            android:layout_height="55dp"
+            android:layout_marginTop="10dp"
+            android:text="Next level" />
 
         <Button
             android:id="@+id/quit_to_menu"

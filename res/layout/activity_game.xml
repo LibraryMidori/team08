@@ -11,7 +11,7 @@
         android:layout_alignParentTop="true"
         android:background="@drawable/leveltext"
         android:layout_marginLeft="240dp"
-        android:layout_marginTop="35dp"
+        android:layout_marginTop="37dp"
         />
     
     <ImageView 
@@ -20,7 +20,7 @@
         android:layout_alignParentTop="true"
         android:background="@drawable/scoretext"
         android:layout_marginLeft="350dp"
-        android:layout_marginTop="35dp"
+        android:layout_marginTop="37dp"
         />
     
     <ImageView 
@@ -29,7 +29,7 @@
         android:layout_alignParentTop="true"
         android:background="@drawable/timetext"
         android:layout_marginLeft="750dp"
-        android:layout_marginTop="35dp"
+        android:layout_marginTop="37dp"
         />
     
     <ImageView 
@@ -38,7 +38,7 @@
         android:layout_alignParentTop="true"
         android:background="@drawable/livestext"
         android:layout_marginLeft="880dp"
-        android:layout_marginTop="35dp"
+        android:layout_marginTop="37dp"
         />
     
     <TextView
@@ -47,7 +47,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_marginLeft="330dp"
-        android:layout_marginTop="31dp"
+        android:layout_marginTop="33dp"
         android:text="8"
         android:textSize="33sp"
         android:textStyle="bold"
@@ -59,7 +59,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_marginLeft="440dp"
-        android:layout_marginTop="31dp"
+        android:layout_marginTop="33dp"
         android:text="1234"
         android:textSize="33sp"
         android:textStyle="bold"
@@ -71,7 +71,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_marginLeft="830dp"
-        android:layout_marginTop="31dp"
+        android:layout_marginTop="33dp"
         android:textSize="33sp"
         android:textStyle="bold"
         android:textColor="@android:color/white" />
@@ -99,5 +99,13 @@
         android:padding="2dp"
         android:stretchColumns="*" >
     </TableLayout>
+    
+    <ImageView 
+        android:id="@+id/img_result"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:background="@drawable/trapped"
+        android:visibility="gone"/>
 
 </RelativeLayout>

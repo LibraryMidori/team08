@@ -16,6 +16,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.BitmapFactory.Options;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
@@ -24,6 +25,7 @@ import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -54,7 +56,7 @@ public class Game extends Activity {
 	private int totalScore = 0;
 
 	private final int minTraps = 84;
-	private final int maxTime = 480;
+	private final int maxTime = 20;
 
 	private int cellWidth = 27;
 	private int cellPadding = 2;
@@ -76,10 +78,11 @@ public class Game extends Activity {
 
 	// Texts
 	Typeface font;
-	TextView levelText, scoreText, timeText, livesText;
+	TextView levelText, scoreText, timeText, livesText, finalScoreText, finalTimeText;;
 
 	// UI
-	ImageView resultDisplay;
+	ImageView mImgViewResult;
+	
 
 	// Save Score
 	private SharedPreferences gamePrefs;
@@ -190,6 +193,9 @@ public class Game extends Activity {
 		levelText.setText("" + level);
 		scoreText.setText("" + totalScore);
 		livesText.setText("" + lives);
+		
+		mImgViewResult = (ImageView) findViewById(R.id.img_result);
+
 	}
 
 	/*
@@ -781,7 +787,6 @@ public class Game extends Activity {
 		// reset all stuffs
 		stopTimer();
 		isGameStart = false;
-		isGameOver = true;
 		trapsRemain = 0;
 
 		// updateMineCountDisplay(); // update mine count
@@ -799,25 +804,155 @@ public class Game extends Activity {
 			}
 		}
 
-		Toast.makeText(this, "You are win!!", Toast.LENGTH_SHORT).show();
-		level++;
-		totalScore += 1000;
+		// Toast.makeText(this, "You are win!!", Toast.LENGTH_SHORT).show();
+		Handler handler = new Handler();
+		handler.postDelayed(new Runnable() {
 
-		if (level < 16) {
-			Intent nextLevel = new Intent(Game.this, Game.class);
-			nextLevel.putExtra("Level", "" + level);
-			nextLevel.putExtra("Total Score", "" + totalScore);
-			nextLevel.putExtra("Lives", "" + lives);
-			startActivity(nextLevel);
-			finish();
-		} else {
-			Toast.makeText(this, "Congratulation, you win!!",
-					Toast.LENGTH_SHORT).show();
-			// TODO: save point here
-			// setHighScore(value, totalScore, level);
-			Intent backToMainMenu = new Intent(Game.this, MainMenu.class);
-			startActivity(backToMainMenu);
-		}
+			@Override
+			public void run() {
+				mImgViewResult.setBackgroundResource(R.drawable.congrat);
+				mImgViewResult.setVisibility(View.VISIBLE);
+				mImgViewResult.bringToFront();
+				mImgViewResult.postDelayed(new Runnable() {
+
+					@Override
+					public void run() {
+						mImgViewResult.setVisibility(View.GONE);
+
+						if (!isGameOver) {
+							isGameOver = true; // mark game as over
+							isPopupShow = true;
+							final Dialog popup = new Dialog(Game.this);
+							popup.requestWindowFeature(Window.FEATURE_NO_TITLE);
+							popup.getWindow()
+									.setBackgroundDrawable(
+											new ColorDrawable(
+													android.graphics.Color.TRANSPARENT));
+							popup.setContentView(R.layout.win_popup);
+							// Set dialog title
+							// TODO time up
+
+							// popup.setTitle("Say something");
+							popup.setCancelable(false);
+
+							finalScoreText = (TextView) popup
+									.findViewById(R.id.finalScore);
+							finalScoreText.setTypeface(font);
+							finalTimeText = (TextView) popup
+									.findViewById(R.id.finalTime);
+							finalTimeText.setTypeface(font);
+							finalTimeText.setText("" + timer);
+
+							popup.show();
+
+							Button saveRecordBtn = (Button) popup
+									.findViewById(R.id.save_record);
+							saveRecordBtn
+									.setOnClickListener(new OnClickListener() {
+
+										@Override
+										public void onClick(View v) {
+											// TODO Auto-generated method stub
+											AlertDialog.Builder alert = new AlertDialog.Builder(
+													Game.this);
+
+											alert.setTitle("Enter your name");
+
+											// Set an EditText view to get user
+											// input
+											final EditText input = new EditText(
+													Game.this);
+											alert.setView(input);
+
+											alert.setPositiveButton(
+													"Ok",
+													new DialogInterface.OnClickListener() {
+														public void onClick(
+																DialogInterface dialog,
+																int whichButton) {
+															String value = input
+																	.getText()
+																	.toString();
+															// Do something with
+															// value!
+															setHighScore(value, totalScore, level);
+															isPopupShow = false;
+															popup.dismiss();
+														}
+													});
+
+											alert.setNegativeButton(
+													"Cancel",
+													new DialogInterface.OnClickListener() {
+														public void onClick(
+																DialogInterface dialog,
+																int whichButton) {
+															// Canceled.
+														}
+													});
+
+											alert.show();
+										}
+									});
+
+							Button quitToMenuBtn = (Button) popup
+									.findViewById(R.id.quit_to_menu);
+							quitToMenuBtn
+									.setOnClickListener(new OnClickListener() {
+
+										@Override
+										public void onClick(View v) {
+											Intent backToMenu = new Intent(
+													Game.this, MainMenu.class);
+											isPopupShow = false;
+											startActivity(backToMenu);
+										}
+									});
+							
+							Button nextLevelBtn = (Button) popup.findViewById(R.id.next_level);
+							nextLevelBtn.setOnClickListener(new OnClickListener() {
+								
+								@Override
+								public void onClick(View v) {
+									// TODO Auto-generated method stub
+									level++;
+									totalScore += 1000;
+
+									if (level < 16) {
+										Intent nextLevel = new Intent(Game.this, Game.class);
+										nextLevel.putExtra("Level", "" + level);
+										nextLevel.putExtra("Total Score", "" + totalScore);
+										nextLevel.putExtra("Lives", "" + lives);
+										startActivity(nextLevel);
+										finish();
+									} else {
+										Toast.makeText(Game.this, "Congratulation, you win!!",
+												Toast.LENGTH_SHORT).show();
+										// TODO: save point here
+										// setHighScore(value, totalScore, level);
+										Intent backToMainMenu = new Intent(Game.this, MainMenu.class);
+										startActivity(backToMainMenu);
+									}
+								}
+							});
+
+							Button postToFbBtn = (Button) popup
+									.findViewById(R.id.post_to_fb);
+							postToFbBtn
+									.setOnClickListener(new OnClickListener() {
+
+										@Override
+										public void onClick(View v) {
+											isPopupShow = false;
+
+										}
+									});
+						}
+					}
+				}, 2000);
+			}
+		}, 500);
+		
 	}
 
 	/*
@@ -826,7 +961,6 @@ public class Game extends Activity {
 	 * @author 8B Pham Hung Cuong
 	 */
 	private void finishGame(int currentRow, int currentColumn) {
-		isGameOver = true; // mark game as over
 		stopTimer(); // stop timer
 		isGameStart = false;
 
@@ -869,95 +1003,128 @@ public class Game extends Activity {
 		// trigger trap
 		cells[currentRow][currentColumn].triggerTrap();
 
-		// clock.postDelayed(updateTimeElasped, 200);
-		Dialog respop = new Dialog(Game.this);
-		respop.setContentView(R.layout.result_popup);
-		respop.setCancelable(false);
-		respop.show();
-		resultDisplay = (ImageView) respop.findViewById(R.id.result_display);
-		resultDisplay.setBackgroundResource(R.drawable.trapped);
-		// clock.postDelayed(updateTimeElasped, 1000);
-		// respop.dismiss();
-		// clock.postDelayed(updateTimeElasped, 100);
+		Handler handler = new Handler();
+		handler.postDelayed(new Runnable() {
 
-		if (isGameOver) {
-			isGameOver = true; // mark game as over
-			isPopupShow = true;
-			Dialog popup = new Dialog(Game.this);
-			popup.setContentView(R.layout.finish_popup);
-			// Set dialog title
-			// TODO time up
-
-			// popup.setTitle("Say something");
-			popup.setCancelable(false);
-
-			popup.show();
-
-			Button nextLevelBtn = (Button) popup.findViewById(R.id.next_level);
-			nextLevelBtn.setOnClickListener(new OnClickListener() {
-
-				@Override
-				public void onClick(View v) {
-					isPopupShow = false;
+			@Override
+			public void run() {
+				if (timer <= 0) {
+					mImgViewResult.setBackgroundResource(R.drawable.timeout);
 				}
-			});
+				mImgViewResult.setVisibility(View.VISIBLE);
+				mImgViewResult.bringToFront();
+				mImgViewResult.postDelayed(new Runnable() {
 
-			Button quitToMenuBtn = (Button) popup
-					.findViewById(R.id.quit_to_menu);
-			quitToMenuBtn.setOnClickListener(new OnClickListener() {
+					@Override
+					public void run() {
+						mImgViewResult.setVisibility(View.GONE);
 
-				@Override
-				public void onClick(View v) {
-					isPopupShow = false;
-					// TODO Auto-generated method stub
-					AlertDialog.Builder alert = new AlertDialog.Builder(
-							Game.this);
+						if (!isGameOver) {
+							isGameOver = true; // mark game as over
+							isPopupShow = true;
+							final Dialog popup = new Dialog(Game.this);
+							popup.requestWindowFeature(Window.FEATURE_NO_TITLE);
+							popup.getWindow()
+									.setBackgroundDrawable(
+											new ColorDrawable(
+													android.graphics.Color.TRANSPARENT));
+							popup.setContentView(R.layout.finish_popup);
+							// Set dialog title
+							// TODO time up
 
-					alert.setTitle("Title");
-					alert.setMessage("Message");
+							// popup.setTitle("Say something");
+							popup.setCancelable(false);
 
-					// Set an EditText view to get user input
-					final EditText input = new EditText(Game.this);
-					alert.setView(input);
+							finalScoreText = (TextView) popup
+									.findViewById(R.id.finalScore);
+							finalScoreText.setTypeface(font);
+							finalTimeText = (TextView) popup
+									.findViewById(R.id.finalTime);
+							finalTimeText.setTypeface(font);
+							finalTimeText.setText("" + timer);
 
-					alert.setPositiveButton("Ok",
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int whichButton) {
-									String value = input.getText().toString();
-									// Do something with value!
-									Toast.makeText(Game.this,
-											"Your name is" + value,
-											Toast.LENGTH_SHORT).show();
+							popup.show();
 
-									setHighScore(value, totalScore, level);
-									Intent backToMainMenu = new Intent(
-											Game.this, MainMenu.class);
-									startActivity(backToMainMenu);
-								}
-							});
+							Button saveRecordBtn = (Button) popup
+									.findViewById(R.id.save_record);
+							saveRecordBtn
+									.setOnClickListener(new OnClickListener() {
 
-					alert.setNegativeButton("Cancel",
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int whichButton) {
-									// Canceled.
-								}
-							});
+										@Override
+										public void onClick(View v) {
+											// TODO Auto-generated method stub
+											AlertDialog.Builder alert = new AlertDialog.Builder(
+													Game.this);
 
-					alert.show();
-				}
-			});
+											alert.setTitle("Enter your name");
 
-			Button postToFbBtn = (Button) popup.findViewById(R.id.post_to_fb);
-			postToFbBtn.setOnClickListener(new OnClickListener() {
+											// Set an EditText view to get user
+											// input
+											final EditText input = new EditText(
+													Game.this);
+											alert.setView(input);
 
-				@Override
-				public void onClick(View v) {
-					isPopupShow = false;
-				}
-			});
-		}
+											alert.setPositiveButton(
+													"Ok",
+													new DialogInterface.OnClickListener() {
+														public void onClick(
+																DialogInterface dialog,
+																int whichButton) {
+															String value = input
+																	.getText()
+																	.toString();
+															// Do something with
+															// value!
+															setHighScore(value, totalScore, level);
+															isPopupShow = false;
+															popup.dismiss();
+														}
+													});
+
+											alert.setNegativeButton(
+													"Cancel",
+													new DialogInterface.OnClickListener() {
+														public void onClick(
+																DialogInterface dialog,
+																int whichButton) {
+															// Canceled.
+														}
+													});
+
+											alert.show();
+										}
+									});
+
+							Button quitToMenuBtn = (Button) popup
+									.findViewById(R.id.quit_to_menu);
+							quitToMenuBtn
+									.setOnClickListener(new OnClickListener() {
+
+										@Override
+										public void onClick(View v) {
+											Intent backToMenu = new Intent(
+													Game.this, MainMenu.class);
+											isPopupShow = false;
+											startActivity(backToMenu);
+										}
+									});
+
+							Button postToFbBtn = (Button) popup
+									.findViewById(R.id.post_to_fb);
+							postToFbBtn
+									.setOnClickListener(new OnClickListener() {
+
+										@Override
+										public void onClick(View v) {
+											isPopupShow = false;
+
+										}
+									});
+						}
+					}
+				}, 2000);
+			}
+		}, 500);
 	}
 
 	/*

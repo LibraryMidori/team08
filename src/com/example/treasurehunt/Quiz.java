@@ -35,7 +35,6 @@ import android.widget.Toast;
 
 public class Quiz extends Game {
 
-
 	/*
 	 * Properties
 	 */
@@ -875,14 +874,15 @@ public class Quiz extends Game {
 
 			popup.show();
 
-			Button nextLevelBtn = (Button) popup.findViewById(R.id.next_level);
-			nextLevelBtn.setOnClickListener(new OnClickListener() {
-
-				@Override
-				public void onClick(View v) {
-					isPopupShow = false;
-				}
-			});
+			// Button nextLevelBtn = (Button)
+			// popup.findViewById(R.id.next_level);
+			// nextLevelBtn.setOnClickListener(new OnClickListener() {
+			//
+			// @Override
+			// public void onClick(View v) {
+			// isPopupShow = false;
+			// }
+			// });
 
 			Button quitToMenuBtn = (Button) popup
 					.findViewById(R.id.quit_to_menu);

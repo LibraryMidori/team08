@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -21,7 +22,8 @@ public class MainMenu extends Activity implements OnClickListener {
 	 * Properties
 	 */
 	private MediaPlayer mp;
-	Button btn;
+	private Button btn;
+	private int level = 1, score = 0, lives = 3;
 
 	/*
 	 * (non-Javadoc)
@@ -34,7 +36,14 @@ public class MainMenu extends Activity implements OnClickListener {
 		setContentView(R.layout.activity_main_menu);
 
 		btn = (Button) findViewById(R.id.settingBtn);
-		
+
+		if (savedInstanceState != null) {
+			score = savedInstanceState.getInt("score");
+			level = savedInstanceState.getInt("level");
+			lives = savedInstanceState.getInt("lives");
+			Log.e("8A>>>>", level + " " + score + " " + lives);
+		}
+
 		mp = MediaPlayer.create(MainMenu.this, R.raw.sound1);
 		mp.setLooping(true);
 		mp.start();
@@ -73,7 +82,15 @@ public class MainMenu extends Activity implements OnClickListener {
 			startActivity(openNewGame);
 			break;
 		case R.id.continueBtn:
-
+			if (mp.isPlaying() && mp.isLooping()) {
+				btn.setBackgroundResource(R.drawable.mute);
+				mp.pause();
+			}
+			Intent openContinueGame = new Intent(MainMenu.this, Game.class);
+			openContinueGame.putExtra("Level", "" + level);
+			openContinueGame.putExtra("Total Score", "" + score);
+			openContinueGame.putExtra("Lives", "" + lives);
+			startActivity(openContinueGame);
 			break;
 
 		case R.id.settingBtn:
@@ -102,4 +119,5 @@ public class MainMenu extends Activity implements OnClickListener {
 			break;
 		}
 	}
+
 }
