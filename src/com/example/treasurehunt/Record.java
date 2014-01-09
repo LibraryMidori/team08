@@ -14,10 +14,8 @@ import java.util.List;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class Record extends Activity {
 

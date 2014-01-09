@@ -66,11 +66,11 @@ public class Cell extends Button {
 		
 		Random r = new Random();
 		switch (r.nextInt() % 2) {
-		case 1:
+		case 0:
 			this.setBackgroundResource(R.drawable.cell1);
 			break;
 			
-		case 2:
+		case 1:
 			this.setBackgroundResource(R.drawable.cell2);
 			break;
 		default:
@@ -171,6 +171,9 @@ public class Cell extends Button {
 	 */
 	public void setDoubt(boolean questionMarked) {
 		isDoubt = questionMarked;
+		if (isDoubt) {
+			isClickable = true;
+		}
 	}
 
 	/*
@@ -226,14 +229,15 @@ public class Cell extends Button {
 	 */
 	public void setFlagIcon(boolean enabled) {
 		// this.setText("F");
-
-		if (!enabled) {
-			// this.setBackgroundResource(R.drawable.square_grey);
-			this.setBackgroundResource(R.drawable.flag);
-			this.setTextColor(Color.RED);
-		} else {
-			this.setTextColor(Color.BLACK);
-		}
+		this.setBackgroundResource(R.drawable.flag);
+		
+//		if (!enabled) {
+//			// this.setBackgroundResource(R.drawable.square_grey);
+//			this.setBackgroundResource(R.drawable.flag);
+//			this.setTextColor(Color.RED);
+//		} else {
+//			this.setTextColor(Color.BLACK);
+//		}
 	}
 
 	/*
@@ -261,7 +265,8 @@ public class Cell extends Button {
 	 * @author 8A Tran Trong Viet
 	 */
 	public void clearAllIcons() {
-		this.setText("");
+		// this.setText("");
+		this.setBackgroundResource(R.drawable.cell1);
 	}
 
 	/*
@@ -278,7 +283,7 @@ public class Cell extends Button {
 
 		} else {
 			// this.setBackgroundResource(R.drawable.square_blue);
-			this.setBackgroundResource(R.drawable.empty);
+			// this.setBackgroundResource(R.drawable.empty);
 		}
 
 	}
@@ -373,7 +378,7 @@ public class Cell extends Button {
 	 */
 	public void updateNumber(int text) {
 		if (text != 0) {
-			this.setText(Integer.toString(text));
+			// this.setText(Integer.toString(text));
 
 			// select different color for each number
 			// we have 1 - 8 trap count
@@ -426,8 +431,9 @@ public class Cell extends Button {
 	 * @param
 	 */
 	public void triggerTrap() {
+		// TODO: add more effect
 		setTrapIcon(true);
-		this.setTextColor(Color.RED);
+//		this.setTextColor(Color.RED);
 	}
 
 	/*

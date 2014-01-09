@@ -2,8 +2,6 @@ package com.example.treasurehunt;
 
 import java.util.Random;
 
-import javax.crypto.spec.GCMParameterSpec;
-
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -18,7 +16,6 @@ import android.view.View.OnLongClickListener;
 import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
-import android.widget.Toast;
 import android.widget.TableRow.LayoutParams;
 
 /*
@@ -36,7 +33,9 @@ public class Game extends Activity {
 	private int numberOfColumns = 0;
 	private int totalTraps = 0;
 	private int trapsRemain = 0;
-	private int level = 0;
+	private static int level = 0;
+	private int lives = 0;
+	private int totalScore = 0;
 
 	private final int minTraps = 84;
 	private final int maxTime = 480;
@@ -98,25 +97,15 @@ public class Game extends Activity {
 		map = (TableLayout) findViewById(R.id.Map);
 
 		level++;
-		totalTraps = minTraps + level;
+		gameController(level);
 
-		timer = maxTime;
-		numberOfRows = 16;
-		numberOfColumns = 30;
-		trapsRemain = totalTraps;
-
-		cellWidth = 27;
-		cellPadding = 2;
-
-		// Tracking time
-		clock = new Handler();
-
-		isGameOver = false;
-		isTrapHere = false;
-		isGameStart = false;
-		isMapGen = false;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see android.app.Activity#onBackPressed()
+	 */
 	@Override
 	public void onBackPressed() {
 		finish();
@@ -124,8 +113,185 @@ public class Game extends Activity {
 	}
 
 	/*
-	 * private void gameController(int level) { switch(level) { } }
+	 * This method control the level ingame
+	 * 
+	 * @author 8C Pham Duy Hung
+	 * 
+	 * @param level the current level
 	 */
+	private void gameController(int level) {
+		totalTraps = minTraps + level;
+		switch (level) {
+		case 1:
+			timer = maxTime;
+			numberOfRows = 16;
+			numberOfColumns = 30;
+
+			trapsRemain = totalTraps;
+			totalScore = 0;
+
+			cellWidth = 27;
+			cellPadding = 2;
+
+			// Tracking time
+			clock = new Handler();
+
+			isGameOver = false;
+			isTrapHere = false;
+			isGameStart = false;
+			isMapGen = false;
+			break;
+		case 2:
+			timer = maxTime;
+			numberOfRows = 16;
+			numberOfColumns = 30;
+
+			trapsRemain = totalTraps;
+			totalScore = 0; // reset after
+
+			cellWidth = 27;
+			cellPadding = 2;
+
+			// Tracking time
+			clock = new Handler();
+
+			isGameOver = false;
+			isTrapHere = false;
+			isGameStart = false;
+			isMapGen = false;
+			break;
+		case 3:
+			timer = maxTime;
+			numberOfRows = 16;
+			numberOfColumns = 30;
+
+			trapsRemain = totalTraps;
+			totalScore = 0; // reset after
+
+			cellWidth = 27;
+			cellPadding = 2;
+
+			// Tracking time
+			clock = new Handler();
+
+			isGameOver = false;
+			isTrapHere = false;
+			isGameStart = false;
+			isMapGen = false;
+			break;
+		case 4:
+			timer = maxTime;
+			numberOfRows = 16;
+			numberOfColumns = 30;
+
+			trapsRemain = totalTraps;
+			totalScore = 0; // reset after
+
+			cellWidth = 27;
+			cellPadding = 2;
+
+			// Tracking time
+			clock = new Handler();
+
+			isGameOver = false;
+			isTrapHere = false;
+			isGameStart = false;
+			isMapGen = false;
+			break;
+		case 5:
+			timer = maxTime;
+			numberOfRows = 16;
+			numberOfColumns = 30;
+
+			trapsRemain = totalTraps;
+			totalScore = 0; // reset after
+
+			cellWidth = 27;
+			cellPadding = 2;
+
+			// Tracking time
+			clock = new Handler();
+
+			isGameOver = false;
+			isTrapHere = false;
+			isGameStart = false;
+			isMapGen = false;
+			break;
+		case 6:
+			timer = maxTime;
+			numberOfRows = 16;
+			numberOfColumns = 30;
+
+			trapsRemain = totalTraps;
+			totalScore = 0; // reset after
+
+			cellWidth = 27;
+			cellPadding = 2;
+
+			// Tracking time
+			clock = new Handler();
+
+			isGameOver = false;
+			isTrapHere = false;
+			isGameStart = false;
+			isMapGen = false;
+			break;
+		case 7:
+			timer = maxTime;
+			numberOfRows = 16;
+			numberOfColumns = 30;
+
+			trapsRemain = totalTraps;
+			totalScore = 0; // reset after
+
+			cellWidth = 27;
+			cellPadding = 2;
+
+			// Tracking time
+			clock = new Handler();
+
+			isGameOver = false;
+			isTrapHere = false;
+			isGameStart = false;
+			isMapGen = false;
+			break;
+		case 8:
+			timer = maxTime;
+			numberOfRows = 16;
+			numberOfColumns = 30;
+
+			trapsRemain = totalTraps;
+			totalScore = 0; // reset after
+
+			cellWidth = 27;
+			cellPadding = 2;
+
+			// Tracking time
+			clock = new Handler();
+
+			isGameOver = false;
+			isTrapHere = false;
+			isGameStart = false;
+			isMapGen = false;
+			break;
+		case 9:
+			break;
+		case 10:
+			break;
+		case 11:
+			break;
+		case 12:
+			break;
+		case 13:
+			break;
+		case 14:
+			break;
+		case 15:
+			break;
+		default:
+			break;
+		}
+	}
 
 	/*
 	 * Start the game
@@ -167,27 +333,7 @@ public class Game extends Activity {
 					@Override
 					public void onClick(View arg0) {
 						// TODO Auto-generated method stub
-						if (!isGameStart) {
-							startTimer();
-							isGameStart = true;
-						}
-
-						if (!isMapGen) {
-							genMap(currentRow, currentColumn);
-							isMapGen = true;
-						}
-
-						if (!cells[currentRow][currentColumn].isFlagged()) {
-							rippleUncover(currentRow, currentColumn);
-
-							if (cells[currentRow][currentColumn].hasTrap()) {
-								finishGame(currentRow, currentColumn);
-							}
-
-							// if (checkGameWin()) {
-							// winGame();
-							// }
-						}
+						onClickOnCellHandle(currentRow, currentColumn);
 					}
 				});
 
@@ -199,141 +345,151 @@ public class Game extends Activity {
 								// simulate a left-right (middle) click
 								// if it is a long click on an opened trap then
 								// open all surrounding blocks
-								if (!cells[currentRow][currentColumn]
-										.isCovered()
-										&& (cells[currentRow][currentColumn]
-												.getNumberOfTrapsInSurrounding() > 0)
-										&& !isGameOver) {
-									int nearbyFlaggedBlocks = 0;
-									for (int previousRow = -1; previousRow < 2; previousRow++) {
-										for (int previousColumn = -1; previousColumn < 2; previousColumn++) {
-											if (cells[currentRow + previousRow][currentColumn
-													+ previousColumn]
-													.isFlagged()) {
-												nearbyFlaggedBlocks++;
-											}
-										}
-									}
-
-									// if flagged block count is equal to nearby
-									// trap count
-									// then open nearby blocks
-									if (nearbyFlaggedBlocks == cells[currentRow][currentColumn]
-											.getNumberOfTrapsInSurrounding()) {
-										for (int previousRow = -1; previousRow < 2; previousRow++) {
-											for (int previousColumn = -1; previousColumn < 2; previousColumn++) {
-												// don't open flagged blocks
-												if (!cells[currentRow
-														+ previousRow][currentColumn
-														+ previousColumn]
-														.isFlagged()) {
-													// open blocks till we get
-													// numbered block
-													rippleUncover(
-															currentRow
-																	+ previousRow,
-															currentColumn
-																	+ previousColumn);
-
-													// did we clicked a trap
-													if (cells[currentRow
-															+ previousRow][currentColumn
-															+ previousColumn]
-															.hasTrap()) {
-														finishGame(
-																currentRow
-																		+ previousRow,
-																currentColumn
-																		+ previousColumn);
-													}
-
-													// did we win the game
-													/*
-													 * if (checkGameWin()) { //
-													 * mark game as win
-													 * winGame(); }
-													 */
-												}
-											}
-										}
-									}
-
-									// as we no longer want to judge this
-									// gesture so return
-									// not returning from here will actually
-									// trigger other action
-									// which can be marking as a flag or
-									// question mark or blank
-									return true;
-								}
-
-								// if clicked cells is enabled, clickable or
-								// flagged
-								if (cells[currentRow][currentColumn]
-										.isClickable()
-										&& (cells[currentRow][currentColumn]
-												.isEnabled() || cells[currentRow][currentColumn]
-												.isFlagged())) {
-
-									// for long clicks set:
-									// 1. empty blocks to flagged
-									// 2. flagged to question mark
-									// 3. question mark to blank
-
-									// case 1. set blank block to flagged
-									if (!cells[currentRow][currentColumn]
-											.isFlagged()
-											&& !cells[currentRow][currentColumn]
-													.isDoubted()) {
-										cells[currentRow][currentColumn]
-												.setCellAsDisabled(true);
-										cells[currentRow][currentColumn]
-												.setFlagIcon(true);
-										cells[currentRow][currentColumn]
-												.setFlag(true);
-										trapsRemain--; // reduce trap count
-									}
-									// case 2. set flagged to question mark
-									else if (!cells[currentRow][currentColumn]
-											.isDoubted()) {
-										cells[currentRow][currentColumn]
-												.setCellAsDisabled(true);
-										cells[currentRow][currentColumn]
-												.setDoubt(true);
-										cells[currentRow][currentColumn]
-												.setFlagIcon(false);
-										cells[currentRow][currentColumn]
-												.setDoubtIcon(true);
-										cells[currentRow][currentColumn]
-												.setFlag(false);
-										trapsRemain++; // increase trap count
-									}
-									// case 3. change to blank square
-									else {
-										cells[currentRow][currentColumn]
-												.setCellAsDisabled(true);
-										cells[currentRow][currentColumn]
-												.clearAllIcons();
-										cells[currentRow][currentColumn]
-												.setDoubt(false);
-										// if it is flagged then increment trap
-										// count
-										if (cells[currentRow][currentColumn]
-												.isFlagged()) {
-											trapsRemain++; // increase trap
-															// count
-										}
-										// remove flagged status
-										cells[currentRow][currentColumn]
-												.setFlag(false);
-									}
-
-								}
-
-								return true;
+								return onLongClickOnCellHandle(currentRow,
+										currentColumn);
 							}
 						});
 			}
+		}
+	}
+
+	/*
+	 * This method handles the on click event
+	 * 
+	 * @author 8C Pham Duy Hung
+	 * 
+	 * @param currentRow the position of the clicked cell
+	 * 
+	 * @param currentCol the position of the clicked cell
+	 */
+	private void onClickOnCellHandle(int currentRow, int currentColumn) {
+
+		if (!isGameStart) {
+			startTimer();
+			isGameStart = true;
+		}
+
+		if (!isMapGen) {
+			genMap(currentRow, currentColumn);
+			isMapGen = true;
+		}
+
+		if (!cells[currentRow][currentColumn].isFlagged()) {
+			rippleUncover(currentRow, currentColumn);
+
+			if (cells[currentRow][currentColumn].hasTrap()) {
+				finishGame(currentRow, currentColumn);
+			}
+
+			if (checkGameWin(cells[currentRow][currentColumn])) {
+				// winGame();
+			}
+		}
+	}
+
+	/*
+	 * This method handles the on long click event
+	 * 
+	 * @author 8C Pham Duy Hung
+	 * 
+	 * @param currentRow the position of the clicked cell
+	 * 
+	 * @param currentCol the position of the clicked cell
+	 */
+	private boolean onLongClickOnCellHandle(int currentRow, int currentColumn) {
+
+		if (!cells[currentRow][currentColumn].isCovered()
+				&& (cells[currentRow][currentColumn]
+						.getNumberOfTrapsInSurrounding() > 0) && !isGameOver) {
+			int nearbyFlaggedBlocks = 0;
+			for (int previousRow = -1; previousRow < 2; previousRow++) {
+				for (int previousColumn = -1; previousColumn < 2; previousColumn++) {
+					if (cells[currentRow + previousRow][currentColumn
+							+ previousColumn].isFlagged()) {
+						nearbyFlaggedBlocks++;
+					}
+				}
+			}
+
+			// if flagged block count is equal to nearby trap count then open
+			// nearby blocks
+			if (nearbyFlaggedBlocks == cells[currentRow][currentColumn]
+					.getNumberOfTrapsInSurrounding()) {
+				for (int previousRow = -1; previousRow < 2; previousRow++) {
+					for (int previousColumn = -1; previousColumn < 2; previousColumn++) {
+						// don't open flagged blocks
+						if (!cells[currentRow + previousRow][currentColumn
+								+ previousColumn].isFlagged()) {
+							// open blocks till we get
+							// numbered block
+							rippleUncover(currentRow + previousRow,
+									currentColumn + previousColumn);
+
+							// did we clicked a trap
+							if (cells[currentRow + previousRow][currentColumn
+									+ previousColumn].hasTrap()) {
+								finishGame(currentRow + previousRow,
+										currentColumn + previousColumn);
+							}
+						}
+					}
+				}
+			}
+			return true;
+		}
+
+		// if clicked cells is enabled, clickable or flagged
+
+		flagAndDoubtHandle(currentRow, currentColumn);
+		return true;
+	}
+
+	/*
+	 * This method handles the flag and doubt situations
+	 * 
+	 * @author 8C Pham Duy Hung
+	 * 
+	 * @param currentRow the position of the clicked cell
+	 * 
+	 * @param currentCol the position of the clicked cell
+	 */
+	private void flagAndDoubtHandle(int currentRow, int currentColumn) {
+		// we got 3 situations
+		// 1. empty blocks to flagged
+		// 2. flagged to question mark
+		// 3. question mark to blank
+
+		if (cells[currentRow][currentColumn].isClickable()
+				&& (cells[currentRow][currentColumn].isEnabled() || cells[currentRow][currentColumn]
+						.isFlagged())) {
+
+			// case 1. set blank block to flagged
+			if (!cells[currentRow][currentColumn].isFlagged()
+					&& !cells[currentRow][currentColumn].isDoubted()) {
+				cells[currentRow][currentColumn].setFlagIcon(true);
+				cells[currentRow][currentColumn].setFlag(true);
+				trapsRemain--; // reduce trap count
+			}
+			// case 2. set flagged to question mark
+			else if (!cells[currentRow][currentColumn].isDoubted()) {
+				cells[currentRow][currentColumn].setDoubt(true);
+				cells[currentRow][currentColumn].setFlagIcon(false);
+				cells[currentRow][currentColumn].setDoubtIcon(true);
+				cells[currentRow][currentColumn].setFlag(false);
+				trapsRemain++; // increase trap count
+			}
+			// case 3. change to blank square
+			else {
+				cells[currentRow][currentColumn].clearAllIcons();
+				cells[currentRow][currentColumn].setDoubt(false);
+				// if it is flagged then increment trap count
+				if (cells[currentRow][currentColumn].isFlagged()) {
+					trapsRemain++; // increase trap count
+				}
+				// remove flagged status
+				cells[currentRow][currentColumn].setFlag(false);
+			}
+
 		}
 	}
 
@@ -374,18 +530,34 @@ public class Game extends Activity {
 	 * @param columnClicked the position of clicked cell
 	 */
 	private void genMap(int rowClicked, int columnClicked) {
+
+		genTreasure(rowClicked, columnClicked);
+		genTraps(rowClicked, columnClicked);
+		setTheNumberOfSurroundingTrap();
+	}
+
+	/*
+	 * Generate the treasure position in map
+	 * 
+	 * @author 8C Pham Duy Hung
+	 * 
+	 * @param rowClicked the position of the first-clicked-cell
+	 * 
+	 * @param columnClicked the position of the first-clicked-cell
+	 */
+	private void genTreasure(int rowClicked, int columnClicked) {
 		Random rand = new Random();
 		int treasureRow = 0, treasureCol = 0;
 
 		// Set the treasure position
 		treasureRow = rand.nextInt(numberOfRows - 1) + 2;
-		if (treasureRow == numberOfRows) {
-			treasureRow--;
+		if (treasureRow >= numberOfRows) {
+			treasureRow = numberOfRows - 2;
 		}
 
 		treasureCol = rand.nextInt(numberOfColumns - 1) + 2;
-		if (treasureCol == numberOfColumns) {
-			treasureCol--;
+		if (treasureCol >= numberOfColumns) {
+			treasureCol = numberOfColumns - 2;
 		}
 
 		// Make sure the treasure is not near the clicked cell
@@ -411,14 +583,26 @@ public class Game extends Activity {
 				}
 			}
 		}
+	}
 
+	/*
+	 * Generate the traps position in map
+	 * 
+	 * @author 8C Pham Duy Hung
+	 * 
+	 * @param rowClicked the position of the first-clicked-cell
+	 * 
+	 * @param columnClicked the position of the first-clicked-cell
+	 */
+	private void genTraps(int rowClicked, int columnClicked) {
+		Random rand = new Random();
 		int trapRow, trapColumn;
 		// set traps excluding the location where user clicked
 		for (int row = 0; row < totalTraps - 8; row++) {
 			trapRow = rand.nextInt(numberOfColumns);
 			trapColumn = rand.nextInt(numberOfRows);
-			// set the 8 surrounded cells of the clicked cell has no trap
 
+			// set the 8 surrounded cells of the clicked cell have no trap
 			if (isNearTheClickedCell(trapRow, trapColumn, rowClicked,
 					columnClicked)) {
 				if (cells[trapColumn + 1][trapRow + 1].hasTrap()
@@ -433,6 +617,14 @@ public class Game extends Activity {
 				row--;
 			}
 		}
+	}
+
+	/*
+	 * Set the number of surrounding trap
+	 * 
+	 * @author 8C Pham Duy Hung
+	 */
+	private void setTheNumberOfSurroundingTrap() {
 
 		int nearByTrapCount;
 		// count number of traps in surrounding blocks
@@ -507,8 +699,8 @@ public class Game extends Activity {
 	 */
 	private void rippleUncover(int rowClicked, int columnClicked) {
 		if (cells[rowClicked][columnClicked].hasTrap()
-				|| cells[rowClicked][columnClicked].hasTreasure()
-				|| cells[rowClicked][columnClicked].isFlagged()) {
+				|| cells[rowClicked][columnClicked].isFlagged()
+				|| cells[rowClicked][columnClicked].isDoubted()) {
 			return;
 		}
 
@@ -539,6 +731,45 @@ public class Game extends Activity {
 	}
 
 	/*
+	 * Check the game wins or not (should do this for changing rules)
+	 * 
+	 * @author 8C Pham Duy Hung
+	 * 
+	 * @param cell the cell which is clicked
+	 */
+	private boolean checkGameWin(Cell cell) {
+		return cell.hasTreasure();
+	}
+
+	// private void winGame() {
+	// stopTimer();
+	// isTimerStarted = false;
+	// isGameOver = true;
+	// minesToFind = 0; // set mine count to 0
+	//
+	// // set icon to cool dude
+	// btnSmile.setBackgroundResource(R.drawable.cool);
+	//
+	// updateMineCountDisplay(); // update mine count
+	//
+	// // disable all buttons
+	// // set flagged all un-flagged blocks
+	// for (int row = 1; row < numberOfRowsInMineField + 1; row++) {
+	// for (int column = 1; column < numberOfColumnsInMineField + 1; column++) {
+	// blocks[row][column].setClickable(false);
+	// if (blocks[row][column].hasMine()) {
+	// blocks[row][column].setBlockAsDisabled(false);
+	// blocks[row][column].setFlagIcon(true);
+	// }
+	// }
+	// }
+	//
+	// // show message
+	// showDialog("You won in " + Integer.toString(secondsPassed)
+	// + " seconds!", 1000, false, true);
+	// }
+
+	/*
 	 * Finish the game
 	 * 
 	 * @author 8B Pham Hung Cuong
@@ -553,7 +784,7 @@ public class Game extends Activity {
 		for (int row = 1; row < numberOfRows + 1; row++) {
 			for (int column = 1; column < numberOfColumns + 1; column++) {
 				// disable block
-				cells[row][column].setCellAsDisabled(false);
+				// cells[row][column].setCellAsDisabled(false);
 				cells[row][column].disableCell();
 
 				// block has trap and is not flagged
