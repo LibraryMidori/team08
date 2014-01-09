@@ -63,13 +63,13 @@ public class Cell extends Button {
 		isDoubt = false;
 		isClickable = true;
 		numberOfTrapInSurrounding = 0;
-		
+
 		Random r = new Random();
 		switch (r.nextInt() % 2) {
 		case 0:
 			this.setBackgroundResource(R.drawable.cell1);
 			break;
-			
+
 		case 1:
 			this.setBackgroundResource(R.drawable.cell2);
 			break;
@@ -230,14 +230,14 @@ public class Cell extends Button {
 	public void setFlagIcon(boolean enabled) {
 		// this.setText("F");
 		this.setBackgroundResource(R.drawable.flag);
-		
-//		if (!enabled) {
-//			// this.setBackgroundResource(R.drawable.square_grey);
-//			this.setBackgroundResource(R.drawable.flag);
-//			this.setTextColor(Color.RED);
-//		} else {
-//			this.setTextColor(Color.BLACK);
-//		}
+
+		// if (!enabled) {
+		// // this.setBackgroundResource(R.drawable.square_grey);
+		// this.setBackgroundResource(R.drawable.flag);
+		// this.setTextColor(Color.RED);
+		// } else {
+		// this.setTextColor(Color.BLACK);
+		// }
 	}
 
 	/*
@@ -352,7 +352,7 @@ public class Cell extends Button {
 		if (!isCovered)
 			return;
 
-		setCellAsDisabled(false);
+		// setCellAsDisabled(false);
 		isCovered = false;
 
 		if (this.numberOfTrapInSurrounding == 0) {
@@ -405,19 +405,19 @@ public class Cell extends Button {
 				break;
 			case 6:
 				this.setBackgroundResource(R.drawable.c6);
-//				this.setTextColor(Color.rgb(238, 173, 14));
+				// this.setTextColor(Color.rgb(238, 173, 14));
 				break;
 			case 7:
 				this.setBackgroundResource(R.drawable.c7);
-//				this.setTextColor(Color.rgb(47, 79, 79));
+				// this.setTextColor(Color.rgb(47, 79, 79));
 				break;
 			case 8:
 				this.setBackgroundResource(R.drawable.c8);
-//				this.setTextColor(Color.rgb(71, 71, 71));
+				// this.setTextColor(Color.rgb(71, 71, 71));
 				break;
 			case 9:
 				// this.setBackgroundResource(R.drawable.empty);
-//				this.setTextColor(Color.rgb(205, 205, 0));
+				// this.setTextColor(Color.rgb(205, 205, 0));
 				break;
 			}
 		}
@@ -433,7 +433,7 @@ public class Cell extends Button {
 	public void triggerTrap() {
 		// TODO: add more effect
 		setTrapIcon(true);
-//		this.setTextColor(Color.RED);
+		// this.setTextColor(Color.RED);
 	}
 
 	/*

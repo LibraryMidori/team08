@@ -34,7 +34,7 @@ public class MainMenu extends Activity implements OnClickListener {
 		setContentView(R.layout.activity_main_menu);
 
 		btn = (Button) findViewById(R.id.settingBtn);
-
+		
 		mp = MediaPlayer.create(MainMenu.this, R.raw.sound1);
 		mp.setLooping(true);
 		mp.start();

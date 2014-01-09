@@ -1,12 +1,17 @@
 package com.example.treasurehunt;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapFactory.Options;
@@ -77,6 +82,10 @@ public class Game extends Activity {
 	// UI
 	ImageView resultDisplay;
 
+	// Save Score
+	private SharedPreferences gamePrefs;
+	public static final String GAME_PREFS = "ArithmeticFile";
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -95,7 +104,7 @@ public class Game extends Activity {
 				level = Integer.parseInt(val1);
 				val1 = extras.getString("Total Score");
 				totalScore = Integer.parseInt(val1);
-				Log.e("8C>>>>>", "" + level + "" + totalScore);
+
 			} else {
 				Toast.makeText(this, "Cannot load the game", Toast.LENGTH_SHORT)
 						.show();
@@ -108,6 +117,8 @@ public class Game extends Activity {
 			Intent backToMainMenu = new Intent(Game.this, MainMenu.class);
 			startActivity(backToMainMenu);
 		}
+
+		gamePrefs = getSharedPreferences(GAME_PREFS, 0);
 
 		RelativeLayout layout = (RelativeLayout) findViewById(R.id.layout_root);
 		Options option = new Options();
@@ -148,10 +159,11 @@ public class Game extends Activity {
 	 */
 	@Override
 	public void onBackPressed() {
-		if (isPopupShow) {
-			return;
-		}
+		// if (isPopupShow) {
+		// return;
+		// }
 		finish();
+		super.onBackPressed();
 	}
 
 	/*
@@ -161,6 +173,7 @@ public class Game extends Activity {
 	 */
 	private void initView() {
 		map = (TableLayout) findViewById(R.id.Map);
+		// recordSaver = new Record();
 
 		font = Typeface.createFromAsset(getBaseContext().getAssets(),
 				"fonts/FRANCHISE-BOLD.TTF");
@@ -173,6 +186,9 @@ public class Game extends Activity {
 		livesText = (TextView) findViewById(R.id.livesText);
 		livesText.setTypeface(font);
 
+		levelText.setText("" + level);
+		scoreText.setText("" + totalScore);
+		livesText.setText("" + lives);
 	}
 
 	/*
@@ -198,49 +214,49 @@ public class Game extends Activity {
 
 		switch (_level) {
 		case 1:
-			setUpGame(maxTime, minTraps, 0, 3);
+			setUpGame(maxTime, minTraps, _score, _lives);
 			break;
 		case 2:
-			setUpGame(maxTime, minTraps, 0, 3);
+			setUpGame(maxTime, minTraps, _score, _lives);
 			break;
 		case 3:
-			setUpGame(maxTime, minTraps, 0, 3);
+			setUpGame(maxTime, minTraps, _score, _lives);
 			break;
 		case 4:
-			setUpGame(maxTime, minTraps, 0, 3);
+			setUpGame(maxTime, minTraps, _score, _lives);
 			break;
 		case 5:
-			setUpGame(maxTime, minTraps, 0, 3);
+			setUpGame(maxTime, minTraps, _score, _lives);
 			break;
 		case 6:
-			setUpGame(maxTime, minTraps, 0, 3);
+			setUpGame(maxTime, minTraps, _score, _lives);
 			break;
 		case 7:
-			setUpGame(maxTime, minTraps, 0, 3);
+			setUpGame(maxTime, minTraps, _score, _lives);
 			break;
 		case 8:
-			setUpGame(maxTime, minTraps, 0, 3);
+			setUpGame(maxTime, minTraps, _score, _lives);
 			break;
 		case 9:
-			setUpGame(maxTime, minTraps, 0, 3);
+			setUpGame(maxTime, minTraps, _score, _lives);
 			break;
 		case 10:
-			setUpGame(maxTime, minTraps, 0, 3);
+			setUpGame(maxTime, minTraps, _score, _lives);
 			break;
 		case 11:
-			setUpGame(maxTime, minTraps, 0, 3);
+			setUpGame(maxTime, minTraps, _score, _lives);
 			break;
 		case 12:
-			setUpGame(maxTime, minTraps, 0, 3);
+			setUpGame(maxTime, minTraps, _score, _lives);
 			break;
 		case 13:
-			setUpGame(maxTime, minTraps, 0, 3);
+			setUpGame(maxTime, minTraps, _score, _lives);
 			break;
 		case 14:
-			setUpGame(maxTime, minTraps, 0, 3);
+			setUpGame(maxTime, minTraps, _score, _lives);
 			break;
 		case 15:
-			setUpGame(maxTime, minTraps, 0, 3);
+			setUpGame(maxTime, minTraps, _score, _lives);
 			break;
 		default:
 			break;
@@ -283,6 +299,7 @@ public class Game extends Activity {
 		isGameOver = false;
 		isTrapHere = false;
 		isGameStart = false;
+		timeText.setText("" + timer);
 	}
 
 	/*
@@ -354,11 +371,17 @@ public class Game extends Activity {
 			rippleUncover(currentRow, currentColumn);
 
 			if (cells[currentRow][currentColumn].hasTrap()) {
-				finishGame(currentRow, currentColumn);
+				lives--;
+				livesText.setText("" + lives);
+				cells[currentRow][currentColumn].OpenCell();
+				cells[currentRow][currentColumn].setFlag(true);
+				if (lives == 0) {
+					finishGame(currentRow, currentColumn);
+				}
 			}
 
 			if (checkGameWin(cells[currentRow][currentColumn])) {
-				// winGame();
+				winGame();
 			}
 		}
 	}
@@ -773,6 +796,15 @@ public class Game extends Activity {
 			}
 		}
 
+		Toast.makeText(this, "You are win!!", Toast.LENGTH_SHORT).show();
+		level++;
+		totalScore += 1000;
+
+		Intent nextLevel = new Intent(Game.this, Game.class);
+		nextLevel.putExtra("Level", "" + level);
+		nextLevel.putExtra("Total Score", "" + totalScore);
+		startActivity(nextLevel);
+		finish();
 	}
 
 	/*
@@ -884,6 +916,11 @@ public class Game extends Activity {
 									Toast.makeText(Game.this,
 											"Your name is" + value,
 											Toast.LENGTH_SHORT).show();
+
+									setHighScore(value, 3000, level);
+									Intent backToMainMenu = new Intent(
+											Game.this, MainMenu.class);
+									startActivity(backToMainMenu);
 								}
 							});
 
@@ -907,6 +944,68 @@ public class Game extends Activity {
 					isPopupShow = false;
 				}
 			});
+		}
+	}
+
+	/*
+	 * Set high score
+	 * 
+	 * @author 8A Tran Trong Viet
+	 * 
+	 * @param sc: savedInstanceState: the state of previous game
+	 */
+	public void setHighScore(String playerName, int score, int level) {
+		try {
+			if (score > 0) {
+
+				SharedPreferences.Editor scoreEdit = gamePrefs.edit();
+				// get existing scores
+				String scores = gamePrefs.getString("highScores", "");
+
+				// check for scores
+				if (scores.length() > 0) {
+
+					List<Score> scoreStrings = new ArrayList<Score>();
+					String[] exScores = scores.split("\\|");
+
+					// add score object for each
+					for (String eSc : exScores) {
+						String[] parts = eSc.split(" - ");
+						scoreStrings
+								.add(new Score(parts[0], Integer
+										.parseInt(parts[1]), Integer
+										.parseInt(parts[2])));
+					}
+
+					// new score
+					Score newScore = new Score(playerName, score, level);
+					scoreStrings.add(newScore);
+					Collections.sort(scoreStrings);
+
+					// get top ten
+					StringBuilder scoreBuild = new StringBuilder("");
+					for (int s = 0; s < scoreStrings.size(); s++) {
+						if (s >= 10)
+							break;
+						if (s > 0)
+							scoreBuild.append("|");
+						scoreBuild.append(scoreStrings.get(s).getScoreText());
+					}
+					// write to prefs
+					scoreEdit.putString("highScores", scoreBuild.toString());
+					scoreEdit.commit();
+
+				} else {
+					// no existing scores
+					scoreEdit.putString("highScores", "" + playerName + " - "
+							+ score + " - " + level);
+					scoreEdit.commit();
+				}
+
+			}
+		} catch (NumberFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
@@ -944,13 +1043,19 @@ public class Game extends Activity {
 			long currentMilliseconds = System.currentTimeMillis();
 			--timer;
 
-			// TODO: set the time to the screen here
+			if (!isGameOver) {
+				timeText.setText("" + timer);
+			}
 
 			// add notification
 			clock.postAtTime(this, currentMilliseconds);
 			// notify to call back after 1 seconds
 			// basically to remain in the timer loop
 			clock.postDelayed(updateTimeElasped, 1000);
+
+			if (timer == 0) {
+				finishGame(0, 0);
+			}
 		}
 	};
 
