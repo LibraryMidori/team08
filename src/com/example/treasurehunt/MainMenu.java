@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Button;
 
 /*
  * This is a main menu of this game
@@ -20,6 +21,7 @@ public class MainMenu extends Activity implements OnClickListener {
 	 * Properties
 	 */
 	private MediaPlayer mp;
+	Button btn;
 
 	/*
 	 * (non-Javadoc)
@@ -31,10 +33,11 @@ public class MainMenu extends Activity implements OnClickListener {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main_menu);
 
+		btn = (Button) findViewById(R.id.settingBtn);
+		
 		mp = MediaPlayer.create(MainMenu.this, R.raw.sound1);
 		mp.setLooping(true);
 		mp.start();
-
 	}
 
 	/*
@@ -65,13 +68,11 @@ public class MainMenu extends Activity implements OnClickListener {
 		case R.id.continueBtn:
 
 			break;
-		case R.id.rankingBtn:
-
-			break;
 
 		case R.id.settingBtn:
-			if (mp.isPlaying()) {
-				mp.stop();
+			if (mp.isPlaying() && mp.isLooping()) {
+				btn.setBackgroundResource(R.drawable.mute);
+				mp.pause();
 				try {
 					mp.prepare();
 				} catch (IllegalStateException e) {
@@ -83,6 +84,7 @@ public class MainMenu extends Activity implements OnClickListener {
 				}
 				mp.seekTo(0);
 			} else {
+				btn.setBackgroundResource(R.drawable.sound);
 				mp.start();
 			}
 			break;
