@@ -748,7 +748,7 @@ public class Game extends Activity {
 		isGameOver = true;
 		trapsRemain = 0;
 
-		updateMineCountDisplay(); // update mine count
+		//updateMineCountDisplay(); // update mine count
 
 		// disable all buttons
 		// set flagged all un-flagged blocks
