@@ -34,7 +34,7 @@ public class MainMenu extends Activity implements OnClickListener {
 		setContentView(R.layout.activity_main_menu);
 
 		btn = (Button) findViewById(R.id.settingBtn);
-		
+
 		mp = MediaPlayer.create(MainMenu.this, R.raw.sound1);
 		mp.setLooping(true);
 		mp.start();
@@ -67,6 +67,8 @@ public class MainMenu extends Activity implements OnClickListener {
 				mp.pause();
 			}
 			Intent openNewGame = new Intent(MainMenu.this, Game.class);
+			openNewGame.putExtra("Level", "1");
+			openNewGame.putExtra("Total Score", "0");
 			startActivity(openNewGame);
 			break;
 		case R.id.continueBtn:

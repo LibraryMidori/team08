@@ -2,11 +2,15 @@ package com.example.treasurehunt;
 
 import java.util.Random;
 
-import android.R.integer;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapFactory.Options;
+import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -16,10 +20,15 @@ import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TableRow.LayoutParams;
+import android.widget.TextView;
+import android.widget.Toast;
 
 /*
  * @author group 8
@@ -55,7 +64,18 @@ public class Game extends Activity {
 	private boolean isGameStart;
 	private boolean isMapGen;
 
+	// Sound
 	private MediaPlayer mp;
+
+	// Popup
+	private boolean isPopupShow = false;
+
+	// Texts
+	Typeface font;
+	TextView levelText, scoreText, timeText, livesText;
+
+	// UI
+	ImageView resultDisplay;
 
 	/*
 	 * (non-Javadoc)
@@ -67,6 +87,28 @@ public class Game extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_game);
 
+		// @author 8C Pham Duy Hung
+		try {
+			Bundle extras = getIntent().getExtras();
+			if (extras != null) {
+				String val1 = extras.getString("Level");
+				level = Integer.parseInt(val1);
+				val1 = extras.getString("Total Score");
+				totalScore = Integer.parseInt(val1);
+				Log.e("8C>>>>>", "" + level + "" + totalScore);
+			} else {
+				Toast.makeText(this, "Cannot load the game", Toast.LENGTH_SHORT)
+						.show();
+				Intent backToMainMenu = new Intent(Game.this, MainMenu.class);
+				startActivity(backToMainMenu);
+			}
+		} catch (Exception e) {
+			Toast.makeText(this, "Cannot load the game", Toast.LENGTH_SHORT)
+					.show();
+			Intent backToMainMenu = new Intent(Game.this, MainMenu.class);
+			startActivity(backToMainMenu);
+		}
+
 		RelativeLayout layout = (RelativeLayout) findViewById(R.id.layout_root);
 		Options option = new Options();
 		option.inSampleSize = 2;
@@ -76,13 +118,14 @@ public class Game extends Activity {
 			layout.setBackgroundDrawable(new BitmapDrawable(getResources(), bmp));
 		}
 
-		// @author 8C Pham Duy Hung
+		// @author 8A Tran Trong Viet
 
 		mp = MediaPlayer.create(Game.this, R.raw.flag);
 
 		map = (TableLayout) findViewById(R.id.Map);
 
 		gameController(level, totalScore, lives);
+		initView();
 		startNewGame();
 	}
 
@@ -105,8 +148,31 @@ public class Game extends Activity {
 	 */
 	@Override
 	public void onBackPressed() {
+		if (isPopupShow) {
+			return;
+		}
 		finish();
-		super.onBackPressed();
+	}
+
+	/*
+	 * Initial view
+	 * 
+	 * @author 8B Pham Hung Cuong
+	 */
+	private void initView() {
+		map = (TableLayout) findViewById(R.id.Map);
+
+		font = Typeface.createFromAsset(getBaseContext().getAssets(),
+				"fonts/FRANCHISE-BOLD.TTF");
+		levelText = (TextView) findViewById(R.id.levelText);
+		levelText.setTypeface(font);
+		scoreText = (TextView) findViewById(R.id.scoreText);
+		scoreText.setTypeface(font);
+		timeText = (TextView) findViewById(R.id.timeText);
+		timeText.setTypeface(font);
+		livesText = (TextView) findViewById(R.id.livesText);
+		livesText.setTypeface(font);
+
 	}
 
 	/*
@@ -757,6 +823,91 @@ public class Game extends Activity {
 
 		// trigger trap
 		cells[currentRow][currentColumn].triggerTrap();
+
+		// clock.postDelayed(updateTimeElasped, 200);
+		Dialog respop = new Dialog(Game.this);
+		respop.setContentView(R.layout.result_popup);
+		respop.setCancelable(false);
+		respop.show();
+		resultDisplay = (ImageView) respop.findViewById(R.id.result_display);
+		resultDisplay.setBackgroundResource(R.drawable.trapped);
+		// clock.postDelayed(updateTimeElasped, 1000);
+		// respop.dismiss();
+		// clock.postDelayed(updateTimeElasped, 100);
+
+		if (isGameOver) {
+			isGameOver = true; // mark game as over
+			isPopupShow = true;
+			Dialog popup = new Dialog(Game.this);
+			popup.setContentView(R.layout.finish_popup);
+			// Set dialog title
+			// TODO time up
+
+			// popup.setTitle("Say something");
+			popup.setCancelable(false);
+
+			popup.show();
+
+			Button nextLevelBtn = (Button) popup.findViewById(R.id.next_level);
+			nextLevelBtn.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					isPopupShow = false;
+				}
+			});
+
+			Button quitToMenuBtn = (Button) popup
+					.findViewById(R.id.quit_to_menu);
+			quitToMenuBtn.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					isPopupShow = false;
+					// TODO Auto-generated method stub
+					AlertDialog.Builder alert = new AlertDialog.Builder(
+							Game.this);
+
+					alert.setTitle("Title");
+					alert.setMessage("Message");
+
+					// Set an EditText view to get user input
+					final EditText input = new EditText(Game.this);
+					alert.setView(input);
+
+					alert.setPositiveButton("Ok",
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int whichButton) {
+									String value = input.getText().toString();
+									// Do something with value!
+									Toast.makeText(Game.this,
+											"Your name is" + value,
+											Toast.LENGTH_SHORT).show();
+								}
+							});
+
+					alert.setNegativeButton("Cancel",
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int whichButton) {
+									// Canceled.
+								}
+							});
+
+					alert.show();
+				}
+			});
+
+			Button postToFbBtn = (Button) popup.findViewById(R.id.post_to_fb);
+			postToFbBtn.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					isPopupShow = false;
+				}
+			});
+		}
 	}
 
 	/*
@@ -766,7 +917,6 @@ public class Game extends Activity {
 	 */
 	public void startTimer() {
 		clock.removeCallbacks(updateTimeElasped);
-		// delay clock for a second
 		clock.postDelayed(updateTimeElasped, 1000);
 	}
 
@@ -792,7 +942,7 @@ public class Game extends Activity {
 		public void run() {
 			// TODO Auto-generated method stub
 			long currentMilliseconds = System.currentTimeMillis();
-			++timer;
+			--timer;
 
 			// TODO: set the time to the screen here
 
