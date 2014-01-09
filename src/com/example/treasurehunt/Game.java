@@ -741,33 +741,27 @@ public class Game extends Activity {
 		return cell.hasTreasure();
 	}
 
-	// private void winGame() {
-	// stopTimer();
-	// isTimerStarted = false;
-	// isGameOver = true;
-	// minesToFind = 0; // set mine count to 0
-	//
-	// // set icon to cool dude
-	// btnSmile.setBackgroundResource(R.drawable.cool);
-	//
-	// updateMineCountDisplay(); // update mine count
-	//
-	// // disable all buttons
-	// // set flagged all un-flagged blocks
-	// for (int row = 1; row < numberOfRowsInMineField + 1; row++) {
-	// for (int column = 1; column < numberOfColumnsInMineField + 1; column++) {
-	// blocks[row][column].setClickable(false);
-	// if (blocks[row][column].hasMine()) {
-	// blocks[row][column].setBlockAsDisabled(false);
-	// blocks[row][column].setFlagIcon(true);
-	// }
-	// }
-	// }
-	//
-	// // show message
-	// showDialog("You won in " + Integer.toString(secondsPassed)
-	// + " seconds!", 1000, false, true);
-	// }
+	private void winGame() {
+		// reset all stuffs
+		stopTimer();
+		isGameStart = false;
+		isGameOver = true;
+		trapsRemain = 0;
+
+		updateMineCountDisplay(); // update mine count
+
+		// disable all buttons
+		// set flagged all un-flagged blocks
+		for (int row = 1; row < numberOfRows + 1; row++) {
+			for (int column = 1; column < numberOfColumns + 1; column++) {
+				cells[row][column].setClickable(false);
+				if (cells[row][column].hasTrap()) {
+					cells[row][column].setFlagIcon(true);
+				}
+			}
+		}
+
+	}
 
 	/*
 	 * Finish the game

@@ -1,3 +1,0 @@
-viet:12:5
-hung:10:4
-Cuong:3:3
