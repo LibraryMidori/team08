@@ -381,6 +381,7 @@ public class Game extends Activity {
 				cells[currentRow][currentColumn].setFlag(true);
 				if (lives <= 0) {
 					finishGame(currentRow, currentColumn);
+					livesText.setText("0");
 				}
 			}
 
@@ -439,6 +440,7 @@ public class Game extends Activity {
 								trapsRemain--;
 								trapText.setText("" + trapsRemain);
 								if (lives <= 0) {
+									livesText.setText("0");
 									finishGame(0, 0);
 								}
 
