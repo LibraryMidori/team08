@@ -143,7 +143,7 @@ public class Quiz extends Activity {
 		livesText = (TextView) findViewById(R.id.livesText);
 		livesText.setTypeface(font);
 
-		levelText.setText("" + level);
+		levelText.setText("Quiz " + level);
 		scoreText.setText("" + totalScore);
 		livesText.setText("" + lives);
 

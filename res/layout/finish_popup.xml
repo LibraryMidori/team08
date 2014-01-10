@@ -14,32 +14,39 @@
 
         <Button
             android:id="@+id/save_record"
-            android:layout_width="160dp"
+            android:layout_width="170dp"
             android:layout_height="55dp"
             android:layout_marginTop="200dp"
-            android:text="Save record"  />
+            android:background="@drawable/saverecord" />
 
         <Button
             android:id="@+id/quit_to_menu"
-            android:layout_width="160dp"
+            android:layout_width="170dp"
             android:layout_height="55dp"
             android:layout_marginTop="10dp"
-            android:text="Quit to menu" />
+            android:background="@drawable/quittomenu" />
+
+        <Button
+            android:id="@+id/post_to_fb"
+            android:layout_width="170dp"
+            android:layout_height="55dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/sharescore" />
         
     </LinearLayout>
 
     <ImageView
-        android:layout_width="100dp"
+        android:layout_width="120dp"
         android:layout_height="50dp"
-        android:layout_marginTop="80dp"
         android:layout_marginLeft="40dp"
+        android:layout_marginTop="80dp"
         android:background="@drawable/scoretext" />
 
     <ImageView
-        android:layout_width="100dp"
+        android:layout_width="120dp"
         android:layout_height="50dp"
-        android:layout_marginTop="140dp"
         android:layout_marginLeft="40dp"
+        android:layout_marginTop="140dp"
         android:background="@drawable/timetext" />
 
     <TextView
@@ -48,6 +55,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="140dp"
         android:layout_marginTop="82dp"
+        android:text="1234"
         android:textColor="@android:color/white"
         android:textSize="37sp"
         android:textStyle="bold" />
@@ -58,16 +66,9 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="140dp"
         android:layout_marginTop="142dp"
+        android:text="1234"
         android:textColor="@android:color/white"
         android:textSize="37sp"
         android:textStyle="bold" />
-
-    <Button
-        android:id="@+id/post_to_fb"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_marginLeft="230dp"
-        android:layout_marginTop="100dp"
-        android:background="@drawable/sharefb" />
 
 </RelativeLayout>
