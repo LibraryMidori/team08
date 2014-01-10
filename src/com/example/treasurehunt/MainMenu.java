@@ -4,13 +4,15 @@ import java.io.IOException;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.Toast;
 
 /*
  * This is a main menu of this game
@@ -25,6 +27,8 @@ public class MainMenu extends Activity implements OnClickListener {
 	private Button btn;
 	private int level = 1, score = 0, lives = 3;
 
+	public final String GAME_PREFS = "ArithmeticFile";
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -36,13 +40,6 @@ public class MainMenu extends Activity implements OnClickListener {
 		setContentView(R.layout.activity_main_menu);
 
 		btn = (Button) findViewById(R.id.settingBtn);
-
-		if (savedInstanceState != null) {
-			score = savedInstanceState.getInt("score");
-			level = savedInstanceState.getInt("level");
-			lives = savedInstanceState.getInt("lives");
-			Log.e("8A>>>>", level + " " + score + " " + lives);
-		}
 
 		mp = MediaPlayer.create(MainMenu.this, R.raw.sound1);
 		mp.setLooping(true);
@@ -69,28 +66,55 @@ public class MainMenu extends Activity implements OnClickListener {
 	@Override
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
+
 		switch (v.getId()) {
 		case R.id.newGameBtn:
 			if (mp.isPlaying() && mp.isLooping()) {
 				btn.setBackgroundResource(R.drawable.mute);
 				mp.pause();
 			}
+
 			Intent openNewGame = new Intent(MainMenu.this, Game.class);
 			openNewGame.putExtra("Level", "1");
 			openNewGame.putExtra("Total Score", "0");
 			openNewGame.putExtra("Lives", "3");
 			startActivity(openNewGame);
 			break;
+
 		case R.id.continueBtn:
 			if (mp.isPlaying() && mp.isLooping()) {
 				btn.setBackgroundResource(R.drawable.mute);
 				mp.pause();
 			}
-			Intent openContinueGame = new Intent(MainMenu.this, Game.class);
-			openContinueGame.putExtra("Level", "" + level);
-			openContinueGame.putExtra("Total Score", "" + score);
-			openContinueGame.putExtra("Lives", "" + lives);
-			startActivity(openContinueGame);
+			
+			SharedPreferences gameSavePrefs = getSharedPreferences(
+					Game.GAME_PREFS, 0);
+
+			String savedGame1 = gameSavePrefs.getString("saveGame", "");
+
+			if (savedGame1.length() > 0) {
+				String[] parts = savedGame1.split(" - ");
+
+				level = Integer.parseInt(parts[0]);
+				score = Integer.parseInt(parts[1]);
+				lives = Integer.parseInt(parts[2]);
+
+				// clear the saved game state
+				gameSavePrefs.edit().putString("saveGame", "").commit();
+
+				// load saved state to game play
+				Intent openContinueGame = new Intent(MainMenu.this, Game.class);
+				openContinueGame.putExtra("Level", "" + level);
+				openContinueGame.putExtra("Total Score", "" + score);
+				openContinueGame.putExtra("Lives", "" + lives);
+				startActivity(openContinueGame);
+			} else {
+				Toast dialog = Toast.makeText(MainMenu.this,
+						"There 's no game to continue !!!", Toast.LENGTH_SHORT);
+				dialog.setGravity(Gravity.CENTER, 0, 0);
+				dialog.setDuration(2000);
+				dialog.show();
+			}
 			break;
 
 		case R.id.settingBtn:

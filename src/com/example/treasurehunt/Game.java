@@ -11,11 +11,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.BitmapFactory.Options;
 import android.graphics.Typeface;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -29,7 +25,6 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TableRow.LayoutParams;
@@ -37,6 +32,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 /*
+ * The main game
  * @author group 8
  */
 
@@ -56,9 +52,9 @@ public class Game extends Activity {
 	private int totalScore = 0;
 
 	private final int minTraps = 84;
-	private final int maxTime = 20;
+	private final int maxTime = 480;
 
-	private int cellWidth = 27;
+	private int cellWidth = 34;
 	private int cellPadding = 2;
 
 	// Tracking time
@@ -66,7 +62,7 @@ public class Game extends Activity {
 	private int timer;
 
 	private boolean isGameOver;
-	private boolean isTrapHere;
+	private boolean isGameFinish = false;
 	private boolean isGameStart;
 	private boolean isMapGen;
 
@@ -74,15 +70,15 @@ public class Game extends Activity {
 	private MediaPlayer mp;
 
 	// Popup
-	private boolean isPopupShow = false;
+	Handler handler;
 
 	// Texts
-	Typeface font;
-	TextView levelText, scoreText, timeText, livesText, finalScoreText, finalTimeText;;
+	Typeface font, font2;
+	TextView levelText, scoreText, timeText, livesText, finalScoreText,
+			finalTimeText, trapText;
 
 	// UI
 	ImageView mImgViewResult;
-	
 
 	// Save Score
 	private SharedPreferences gamePrefs;
@@ -122,22 +118,8 @@ public class Game extends Activity {
 			startActivity(backToMainMenu);
 		}
 
+		// Share preference of Game class
 		gamePrefs = getSharedPreferences(GAME_PREFS, 0);
-
-		RelativeLayout layout = (RelativeLayout) findViewById(R.id.layout_root);
-		Options option = new Options();
-		option.inSampleSize = 2;
-		Bitmap bmp = BitmapFactory.decodeResource(getResources(),
-				R.drawable.gamebg, option);
-		if (bmp != null) {
-			layout.setBackgroundDrawable(new BitmapDrawable(getResources(), bmp));
-		}
-
-		// @author 8A Tran Trong Viet
-
-		mp = MediaPlayer.create(Game.this, R.raw.flag);
-
-		map = (TableLayout) findViewById(R.id.Map);
 
 		gameController(level, totalScore, lives);
 		initView();
@@ -163,9 +145,9 @@ public class Game extends Activity {
 	 */
 	@Override
 	public void onBackPressed() {
-		// if (isPopupShow) {
-		// return;
-		// }
+		if (lives > 0 && !isGameFinish) {
+			saveGameState(level, totalScore, lives);
+		}
 		finish();
 		super.onBackPressed();
 	}
@@ -175,25 +157,36 @@ public class Game extends Activity {
 	 * 
 	 * @author 8B Pham Hung Cuong
 	 */
+	@SuppressWarnings("deprecation")
 	private void initView() {
+
+		// @author 8A Tran Trong Viet
+
+		mp = MediaPlayer.create(Game.this, R.raw.flag);
+
 		map = (TableLayout) findViewById(R.id.Map);
 		// recordSaver = new Record();
 
 		font = Typeface.createFromAsset(getBaseContext().getAssets(),
 				"fonts/FRANCHISE-BOLD.TTF");
+		font2 = Typeface.createFromAsset(getBaseContext().getAssets(),
+				"fonts/Sketch_Block.ttf");
 		levelText = (TextView) findViewById(R.id.levelText);
-		levelText.setTypeface(font);
+		levelText.setTypeface(font2);
 		scoreText = (TextView) findViewById(R.id.scoreText);
-		scoreText.setTypeface(font);
+		scoreText.setTypeface(font2);
 		timeText = (TextView) findViewById(R.id.timeText);
-		timeText.setTypeface(font);
+		timeText.setTypeface(font2);
 		livesText = (TextView) findViewById(R.id.livesText);
-		livesText.setTypeface(font);
+		livesText.setTypeface(font2);
+		trapText = (TextView) findViewById(R.id.trapText);
+		trapText.setTypeface(font2);
 
-		levelText.setText("" + level);
+		levelText.setText("LEVEL " + level);
 		scoreText.setText("" + totalScore);
 		livesText.setText("" + lives);
-		
+		trapText.setText("" + trapsRemain);
+
 		mImgViewResult = (ImageView) findViewById(R.id.img_result);
 
 	}
@@ -203,13 +196,16 @@ public class Game extends Activity {
 	 * 
 	 * @author 8C Pham Duy Hung
 	 * 
-	 * @param level the current level
+	 * @param _level the current level
+	 * 
+	 * @param _score the current score
+	 * 
+	 * @param _lives the current lives
 	 */
 	private void gameController(int _level, int _score, int _lives) {
 
 		// Default setting
 		isGameOver = false;
-		isTrapHere = false;
 		isGameStart = false;
 		isMapGen = false;
 
@@ -304,7 +300,6 @@ public class Game extends Activity {
 		showMap();
 
 		isGameOver = false;
-		isTrapHere = false;
 		isGameStart = false;
 		timeText.setText("" + timer);
 	}
@@ -379,10 +374,12 @@ public class Game extends Activity {
 
 			if (cells[currentRow][currentColumn].hasTrap()) {
 				lives--;
+				trapsRemain--;
 				livesText.setText("" + lives);
+				trapText.setText("" + trapsRemain);
 				cells[currentRow][currentColumn].OpenCell();
 				cells[currentRow][currentColumn].setFlag(true);
-				if (lives == 0) {
+				if (lives <= 0) {
 					finishGame(currentRow, currentColumn);
 				}
 			}
@@ -434,8 +431,17 @@ public class Game extends Activity {
 							// did we clicked a trap
 							if (cells[currentRow + previousRow][currentColumn
 									+ previousColumn].hasTrap()) {
-								finishGame(currentRow + previousRow,
-										currentColumn + previousColumn);
+
+								cells[currentRow + previousRow][currentColumn
+										+ previousColumn].OpenCell();
+								lives--;
+								livesText.setText("" + lives);
+								trapsRemain--;
+								trapText.setText("" + trapsRemain);
+								if (lives <= 0) {
+									finishGame(0, 0);
+								}
+
 							}
 						}
 					}
@@ -475,6 +481,7 @@ public class Game extends Activity {
 				cells[currentRow][currentColumn].setFlagIcon(true);
 				cells[currentRow][currentColumn].setFlag(true);
 				trapsRemain--; // reduce trap count
+				trapText.setText("" + trapsRemain);
 			}
 			// case 2. set flagged to question mark
 			else if (!cells[currentRow][currentColumn].isDoubted()) {
@@ -483,6 +490,7 @@ public class Game extends Activity {
 				cells[currentRow][currentColumn].setDoubtIcon(true);
 				cells[currentRow][currentColumn].setFlag(false);
 				trapsRemain++; // increase trap count
+				trapText.setText("" + trapsRemain);
 			}
 			// case 3. change to blank square
 			else {
@@ -491,6 +499,7 @@ public class Game extends Activity {
 				// if it is flagged then increment trap count
 				if (cells[currentRow][currentColumn].isFlagged()) {
 					trapsRemain++; // increase trap count
+					trapText.setText("" + trapsRemain);
 				}
 				// remove flagged status
 				cells[currentRow][currentColumn].setFlag(false);
@@ -566,7 +575,9 @@ public class Game extends Activity {
 			treasureCol = numberOfColumns - 2;
 		}
 
+		// For debugging
 		Log.e("8A >>>>", "Treasure: " + treasureRow + " " + treasureCol);
+
 		// Make sure the treasure is not near the clicked cell
 		if (!isTreasureNear(treasureRow, treasureCol, rowClicked, columnClicked)) {
 			if (treasureRow < numberOfRows / 2) {
@@ -786,10 +797,11 @@ public class Game extends Activity {
 	private void winGame() {
 		// reset all stuffs
 		stopTimer();
+		isGameFinish = true;
 		isGameStart = false;
 		trapsRemain = 0;
-
-		// updateMineCountDisplay(); // update mine count
+		totalScore += 1000;
+		scoreText.setText("" + totalScore);
 
 		// disable all buttons
 		// set flagged all un-flagged blocks
@@ -804,8 +816,7 @@ public class Game extends Activity {
 			}
 		}
 
-		// Toast.makeText(this, "You are win!!", Toast.LENGTH_SHORT).show();
-		Handler handler = new Handler();
+		handler = new Handler();
 		handler.postDelayed(new Runnable() {
 
 			@Override
@@ -818,141 +829,139 @@ public class Game extends Activity {
 					@Override
 					public void run() {
 						mImgViewResult.setVisibility(View.GONE);
-
-						if (!isGameOver) {
-							isGameOver = true; // mark game as over
-							isPopupShow = true;
-							final Dialog popup = new Dialog(Game.this);
-							popup.requestWindowFeature(Window.FEATURE_NO_TITLE);
-							popup.getWindow()
-									.setBackgroundDrawable(
-											new ColorDrawable(
-													android.graphics.Color.TRANSPARENT));
-							popup.setContentView(R.layout.win_popup);
-							// Set dialog title
-							// TODO time up
-
-							// popup.setTitle("Say something");
-							popup.setCancelable(false);
-
-							finalScoreText = (TextView) popup
-									.findViewById(R.id.finalScore);
-							finalScoreText.setTypeface(font);
-							finalTimeText = (TextView) popup
-									.findViewById(R.id.finalTime);
-							finalTimeText.setTypeface(font);
-							finalTimeText.setText("" + timer);
-
-							popup.show();
-
-							Button saveRecordBtn = (Button) popup
-									.findViewById(R.id.save_record);
-							saveRecordBtn
-									.setOnClickListener(new OnClickListener() {
-
-										@Override
-										public void onClick(View v) {
-											// TODO Auto-generated method stub
-											AlertDialog.Builder alert = new AlertDialog.Builder(
-													Game.this);
-
-											alert.setTitle("Enter your name");
-
-											// Set an EditText view to get user
-											// input
-											final EditText input = new EditText(
-													Game.this);
-											alert.setView(input);
-
-											alert.setPositiveButton(
-													"Ok",
-													new DialogInterface.OnClickListener() {
-														public void onClick(
-																DialogInterface dialog,
-																int whichButton) {
-															String value = input
-																	.getText()
-																	.toString();
-															// Do something with
-															// value!
-															setHighScore(value, totalScore, level);
-															isPopupShow = false;
-															popup.dismiss();
-														}
-													});
-
-											alert.setNegativeButton(
-													"Cancel",
-													new DialogInterface.OnClickListener() {
-														public void onClick(
-																DialogInterface dialog,
-																int whichButton) {
-															// Canceled.
-														}
-													});
-
-											alert.show();
-										}
-									});
-
-							Button quitToMenuBtn = (Button) popup
-									.findViewById(R.id.quit_to_menu);
-							quitToMenuBtn
-									.setOnClickListener(new OnClickListener() {
-
-										@Override
-										public void onClick(View v) {
-											Intent backToMenu = new Intent(
-													Game.this, MainMenu.class);
-											isPopupShow = false;
-											startActivity(backToMenu);
-										}
-									});
-							
-							Button nextLevelBtn = (Button) popup.findViewById(R.id.next_level);
-							nextLevelBtn.setOnClickListener(new OnClickListener() {
-								
-								@Override
-								public void onClick(View v) {
-									// TODO Auto-generated method stub
-									level++;
-									totalScore += 1000;
-
-									if (level < 16) {
-										Intent nextLevel = new Intent(Game.this, Game.class);
-										nextLevel.putExtra("Level", "" + level);
-										nextLevel.putExtra("Total Score", "" + totalScore);
-										nextLevel.putExtra("Lives", "" + lives);
-										startActivity(nextLevel);
-										finish();
-									} else {
-										Toast.makeText(Game.this, "Congratulation, you win!!",
-												Toast.LENGTH_SHORT).show();
-										// TODO: save point here
-										// setHighScore(value, totalScore, level);
-										Intent backToMainMenu = new Intent(Game.this, MainMenu.class);
-										startActivity(backToMainMenu);
-									}
-								}
-							});
-
-							Button postToFbBtn = (Button) popup
-									.findViewById(R.id.post_to_fb);
-							postToFbBtn
-									.setOnClickListener(new OnClickListener() {
-
-										@Override
-										public void onClick(View v) {
-											isPopupShow = false;
-
-										}
-									});
-						}
+						showWinPopUp();
+						handler.removeCallbacks(this);
 					}
 				}, 2000);
 			}
 		}, 500);
-		
+
+	}
+
+	/*
+	 * Show Winning pop-up
+	 * 
+	 * @author Pham Hung Cuong
+	 */
+	private void showWinPopUp() {
+		if (!isGameOver) {
+			isGameOver = true; // mark game as over
+			final Dialog popup = new Dialog(Game.this);
+			popup.requestWindowFeature(Window.FEATURE_NO_TITLE);
+			popup.getWindow().setBackgroundDrawable(
+					new ColorDrawable(android.graphics.Color.TRANSPARENT));
+			popup.setContentView(R.layout.win_popup);
+			// Set dialog title
+
+			// popup.setTitle("Say something");
+			popup.setCancelable(false);
+
+			finalScoreText = (TextView) popup.findViewById(R.id.finalScore);
+			finalScoreText.setTypeface(font);
+			finalScoreText.setText("" + totalScore);
+
+			finalTimeText = (TextView) popup.findViewById(R.id.finalTime);
+			finalTimeText.setTypeface(font);
+			finalTimeText.setText("" + timer);
+
+			popup.dismiss();
+			popup.show();
+
+			Button saveRecordBtn = (Button) popup
+					.findViewById(R.id.save_record);
+			saveRecordBtn.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					AlertDialog.Builder alert = new AlertDialog.Builder(
+							Game.this);
+
+					alert.setTitle("Enter your name");
+
+					// Set an EditText view to get user
+					final EditText input = new EditText(Game.this);
+					input.setText("Playername");
+					alert.setView(input);
+
+					alert.setPositiveButton("Ok",
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int whichButton) {
+									String value = input.getText().toString();
+
+									setHighScore(value, totalScore, level);
+									popup.dismiss();
+								}
+							});
+
+					alert.setNegativeButton("Cancel",
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int whichButton) {
+									// Canceled.
+								}
+							});
+					alert.show();
+				}
+			});
+
+			Button quitToMenuBtn = (Button) popup
+					.findViewById(R.id.quit_to_menu);
+			quitToMenuBtn.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					popup.dismiss();
+					Intent backToMenu = new Intent(Game.this, MainMenu.class);
+					startActivity(backToMenu);
+					finish();
+				}
+			});
+
+			Button nextLevelBtn = (Button) popup.findViewById(R.id.next_level);
+			nextLevelBtn.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					level++;
+
+					if (level == 5 || level == 10) {
+						Intent nextLevel = new Intent(Game.this, Quiz.class);
+						nextLevel.putExtra("Level", "" + level);
+						nextLevel.putExtra("Total Score", "" + totalScore);
+						nextLevel.putExtra("Lives", "" + lives);
+						startActivity(nextLevel);
+						finish();
+					} else if (level < 16) {
+						Intent nextLevel = new Intent(Game.this, Game.class);
+						nextLevel.putExtra("Level", "" + level);
+						nextLevel.putExtra("Total Score", "" + totalScore);
+						nextLevel.putExtra("Lives", "" + lives);
+						startActivity(nextLevel);
+						finish();
+					} else {
+						Toast.makeText(Game.this, "Congratulation, you win!!",
+								Toast.LENGTH_SHORT).show();
+
+						Intent backToMainMenu = new Intent(Game.this,
+								MainMenu.class);
+						startActivity(backToMainMenu);
+						finish();
+					}
+				}
+			});
+
+			Button postToFbBtn = (Button) popup.findViewById(R.id.post_to_fb);
+			postToFbBtn.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+
+				}
+			});
+		}
 	}
 
 	/*
@@ -1021,7 +1030,6 @@ public class Game extends Activity {
 
 						if (!isGameOver) {
 							isGameOver = true; // mark game as over
-							isPopupShow = true;
 							final Dialog popup = new Dialog(Game.this);
 							popup.requestWindowFeature(Window.FEATURE_NO_TITLE);
 							popup.getWindow()
@@ -1038,6 +1046,8 @@ public class Game extends Activity {
 							finalScoreText = (TextView) popup
 									.findViewById(R.id.finalScore);
 							finalScoreText.setTypeface(font);
+							finalScoreText.setText("" + totalScore);
+
 							finalTimeText = (TextView) popup
 									.findViewById(R.id.finalTime);
 							finalTimeText.setTypeface(font);
@@ -1062,6 +1072,7 @@ public class Game extends Activity {
 											// input
 											final EditText input = new EditText(
 													Game.this);
+											input.setText("Playername");
 											alert.setView(input);
 
 											alert.setPositiveButton(
@@ -1075,8 +1086,9 @@ public class Game extends Activity {
 																	.toString();
 															// Do something with
 															// value!
-															setHighScore(value, totalScore, level);
-															isPopupShow = false;
+															setHighScore(value,
+																	totalScore,
+																	level);
 															popup.dismiss();
 														}
 													});
@@ -1102,9 +1114,9 @@ public class Game extends Activity {
 
 										@Override
 										public void onClick(View v) {
+											popup.dismiss();
 											Intent backToMenu = new Intent(
 													Game.this, MainMenu.class);
-											isPopupShow = false;
 											startActivity(backToMenu);
 										}
 									});
@@ -1116,8 +1128,7 @@ public class Game extends Activity {
 
 										@Override
 										public void onClick(View v) {
-											isPopupShow = false;
-
+											popup.dismiss();
 										}
 									});
 						}
@@ -1236,7 +1247,27 @@ public class Game extends Activity {
 			if (timer == 0) {
 				finishGame(0, 0);
 			}
+
 		}
 	};
+
+	/*
+	 * Save game to continue
+	 * 
+	 * @author 8A Tran Trong Viet
+	 * 
+	 * @param _level the current level
+	 * 
+	 * @param _score the current score
+	 * 
+	 * @param _lives the current lives
+	 */
+	private void saveGameState(int _level, int _score, int _lives) {
+		SharedPreferences.Editor gameStateEdit = gamePrefs.edit();
+
+		gameStateEdit.putString("saveGame", _level + " - " + _score + " - "
+				+ _lives);
+		gameStateEdit.commit();
+	}
 
 }

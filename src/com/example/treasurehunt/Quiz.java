@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -15,14 +16,12 @@ import android.graphics.BitmapFactory;
 import android.graphics.BitmapFactory.Options;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
-import android.media.MediaPlayer;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
-import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnLongClickListener;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -33,7 +32,13 @@ import android.widget.TableRow.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class Quiz extends Game {
+/*
+ * The quiz level
+ * 
+ * @author group 8
+ */
+
+public class Quiz extends Activity {
 
 	/*
 	 * Properties
@@ -43,54 +48,55 @@ public class Quiz extends Game {
 	private int numberOfRows = 0;
 	private int numberOfColumns = 0;
 	private int totalTraps = 0;
-	private int trapsRemain = 0;
 	private int level = 1;
 	private int lives = 0;
 	private int totalScore = 0;
+	private int step = 0;
 
-	private final int minTraps = 84;
-	private final int maxTime = 480;
-
-	private int cellWidth = 27;
+	private int cellWidth = 34;
 	private int cellPadding = 2;
 
 	// Tracking time
 	private Handler clock;
 	private int timer;
 
-	private boolean isGameOver;
-	private boolean isTrapHere;
-	private boolean isGameStart;
-	private boolean isMapGen;
-
-	// Sound
-	private MediaPlayer mp;
-
-	// Popup
-	private boolean isPopupShow = false;
+	private boolean isQuizOver;
+	private boolean isQuizStart;
 
 	// Texts
 	Typeface font;
-	TextView levelText, scoreText, timeText, livesText;
+	TextView levelText, scoreText, timeText, livesText, finalScoreText,
+			finalTimeText;;
 
 	// UI
-	ImageView resultDisplay;
+	ImageView mImgViewResult;
 
 	// Save Score
-	private SharedPreferences gamePrefs;
-	public static final String GAME_PREFS = "ArithmeticFile";
+	private SharedPreferences QuizPrefs;
+	public static final String Quiz_PREFS = "ArithmeticFile";
 
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see android.app.Activity#onCreate(android.os.Bundle)
 	 */
+	@SuppressWarnings("deprecation")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_game);
 
-		// @author 8C Pham Duy Hung
+		RelativeLayout layout = (RelativeLayout) findViewById(R.id.layout_root);
+		Options option = new Options();
+		option.inSampleSize = 2;
+		Bitmap bmp = BitmapFactory.decodeResource(getResources(),
+				R.drawable.gamebg, option);
+		if (bmp != null) {
+			layout.setBackgroundDrawable(new BitmapDrawable(getResources(), bmp));
+		}
+
+		map = (TableLayout) findViewById(R.id.Map);
+
 		try {
 			Bundle extras = getIntent().getExtras();
 			if (extras != null) {
@@ -98,6 +104,8 @@ public class Quiz extends Game {
 				level = Integer.parseInt(val1);
 				val1 = extras.getString("Total Score");
 				totalScore = Integer.parseInt(val1);
+				val1 = extras.getString("Lives");
+				lives = Integer.parseInt(val1);
 
 			} else {
 				Toast.makeText(this, "Cannot load the game", Toast.LENGTH_SHORT)
@@ -112,62 +120,17 @@ public class Quiz extends Game {
 			startActivity(backToMainMenu);
 		}
 
-		gamePrefs = getSharedPreferences(GAME_PREFS, 0);
-
-		RelativeLayout layout = (RelativeLayout) findViewById(R.id.layout_root);
-		Options option = new Options();
-		option.inSampleSize = 2;
-		Bitmap bmp = BitmapFactory.decodeResource(getResources(),
-				R.drawable.gamebg, option);
-		if (bmp != null) {
-			layout.setBackgroundDrawable(new BitmapDrawable(getResources(), bmp));
-		}
-
-		// @author 8A Tran Trong Viet
-
-		mp = MediaPlayer.create(Quiz.this, R.raw.flag);
-
-		map = (TableLayout) findViewById(R.id.Map);
-
-		gameController(level, totalScore, lives);
 		initView();
-		startNewGame();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see android.app.Activity#onCreateOptionsMenu(android.view.Menu)
-	 */
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.game, menu);
-		return true;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see android.app.Activity#onBackPressed()
-	 */
-	@Override
-	public void onBackPressed() {
-		// if (isPopupShow) {
-		// return;
-		// }
-		finish();
-		super.onBackPressed();
+		quizControl(level);
+		startQuizGame();
 	}
 
 	/*
 	 * Initial view
 	 * 
-	 * @author 8B Pham Hung Cuong
+	 * @author 8A Tran Trong Viet
 	 */
 	private void initView() {
-		map = (TableLayout) findViewById(R.id.Map);
-		// recordSaver = new Record();
 
 		font = Typeface.createFromAsset(getBaseContext().getAssets(),
 				"fonts/FRANCHISE-BOLD.TTF");
@@ -183,82 +146,32 @@ public class Quiz extends Game {
 		levelText.setText("" + level);
 		scoreText.setText("" + totalScore);
 		livesText.setText("" + lives);
-	}
 
-	/*
-	 * This method control the level ingame
-	 * 
-	 * @author 8C Pham Duy Hung
-	 * 
-	 * @param level the current level
-	 */
-	private void gameController(int _level, int _score, int _lives) {
-
-		// Default setting
-		isGameOver = false;
-		isTrapHere = false;
-		isGameStart = false;
-		isMapGen = false;
+		mImgViewResult = (ImageView) findViewById(R.id.img_result);
 
 		numberOfRows = 16;
 		numberOfColumns = 30;
 
-		// Tracking time
 		clock = new Handler();
+	}
 
+	private void quizControl(int _level) {
 		switch (_level) {
-		case 1:
-			setUpGame(maxTime, minTraps, _score, _lives);
-			break;
-		case 2:
-			setUpGame(maxTime, minTraps, _score, _lives);
-			break;
-		case 3:
-			setUpGame(maxTime, minTraps, _score, _lives);
-			break;
-		case 4:
-			setUpGame(maxTime, minTraps, _score, _lives);
-			break;
 		case 5:
-			setUpGame(maxTime, minTraps, _score, _lives);
-			break;
-		case 6:
-			setUpGame(maxTime, minTraps, _score, _lives);
-			break;
-		case 7:
-			setUpGame(maxTime, minTraps, _score, _lives);
-			break;
-		case 8:
-			setUpGame(maxTime, minTraps, _score, _lives);
-			break;
-		case 9:
-			setUpGame(maxTime, minTraps, _score, _lives);
+			setUpQuiz(300, 60);
 			break;
 		case 10:
-			setUpGame(maxTime, minTraps, _score, _lives);
-			break;
-		case 11:
-			setUpGame(maxTime, minTraps, _score, _lives);
-			break;
-		case 12:
-			setUpGame(maxTime, minTraps, _score, _lives);
-			break;
-		case 13:
-			setUpGame(maxTime, minTraps, _score, _lives);
-			break;
-		case 14:
-			setUpGame(maxTime, minTraps, _score, _lives);
-			break;
-		case 15:
-			setUpGame(maxTime, minTraps, _score, _lives);
+			setUpQuiz(300, 90);
 			break;
 		default:
 			break;
+
 		}
+
 	}
 
 	/*
-	 * Set up the game properties
+	 * Set up the Quiz properties
 	 * 
 	 * @author 8A Tran Trong Viet
 	 * 
@@ -270,38 +183,34 @@ public class Quiz extends Game {
 	 * 
 	 * @_lives the current lives
 	 */
-	private void setUpGame(int playTime, int numberOfTraps, int score,
-			int _lives) {
+	private void setUpQuiz(int playTime, int numberOfTraps) {
 		totalTraps = numberOfTraps;
 		timer = playTime;
-		trapsRemain = numberOfTraps;
-		totalScore = score;
-		lives = _lives;
 	}
 
 	/*
-	 * Start the game
+	 * Start the Quiz
 	 * 
-	 * @author 8C Pham Duy Hung
+	 * @author 8A Tran Trong Viet
 	 */
-	private void startNewGame() {
-		// TODO: generate the initial information
+	private void startQuizGame() {
 
 		createMap();
 		showMap();
 
-		isGameOver = false;
-		isTrapHere = false;
-		isGameStart = false;
+		isQuizOver = false;
+		isQuizStart = false;
 		timeText.setText("" + timer);
+
+		genMap();
 	}
 
 	/*
 	 * Create new map
 	 * 
-	 * @author 8C Pham Duy Hung
+	 * @author 8A Tran Trong Viet
 	 */
-	private void createMap() {
+	protected void createMap() {
 
 		// We make more 2 row and column, the 0 row/column and the last one are
 		// not showed
@@ -323,19 +232,6 @@ public class Quiz extends Game {
 						onClickOnCellHandle(currentRow, currentColumn);
 					}
 				});
-
-				// add Long Click listener
-				// this is treated as right mouse click listener
-				cells[row][column]
-						.setOnLongClickListener(new OnLongClickListener() {
-							public boolean onLongClick(View view) {
-								// simulate a left-right (middle) click
-								// if it is a long click on an opened trap then
-								// open all surrounding blocks
-								return onLongClickOnCellHandle(currentRow,
-										currentColumn);
-							}
-						});
 			}
 		}
 	}
@@ -343,7 +239,7 @@ public class Quiz extends Game {
 	/*
 	 * This method handles the on click event
 	 * 
-	 * @author 8C Pham Duy Hung
+	 * @author 8A Tran Trong Viet
 	 * 
 	 * @param currentRow the position of the clicked cell
 	 * 
@@ -351,27 +247,19 @@ public class Quiz extends Game {
 	 */
 	private void onClickOnCellHandle(int currentRow, int currentColumn) {
 
-		if (!isGameStart) {
+		if (!isQuizStart) {
 			startTimer();
-			isGameStart = true;
+			isQuizStart = true;
 		}
 
-		if (!isMapGen) {
-			genMap(currentRow, currentColumn);
-			isMapGen = true;
-		}
-
-		if (!cells[currentRow][currentColumn].isFlagged()) {
+		if (cells[currentRow][currentColumn].isCovered()) {
 			rippleUncover(currentRow, currentColumn);
 
 			if (cells[currentRow][currentColumn].hasTrap()) {
-				lives--;
-				livesText.setText("" + lives);
 				cells[currentRow][currentColumn].OpenCell();
-				cells[currentRow][currentColumn].setFlag(true);
-				if (lives == 0) {
-					finishGame(currentRow, currentColumn);
-				}
+				finishGame(currentRow, currentColumn);
+			} else {
+				step++;
 			}
 
 			if (checkGameWin(cells[currentRow][currentColumn])) {
@@ -381,117 +269,350 @@ public class Quiz extends Game {
 	}
 
 	/*
-	 * This method handles the on long click event
+	 * Check the game wins or not (should do this for changing rules)
 	 * 
-	 * @author 8C Pham Duy Hung
+	 * @author 8A Tran Trong Viet
 	 * 
-	 * @param currentRow the position of the clicked cell
-	 * 
-	 * @param currentCol the position of the clicked cell
+	 * @param cell the cell which is clicked
 	 */
-	private boolean onLongClickOnCellHandle(int currentRow, int currentColumn) {
-
-		if (!cells[currentRow][currentColumn].isCovered()
-				&& (cells[currentRow][currentColumn]
-						.getNumberOfTrapsInSurrounding() > 0) && !isGameOver) {
-			int nearbyFlaggedBlocks = 0;
-			for (int previousRow = -1; previousRow < 2; previousRow++) {
-				for (int previousColumn = -1; previousColumn < 2; previousColumn++) {
-					if (cells[currentRow + previousRow][currentColumn
-							+ previousColumn].isFlagged()) {
-						nearbyFlaggedBlocks++;
-					}
-				}
-			}
-
-			// if flagged block count is equal to nearby trap count then open
-			// nearby blocks
-			if (nearbyFlaggedBlocks == cells[currentRow][currentColumn]
-					.getNumberOfTrapsInSurrounding()) {
-				for (int previousRow = -1; previousRow < 2; previousRow++) {
-					for (int previousColumn = -1; previousColumn < 2; previousColumn++) {
-						// don't open flagged blocks
-						if (!cells[currentRow + previousRow][currentColumn
-								+ previousColumn].isFlagged()) {
-							// open blocks till we get
-							// numbered block
-							rippleUncover(currentRow + previousRow,
-									currentColumn + previousColumn);
-
-							// did we clicked a trap
-							if (cells[currentRow + previousRow][currentColumn
-									+ previousColumn].hasTrap()) {
-								finishGame(currentRow + previousRow,
-										currentColumn + previousColumn);
-							}
-						}
-					}
-				}
-			}
-			return true;
-		}
-
-		// if clicked cells is enabled, clickable or flagged
-
-		flagAndDoubtHandle(currentRow, currentColumn);
-		return true;
+	private boolean checkGameWin(Cell cell) {
+		return step == 10;
 	}
 
 	/*
-	 * This method handles the flag and doubt situations
+	 * finish the game
 	 * 
-	 * @author 8C Pham Duy Hung
-	 * 
-	 * @param currentRow the position of the clicked cell
-	 * 
-	 * @param currentCol the position of the clicked cell
+	 * @author 8A Tran Trong Viet
 	 */
-	private void flagAndDoubtHandle(int currentRow, int currentColumn) {
-		// we got 3 situations
-		// 1. empty blocks to flagged
-		// 2. flagged to question mark
-		// 3. question mark to blank
+	private void finishGame(int currentRow, int currentColumn) {
+		stopTimer(); // stop timer
+		isQuizStart = false;
 
-		if (cells[currentRow][currentColumn].isClickable()
-				&& (cells[currentRow][currentColumn].isEnabled() || cells[currentRow][currentColumn]
-						.isFlagged())) {
-			mp.start();
-			// case 1. set blank block to flagged
-			if (!cells[currentRow][currentColumn].isFlagged()
-					&& !cells[currentRow][currentColumn].isDoubted()) {
-				cells[currentRow][currentColumn].setFlagIcon(true);
-				cells[currentRow][currentColumn].setFlag(true);
-				trapsRemain--; // reduce trap count
+		// show all traps
+		// disable all traps
+		for (int row = 1; row < numberOfRows + 1; row++) {
+			for (int column = 1; column < numberOfColumns + 1; column++) {
+				// disable block
+				// cells[row][column].setCellAsDisabled(false);
+				cells[row][column].disableCell();
 			}
-			// case 2. set flagged to question mark
-			else if (!cells[currentRow][currentColumn].isDoubted()) {
-				cells[currentRow][currentColumn].setDoubt(true);
-				cells[currentRow][currentColumn].setFlagIcon(false);
-				cells[currentRow][currentColumn].setDoubtIcon(true);
-				cells[currentRow][currentColumn].setFlag(false);
-				trapsRemain++; // increase trap count
-			}
-			// case 3. change to blank square
-			else {
-				cells[currentRow][currentColumn].clearAllIcons();
-				cells[currentRow][currentColumn].setDoubt(false);
-				// if it is flagged then increment trap count
-				if (cells[currentRow][currentColumn].isFlagged()) {
-					trapsRemain++; // increase trap count
-				}
-				// remove flagged status
-				cells[currentRow][currentColumn].setFlag(false);
-			}
-
 		}
+
+		// trigger trap
+		cells[currentRow][currentColumn].triggerTrap();
+
+		Handler handler = new Handler();
+		handler.postDelayed(new Runnable() {
+
+			@Override
+			public void run() {
+				mImgViewResult.setBackgroundResource(R.drawable.trapped);
+				mImgViewResult.setVisibility(View.VISIBLE);
+				mImgViewResult.bringToFront();
+				mImgViewResult.postDelayed(new Runnable() {
+
+					@Override
+					public void run() {
+						mImgViewResult.setVisibility(View.GONE);
+
+						if (!isQuizOver) {
+							isQuizOver = true; // mark game as over
+							final Dialog popup = new Dialog(Quiz.this);
+							popup.requestWindowFeature(Window.FEATURE_NO_TITLE);
+							popup.getWindow()
+									.setBackgroundDrawable(
+											new ColorDrawable(
+													android.graphics.Color.TRANSPARENT));
+							popup.setContentView(R.layout.win_popup);
+
+							popup.setCancelable(false);
+
+							finalScoreText = (TextView) popup
+									.findViewById(R.id.finalScore);
+							finalScoreText.setTypeface(font);
+							finalScoreText.setText("" + totalScore);
+							finalTimeText = (TextView) popup
+									.findViewById(R.id.finalTime);
+							finalTimeText.setTypeface(font);
+							finalTimeText.setText("" + timer);
+
+							popup.show();
+
+							Button saveRecordBtn = (Button) popup
+									.findViewById(R.id.save_record);
+							saveRecordBtn
+									.setOnClickListener(new OnClickListener() {
+
+										@Override
+										public void onClick(View v) {
+											// TODO Auto-generated method stub
+											AlertDialog.Builder alert = new AlertDialog.Builder(
+													Quiz.this);
+
+											alert.setTitle("Enter your name");
+
+											// Set an EditText view to get user
+											// input
+											final EditText input = new EditText(
+													Quiz.this);
+											alert.setView(input);
+
+											alert.setPositiveButton(
+													"Ok",
+													new DialogInterface.OnClickListener() {
+														public void onClick(
+																DialogInterface dialog,
+																int whichButton) {
+															String value = input
+																	.getText()
+																	.toString();
+															// Do something with
+															// value!
+															setHighScore(value,
+																	totalScore,
+																	level);
+															popup.dismiss();
+														}
+													});
+
+											alert.setNegativeButton(
+													"Cancel",
+													new DialogInterface.OnClickListener() {
+														public void onClick(
+																DialogInterface dialog,
+																int whichButton) {
+															// Canceled.
+														}
+													});
+
+											alert.show();
+										}
+									});
+
+							Button quitToMenuBtn = (Button) popup
+									.findViewById(R.id.quit_to_menu);
+							quitToMenuBtn
+									.setOnClickListener(new OnClickListener() {
+
+										@Override
+										public void onClick(View v) {
+											Intent backToMenu = new Intent(
+													Quiz.this, MainMenu.class);
+											startActivity(backToMenu);
+										}
+									});
+
+							Button nextLevelBtn = (Button) popup
+									.findViewById(R.id.next_level);
+							nextLevelBtn
+									.setOnClickListener(new OnClickListener() {
+
+										@Override
+										public void onClick(View v) {
+											// TODO Auto-generated method stub
+											level++;
+
+											Intent nextLevel = new Intent(
+													Quiz.this, Game.class);
+											nextLevel.putExtra("Level", ""
+													+ level);
+											nextLevel.putExtra("Total Score",
+													"" + totalScore);
+											nextLevel.putExtra("Lives", ""
+													+ lives);
+											startActivity(nextLevel);
+											finish();
+										}
+									});
+
+							Button postToFbBtn = (Button) popup
+									.findViewById(R.id.post_to_fb);
+							postToFbBtn
+									.setOnClickListener(new OnClickListener() {
+
+										@Override
+										public void onClick(View v) {
+										}
+									});
+						}
+					}
+				}, 2000);
+			}
+		}, 500);
+	}
+
+	/*
+	 * Win the game
+	 * 
+	 * @author 8A Tran Trong Viet
+	 */
+	private void winGame() {
+		// reset all stuffs
+		stopTimer();
+		isQuizStart = false;
+		totalScore += 500;
+
+		// disable all buttons
+		// set flagged all un-flagged blocks
+		for (int row = 1; row < numberOfRows + 1; row++) {
+			for (int column = 1; column < numberOfColumns + 1; column++) {
+				cells[row][column].setClickable(false);
+				if (cells[row][column].hasTrap()) {
+					cells[row][column].setTrapIcon(true);
+				}
+			}
+		}
+
+		Handler handler = new Handler();
+		handler.postDelayed(new Runnable() {
+
+			@Override
+			public void run() {
+				mImgViewResult.setBackgroundResource(R.drawable.congrat);
+				mImgViewResult.setVisibility(View.VISIBLE);
+				mImgViewResult.bringToFront();
+				mImgViewResult.postDelayed(new Runnable() {
+
+					@Override
+					public void run() {
+						mImgViewResult.setVisibility(View.GONE);
+
+						if (!isQuizOver) {
+							isQuizOver = true; // mark game as over
+							final Dialog popup = new Dialog(Quiz.this);
+							popup.requestWindowFeature(Window.FEATURE_NO_TITLE);
+							popup.getWindow()
+									.setBackgroundDrawable(
+											new ColorDrawable(
+													android.graphics.Color.TRANSPARENT));
+							popup.setContentView(R.layout.win_popup);
+
+							popup.setCancelable(false);
+
+							finalScoreText = (TextView) popup
+									.findViewById(R.id.finalScore);
+							finalScoreText.setTypeface(font);
+							finalScoreText.setText("" + totalScore);
+							finalTimeText = (TextView) popup
+									.findViewById(R.id.finalTime);
+							finalTimeText.setTypeface(font);
+							finalTimeText.setText("" + timer);
+
+							popup.show();
+
+							Button saveRecordBtn = (Button) popup
+									.findViewById(R.id.save_record);
+							saveRecordBtn
+									.setOnClickListener(new OnClickListener() {
+
+										@Override
+										public void onClick(View v) {
+											// TODO Auto-generated method stub
+											AlertDialog.Builder alert = new AlertDialog.Builder(
+													Quiz.this);
+
+											alert.setTitle("Enter your name");
+
+											// Set an EditText view to get user
+											// input
+											final EditText input = new EditText(
+													Quiz.this);
+											alert.setView(input);
+
+											alert.setPositiveButton(
+													"Ok",
+													new DialogInterface.OnClickListener() {
+														public void onClick(
+																DialogInterface dialog,
+																int whichButton) {
+															String value = input
+																	.getText()
+																	.toString();
+															// Do something with
+															// value!
+															setHighScore(value,
+																	totalScore,
+																	level);
+															popup.dismiss();
+														}
+													});
+
+											alert.setNegativeButton(
+													"Cancel",
+													new DialogInterface.OnClickListener() {
+														public void onClick(
+																DialogInterface dialog,
+																int whichButton) {
+															// Canceled.
+														}
+													});
+
+											alert.show();
+										}
+									});
+
+							Button quitToMenuBtn = (Button) popup
+									.findViewById(R.id.quit_to_menu);
+							quitToMenuBtn
+									.setOnClickListener(new OnClickListener() {
+
+										@Override
+										public void onClick(View v) {
+											Intent backToMenu = new Intent(
+													Quiz.this, MainMenu.class);
+											startActivity(backToMenu);
+										}
+									});
+
+							Button nextLevelBtn = (Button) popup
+									.findViewById(R.id.next_level);
+							nextLevelBtn
+									.setOnClickListener(new OnClickListener() {
+
+										@Override
+										public void onClick(View v) {
+											// TODO Auto-generated method stub
+											level++;
+											totalScore += 1000;
+											lives += 2;
+
+											Intent nextLevel = new Intent(
+													Quiz.this, Game.class);
+											nextLevel.putExtra("Level", ""
+													+ level);
+											nextLevel.putExtra("Total Score",
+													"" + totalScore);
+											nextLevel.putExtra("Lives", ""
+													+ lives);
+											startActivity(nextLevel);
+											finish();
+										}
+									});
+
+							Button postToFbBtn = (Button) popup
+									.findViewById(R.id.post_to_fb);
+							postToFbBtn
+									.setOnClickListener(new OnClickListener() {
+
+										@Override
+										public void onClick(View v) {
+
+										}
+									});
+						}
+					}
+				}, 2000);
+			}
+		}, 500);
+
 	}
 
 	/*
 	 * Show map procedure
 	 * 
-	 * @author 8C Pham Duy Hung
+	 * @author 8A Tran Trong Viet
 	 */
-	private void showMap() {
+	protected void showMap() {
 		// remember we will not show 0th and last Row and Columns
 		// they are used for calculation purposes only
 		for (int row = 1; row < numberOfRows + 1; row++) {
@@ -522,100 +643,48 @@ public class Quiz extends Game {
 	 * 
 	 * @param columnClicked the position of clicked cell
 	 */
-	private void genMap(int rowClicked, int columnClicked) {
-
-		genTreasure(rowClicked, columnClicked);
-		genTraps(rowClicked, columnClicked);
+	private void genMap() {
+		genTraps();
 		setTheNumberOfSurroundingTrap();
-	}
 
-	/*
-	 * Generate the treasure position in map
-	 * 
-	 * @author 8C Pham Duy Hung
-	 * 
-	 * @param rowClicked the position of the first-clicked-cell
-	 * 
-	 * @param columnClicked the position of the first-clicked-cell
-	 */
-	private void genTreasure(int rowClicked, int columnClicked) {
-		Random rand = new Random();
-		int treasureRow = 0, treasureCol = 0;
-
-		// Set the treasure position
-		treasureRow = rand.nextInt(numberOfRows - 1) + 2;
-		if (treasureRow >= numberOfRows) {
-			treasureRow = numberOfRows - 2;
-		}
-
-		treasureCol = rand.nextInt(numberOfColumns - 1) + 2;
-		if (treasureCol >= numberOfColumns) {
-			treasureCol = numberOfColumns - 2;
-		}
-
-		Log.e("8A >>>>", "Treasure: " + treasureRow + " " + treasureCol);
-		// Make sure the treasure is not near the clicked cell
-		if (!isTreasureNear(treasureRow, treasureCol, rowClicked, columnClicked)) {
-			if (treasureRow < numberOfRows / 2) {
-				treasureRow = (numberOfRows - treasureRow) / 2;
-				treasureCol = (numberOfColumns - treasureCol) / 2;
-			} else {
-				treasureRow = (treasureRow) / 2;
-				treasureCol = (treasureCol) / 2;
-			}
-		}
-
-		for (int previousRow = -1; previousRow < 2; previousRow++) {
-			for (int previousColumn = -1; previousColumn < 2; previousColumn++) {
-				if ((previousRow != 0) || (previousColumn != 0)) {
-					cells[treasureRow + previousRow][treasureCol
-							+ previousColumn].setTrap();
-				} else {
-					cells[treasureRow + previousRow][treasureCol
-							+ previousColumn].setTreasure();
+		for (int row = 0; row < numberOfRows + 2; row++) {
+			for (int column = 0; column < numberOfColumns + 2; column++) {
+				if (cells[row][column].getNumberOfTrapsInSurrounding() == 0) {
+					rippleUncover(row, column);
+					return;
 				}
+
 			}
 		}
+
 	}
 
 	/*
 	 * Generate the traps position in map
 	 * 
-	 * @author 8C Pham Duy Hung
+	 * @author 8A Tran Trong Viet
 	 * 
 	 * @param rowClicked the position of the first-clicked-cell
 	 * 
 	 * @param columnClicked the position of the first-clicked-cell
 	 */
-	private void genTraps(int rowClicked, int columnClicked) {
+	private void genTraps() {
+
 		Random rand = new Random();
 		int trapRow, trapColumn;
-		// set traps excluding the location where user clicked
-		for (int row = 0; row < totalTraps - 8; row++) {
-			trapRow = rand.nextInt(numberOfColumns);
-			trapColumn = rand.nextInt(numberOfRows);
 
-			// set the 8 surrounded cells of the clicked cell have no trap
-			if (isNearTheClickedCell(trapRow, trapColumn, rowClicked,
-					columnClicked)) {
-				if (cells[trapColumn + 1][trapRow + 1].hasTrap()
-						|| cells[trapColumn + 1][trapRow + 1].hasTreasure()) {
-					row--; // trap is already there, don't repeat for same block
-				}
-				// plant trap at this location
-				cells[trapColumn + 1][trapRow + 1].setTrap();
-			}
-			// exclude the user clicked location
-			else {
-				row--;
-			}
+		// set traps excluding the location where user clicked
+		for (int row = 0; row < totalTraps; row++) {
+			trapColumn = rand.nextInt(numberOfColumns);
+			trapRow = rand.nextInt(numberOfRows);
+			cells[trapRow + 1][trapColumn + 1].setTrap();
 		}
 	}
 
 	/*
 	 * Set the number of surrounding trap
 	 * 
-	 * @author 8C Pham Duy Hung
+	 * @author 8A Tran Trong Viet
 	 */
 	private void setTheNumberOfSurroundingTrap() {
 
@@ -652,84 +721,16 @@ public class Quiz extends Game {
 	}
 
 	/*
-	 * Check if this cell is near the clicked cell
-	 * 
-	 * @author 8C Pham Duy Hung
-	 * 
-	 * @param rowCheck the row which want to check
-	 * 
-	 * @param columnCheck the column which want to check
-	 * 
-	 * @param rowClicked the row of the clicked cell
-	 * 
-	 * @param columnClick the column of the clicked cell
-	 */
-	private boolean isNearTheClickedCell(int rowCheck, int columnCheck,
-			int rowClicked, int columnClicked) {
-		if (((rowCheck != columnClicked) || (columnCheck != rowClicked))
-				&& ((rowCheck != columnClicked) || (columnCheck + 1 != rowClicked))
-				&& ((rowCheck != columnClicked) || (columnCheck + 2 != rowClicked))
-				&& ((rowCheck + 1 != columnClicked) || (columnCheck != rowClicked))
-				&& ((rowCheck + 1 != columnClicked) || (columnCheck + 1 != rowClicked))
-				&& ((rowCheck + 1 != columnClicked) || (columnCheck + 2 != rowClicked))
-				&& ((rowCheck + 2 != columnClicked) || (columnCheck != rowClicked))
-				&& ((rowCheck + 2 != columnClicked) || (columnCheck + 1 != rowClicked))
-				&& ((rowCheck + 2 != columnClicked) || (columnCheck + 2 != rowClicked))) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	/*
-	 * Check if the treasure is near the clicked cell
-	 * 
-	 * @author 8A Tran Trong Viet
-	 * 
-	 * @param rowCheck the row which want to check
-	 * 
-	 * @param columnCheck the column which want to check
-	 * 
-	 * @param rowClicked the row of the clicked cell
-	 * 
-	 * @param columnClick the column of the clicked cell
-	 */
-	private boolean isTreasureNear(int rowCheck, int columnCheck,
-			int rowClicked, int columnClicked) {
-		if (((rowCheck != columnClicked) || (columnCheck - 1 != rowClicked))
-				&& ((rowCheck != columnClicked) || (columnCheck != rowClicked))
-				&& ((rowCheck != columnClicked) || (columnCheck + 1 != rowClicked))
-				&& ((rowCheck != columnClicked) || (columnCheck + 2 != rowClicked))
-				&& ((rowCheck != columnClicked) || (columnCheck + 3 != rowClicked))
-				&& ((rowCheck + 1 != columnClicked) || (columnCheck - 1 != rowClicked))
-				&& ((rowCheck + 1 != columnClicked) || (columnCheck != rowClicked))
-				&& ((rowCheck + 1 != columnClicked) || (columnCheck + 1 != rowClicked))
-				&& ((rowCheck + 1 != columnClicked) || (columnCheck + 2 != rowClicked))
-				&& ((rowCheck + 1 != columnClicked) || (columnCheck + 3 != rowClicked))
-				&& ((rowCheck + 2 != columnClicked) || (columnCheck - 1 != rowClicked))
-				&& ((rowCheck + 2 != columnClicked) || (columnCheck != rowClicked))
-				&& ((rowCheck + 2 != columnClicked) || (columnCheck + 1 != rowClicked))
-				&& ((rowCheck + 2 != columnClicked) || (columnCheck + 2 != rowClicked))
-				&& ((rowCheck + 2 != columnClicked) || (columnCheck + 3 != rowClicked))) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	/*
 	 * Open the cells which surrounded the no-trap-surrounded cell continuously
 	 * 
-	 * @author 8-B Pham Hung Cuong
+	 * @author 8A Tran Trong Viet
 	 * 
 	 * @param rowClicked the row of the clicked position
 	 * 
 	 * @param columnClicked the column of the clicked position
 	 */
 	private void rippleUncover(int rowClicked, int columnClicked) {
-		if (cells[rowClicked][columnClicked].hasTrap()
-				|| cells[rowClicked][columnClicked].isFlagged()
-				|| cells[rowClicked][columnClicked].isDoubted()) {
+		if (cells[rowClicked][columnClicked].hasTrap()) {
 			return;
 		}
 
@@ -760,202 +761,19 @@ public class Quiz extends Game {
 	}
 
 	/*
-	 * Check the game wins or not (should do this for changing rules)
-	 * 
-	 * @author 8C Pham Duy Hung
-	 * 
-	 * @param cell the cell which is clicked
-	 */
-	private boolean checkGameWin(Cell cell) {
-		return cell.hasTreasure();
-	}
-
-	private void winGame() {
-		// reset all stuffs
-		stopTimer();
-		isGameStart = false;
-		isGameOver = true;
-		trapsRemain = 0;
-
-		// updateMineCountDisplay(); // update mine count
-
-		// disable all buttons
-		// set flagged all un-flagged blocks
-		for (int row = 1; row < numberOfRows + 1; row++) {
-			for (int column = 1; column < numberOfColumns + 1; column++) {
-				cells[row][column].setClickable(false);
-				if (cells[row][column].hasTrap()) {
-					cells[row][column].setFlagIcon(true);
-				}
-			}
-		}
-
-		Toast.makeText(this, "You are win!!", Toast.LENGTH_SHORT).show();
-		level++;
-		totalScore += 1000;
-
-		Intent nextLevel = new Intent(Quiz.this, Game.class);
-		nextLevel.putExtra("Level", "" + level);
-		nextLevel.putExtra("Total Score", "" + totalScore);
-		startActivity(nextLevel);
-		finish();
-	}
-
-	/*
-	 * Finish the game
-	 * 
-	 * @author 8B Pham Hung Cuong
-	 */
-	private void finishGame(int currentRow, int currentColumn) {
-		isGameOver = true; // mark game as over
-		stopTimer(); // stop timer
-		isGameStart = false;
-
-		// show all traps
-		// disable all traps
-		for (int row = 1; row < numberOfRows + 1; row++) {
-			for (int column = 1; column < numberOfColumns + 1; column++) {
-				// disable block
-				// cells[row][column].setCellAsDisabled(false);
-				cells[row][column].disableCell();
-
-				// block has trap and is not flagged
-				if (cells[row][column].hasTrap()
-						&& !cells[row][column].isFlagged()) {
-					// set trap icon
-					cells[row][column].setTrapIcon(false);
-				}
-
-				// block is flagged and doesn't not have trap
-				if (!cells[row][column].hasTrap()
-						&& cells[row][column].isFlagged()) {
-					// set flag icon
-					cells[row][column].setFlagIcon(false);
-				}
-
-				// block is flagged
-				if (cells[row][column].isFlagged()) {
-					// disable the block
-					cells[row][column].setClickable(false);
-				}
-
-				// set treasure icon
-				if (cells[row][column].hasTreasure()) {
-					// set trap icon
-					cells[row][column].setTreasureIcon(false);
-				}
-			}
-		}
-
-		// trigger trap
-		cells[currentRow][currentColumn].triggerTrap();
-
-		// clock.postDelayed(updateTimeElasped, 200);
-		Dialog respop = new Dialog(Quiz.this);
-		respop.setContentView(R.layout.result_popup);
-		respop.setCancelable(false);
-		respop.show();
-		resultDisplay = (ImageView) respop.findViewById(R.id.result_display);
-		resultDisplay.setBackgroundResource(R.drawable.trapped);
-		// clock.postDelayed(updateTimeElasped, 1000);
-		// respop.dismiss();
-		// clock.postDelayed(updateTimeElasped, 100);
-
-		if (isGameOver) {
-			isGameOver = true; // mark game as over
-			isPopupShow = true;
-			Dialog popup = new Dialog(Quiz.this);
-			popup.setContentView(R.layout.finish_popup);
-			// Set dialog title
-			// TODO time up
-
-			// popup.setTitle("Say something");
-			popup.setCancelable(false);
-
-			popup.show();
-
-			// Button nextLevelBtn = (Button)
-			// popup.findViewById(R.id.next_level);
-			// nextLevelBtn.setOnClickListener(new OnClickListener() {
-			//
-			// @Override
-			// public void onClick(View v) {
-			// isPopupShow = false;
-			// }
-			// });
-
-			Button quitToMenuBtn = (Button) popup
-					.findViewById(R.id.quit_to_menu);
-			quitToMenuBtn.setOnClickListener(new OnClickListener() {
-
-				@Override
-				public void onClick(View v) {
-					isPopupShow = false;
-					// TODO Auto-generated method stub
-					AlertDialog.Builder alert = new AlertDialog.Builder(
-							Quiz.this);
-
-					alert.setTitle("Title");
-					alert.setMessage("Message");
-
-					// Set an EditText view to get user input
-					final EditText input = new EditText(Quiz.this);
-					alert.setView(input);
-
-					alert.setPositiveButton("Ok",
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int whichButton) {
-									String value = input.getText().toString();
-									// Do something with value!
-									Toast.makeText(Quiz.this,
-											"Your name is" + value,
-											Toast.LENGTH_SHORT).show();
-
-									setHighScore(value, 3000, level);
-									Intent backToMainMenu = new Intent(
-											Quiz.this, MainMenu.class);
-									startActivity(backToMainMenu);
-								}
-							});
-
-					alert.setNegativeButton("Cancel",
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int whichButton) {
-									// Canceled.
-								}
-							});
-
-					alert.show();
-				}
-			});
-
-			Button postToFbBtn = (Button) popup.findViewById(R.id.post_to_fb);
-			postToFbBtn.setOnClickListener(new OnClickListener() {
-
-				@Override
-				public void onClick(View v) {
-					isPopupShow = false;
-				}
-			});
-		}
-	}
-
-	/*
 	 * Set high score
 	 * 
 	 * @author 8A Tran Trong Viet
 	 * 
-	 * @param sc: savedInstanceState: the state of previous game
+	 * @param sc: savedInstanceState: the state of previous Quiz
 	 */
 	public void setHighScore(String playerName, int score, int level) {
 		try {
 			if (score > 0) {
 
-				SharedPreferences.Editor scoreEdit = gamePrefs.edit();
+				SharedPreferences.Editor scoreEdit = QuizPrefs.edit();
 				// get existing scores
-				String scores = gamePrefs.getString("highScores", "");
+				String scores = QuizPrefs.getString("highScores", "");
 
 				// check for scores
 				if (scores.length() > 0) {
@@ -1007,7 +825,7 @@ public class Quiz extends Game {
 	/*
 	 * Start time time
 	 * 
-	 * @author: 8B Pham Hung Cuong
+	 * @author 8A Tran Trong Viet
 	 */
 	public void startTimer() {
 		clock.removeCallbacks(updateTimeElasped);
@@ -1017,7 +835,7 @@ public class Quiz extends Game {
 	/*
 	 * Stop the time
 	 * 
-	 * @author 8B Pham Hung Cuong
+	 * @author 8A Tran Trong Viet
 	 */
 
 	public void stopTimer() {
@@ -1028,7 +846,7 @@ public class Quiz extends Game {
 	/*
 	 * This properties must be set up for handling the clock
 	 * 
-	 * @author 8B Pham Hung Cuong
+	 * @author 8A Tran Trong Viet
 	 */
 	private Runnable updateTimeElasped = new Runnable() {
 
@@ -1038,7 +856,7 @@ public class Quiz extends Game {
 			long currentMilliseconds = System.currentTimeMillis();
 			--timer;
 
-			if (!isGameOver) {
+			if (!isQuizOver) {
 				timeText.setText("" + timer);
 			}
 
@@ -1053,5 +871,4 @@ public class Quiz extends Game {
 			}
 		}
 	};
-
 }

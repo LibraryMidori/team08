@@ -7,12 +7,7 @@ package com.example.treasurehunt;
  * 
  */
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import android.app.Activity;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
@@ -21,7 +16,6 @@ import android.widget.TextView;
 public class Record extends Activity {
 
 	public final String GAME_PREFS = "ArithmeticFile";
-	private SharedPreferences gamePrefs;
 
 	/*
 	 * Show high score

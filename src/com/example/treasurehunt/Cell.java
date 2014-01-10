@@ -8,6 +8,11 @@ import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.widget.Button;
 
+/*
+ * The instance of this class is the cell in game
+ * @author group 8
+ */
+
 public class Cell extends Button {
 	/*
 	 * Properties
