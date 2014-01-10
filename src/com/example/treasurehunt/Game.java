@@ -893,7 +893,7 @@ public class Game extends Activity {
 									String value = input.getText().toString();
 
 									setHighScore(value, totalScore, level);
-									popup.dismiss();
+
 								}
 							});
 
@@ -1091,7 +1091,7 @@ public class Game extends Activity {
 															setHighScore(value,
 																	totalScore,
 																	level);
-															popup.dismiss();
+
 														}
 													});
 
