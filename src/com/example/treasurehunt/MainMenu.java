@@ -3,6 +3,7 @@ package com.example.treasurehunt;
 import java.io.IOException;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
@@ -86,7 +87,7 @@ public class MainMenu extends Activity implements OnClickListener {
 				btn.setBackgroundResource(R.drawable.mute);
 				mp.pause();
 			}
-			
+
 			SharedPreferences gameSavePrefs = getSharedPreferences(
 					Game.GAME_PREFS, 0);
 
@@ -141,7 +142,21 @@ public class MainMenu extends Activity implements OnClickListener {
 			Intent openRecord = new Intent(MainMenu.this, Record.class);
 			startActivity(openRecord);
 			break;
+		case R.id.instructionBtn:
+			Intent instruction = new Intent(MainMenu.this, Instruction.class);
+			startActivity(instruction);
+			break;
 		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see android.app.Activity#onBackPressed()
+	 */
+	@Override
+	public void onBackPressed() {
+		System.exit(0);
 	}
 
 }

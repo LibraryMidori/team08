@@ -1120,6 +1120,7 @@ public class Game extends Activity {
 											Intent backToMenu = new Intent(
 													Game.this, MainMenu.class);
 											startActivity(backToMenu);
+											finish();
 										}
 									});
 
