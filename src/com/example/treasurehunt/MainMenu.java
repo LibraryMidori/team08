@@ -2,8 +2,8 @@ package com.example.treasurehunt;
 
 import java.io.IOException;
 
+import GameView.TraditionalGameView;
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
@@ -15,26 +15,14 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.Toast;
 
-/*
- * This is a main menu of this game
- * @author group 8
- */
 public class MainMenu extends Activity implements OnClickListener {
 
-	/*
-	 * Properties
-	 */
 	private MediaPlayer mp;
 	private Button btn;
 	private int level = 1, score = 0, lives = 3;
 
 	public final String GAME_PREFS = "ArithmeticFile";
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see android.app.Activity#onCreate(android.os.Bundle)
-	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -47,11 +35,6 @@ public class MainMenu extends Activity implements OnClickListener {
 		mp.start();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see android.app.Activity#onCreateOptionsMenu(android.view.Menu)
-	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -59,11 +42,6 @@ public class MainMenu extends Activity implements OnClickListener {
 		return true;
 	}
 
-	/*
-	 * This code handle the activity
-	 * 
-	 * @author 8C Pham Duy Hung
-	 */
 	@Override
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
@@ -75,7 +53,7 @@ public class MainMenu extends Activity implements OnClickListener {
 				mp.pause();
 			}
 
-			Intent openNewGame = new Intent(MainMenu.this, Game.class);
+			Intent openNewGame = new Intent(MainMenu.this, TraditionalGameView.class);
 			openNewGame.putExtra("Level", "1");
 			openNewGame.putExtra("Total Score", "0");
 			openNewGame.putExtra("Lives", "3");
@@ -89,7 +67,7 @@ public class MainMenu extends Activity implements OnClickListener {
 			}
 
 			SharedPreferences gameSavePrefs = getSharedPreferences(
-					Game.GAME_PREFS, 0);
+					TraditionalGameView.GAME_PREFS, 0);
 
 			String savedGame1 = gameSavePrefs.getString("saveGame", "");
 
@@ -104,7 +82,7 @@ public class MainMenu extends Activity implements OnClickListener {
 				gameSavePrefs.edit().putString("saveGame", "").commit();
 
 				// load saved state to game play
-				Intent openContinueGame = new Intent(MainMenu.this, Game.class);
+				Intent openContinueGame = new Intent(MainMenu.this, TraditionalGameView.class);
 				openContinueGame.putExtra("Level", "" + level);
 				openContinueGame.putExtra("Total Score", "" + score);
 				openContinueGame.putExtra("Lives", "" + lives);

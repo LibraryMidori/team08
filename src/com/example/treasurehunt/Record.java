@@ -7,6 +7,7 @@ package com.example.treasurehunt;
  * 
  */
 
+import GameView.TraditionalGameView;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
@@ -19,8 +20,8 @@ public class Record extends Activity {
 	public final String GAME_PREFS = "ArithmeticFile";
 	Typeface font, font2;
 	TextView intro, playerName, scoreRecord, levelRecord;
-	
-	private SharedPreferences gamePrefs;
+
+	// private SharedPreferences gamePrefs;
 
 	/*
 	 * Show high score
@@ -59,20 +60,20 @@ public class Record extends Activity {
 	 */
 	private void initView() {
 
-		intro  = (TextView) findViewById(R.id.intro);
+		intro = (TextView) findViewById(R.id.intro);
 		intro.setTypeface(font2);
-		playerName  = (TextView) findViewById(R.id.player_name);
+		playerName = (TextView) findViewById(R.id.player_name);
 		playerName.setTypeface(font2);
-		scoreRecord  = (TextView) findViewById(R.id.score_record);
+		scoreRecord = (TextView) findViewById(R.id.score_record);
 		scoreRecord.setTypeface(font2);
-		levelRecord  = (TextView) findViewById(R.id.level_record);
+		levelRecord = (TextView) findViewById(R.id.level_record);
 		levelRecord.setTypeface(font2);
 
 		TextView scoreView = (TextView) findViewById(R.id.high_scores_list);
-		scoreView.setTypeface(font2); 
+		scoreView.setTypeface(font2);
 
 		// get shared prefs
-		SharedPreferences scorePrefs = getSharedPreferences(Game.GAME_PREFS, 0);
+		SharedPreferences scorePrefs = getSharedPreferences(TraditionalGameView.GAME_PREFS, 0);
 		String[] savedScores = scorePrefs.getString("highScores", "").split(
 				"\\|");
 
