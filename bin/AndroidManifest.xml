@@ -28,13 +28,13 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="GameView.TraditionalGameView"
+            android:name="com.example.treasurehunt.TraditionalGameView"
             android:label="@string/title_activity_game"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen" >
         </activity>
         <activity
-            android:name="GameView.QuizGameView"
+            android:name="com.example.treasurehunt.QuizGameView"
             android:label="@string/title_activity_game"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen" >

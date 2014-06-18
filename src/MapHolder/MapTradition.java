@@ -308,8 +308,8 @@ public class MapTradition implements IMap {
 	public void setTheNumberOfSurroundingTrap() {
 		int nearByTrapCount;
 		// count number of traps in surrounding blocks
-		for (int row = 0; row < numberOfRows + 2; row++) {
-			for (int column = 0; column < numberOfCols + 2; column++) {
+		for (int row = 0; row < numberOfRows + 1; row++) {
+			for (int column = 0; column < numberOfCols + 1; column++) {
 				// for each block find nearby trap count
 				nearByTrapCount = 0;
 				if ((row != 0) && (row != (numberOfRows + 1)) && (column != 0)
@@ -317,6 +317,8 @@ public class MapTradition implements IMap {
 					// check in all nearby blocks
 					for (int previousRow = -1; previousRow < 2; previousRow++) {
 						for (int previousColumn = -1; previousColumn < 2; previousColumn++) {
+							Log.e("8C>>>>>>>>>>>", "row " + row + previousRow
+									+ " - col " + column + previousColumn);
 							if (cells[row + previousRow][column
 									+ previousColumn].hasTrap()) {
 								// a trap was found so increment the counter

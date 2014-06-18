@@ -2,7 +2,6 @@ package com.example.treasurehunt;
 
 import java.io.IOException;
 
-import GameView.TraditionalGameView;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -37,15 +36,12 @@ public class MainMenu extends Activity implements OnClickListener {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main_menu, menu);
 		return true;
 	}
 
 	@Override
 	public void onClick(View v) {
-		// TODO Auto-generated method stub
-
 		switch (v.getId()) {
 		case R.id.newGameBtn:
 			if (mp.isPlaying() && mp.isLooping()) {
@@ -53,11 +49,20 @@ public class MainMenu extends Activity implements OnClickListener {
 				mp.pause();
 			}
 
-			Intent openNewGame = new Intent(MainMenu.this, TraditionalGameView.class);
+			Intent openNewGame = new Intent(MainMenu.this,
+					TraditionalGameView.class);
 			openNewGame.putExtra("Level", "1");
 			openNewGame.putExtra("Total Score", "0");
 			openNewGame.putExtra("Lives", "3");
-			startActivity(openNewGame);
+			try {
+				startActivity(openNewGame);
+			} catch (Exception ex) {
+				Toast dialog = Toast.makeText(MainMenu.this, "Shit!!!!",
+						Toast.LENGTH_SHORT);
+				dialog.setGravity(Gravity.CENTER, 0, 0);
+				dialog.setDuration(2000);
+				dialog.show();
+			}
 			break;
 
 		case R.id.continueBtn:
@@ -82,7 +87,8 @@ public class MainMenu extends Activity implements OnClickListener {
 				gameSavePrefs.edit().putString("saveGame", "").commit();
 
 				// load saved state to game play
-				Intent openContinueGame = new Intent(MainMenu.this, TraditionalGameView.class);
+				Intent openContinueGame = new Intent(MainMenu.this,
+						TraditionalGameView.class);
 				openContinueGame.putExtra("Level", "" + level);
 				openContinueGame.putExtra("Total Score", "" + score);
 				openContinueGame.putExtra("Lives", "" + lives);
@@ -103,10 +109,8 @@ public class MainMenu extends Activity implements OnClickListener {
 				try {
 					mp.prepare();
 				} catch (IllegalStateException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				mp.seekTo(0);
@@ -127,11 +131,6 @@ public class MainMenu extends Activity implements OnClickListener {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see android.app.Activity#onBackPressed()
-	 */
 	@Override
 	public void onBackPressed() {
 		System.exit(0);

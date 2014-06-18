@@ -7,7 +7,6 @@ package com.example.treasurehunt;
  * 
  */
 
-import GameView.TraditionalGameView;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
