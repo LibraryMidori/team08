@@ -19,6 +19,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -164,7 +165,7 @@ public class TraditionalGameView extends Activity implements IGameView {
 
 		switch (_level) {
 		case 1:
-			setUpGame(maxTime, minTraps - 50, _score, _lives);
+			setUpGame(maxTime, minTraps, _score, _lives);
 			break;
 		case 2:
 			setUpGame(maxTime, minTraps + _level, _score, _lives);
@@ -524,7 +525,6 @@ public class TraditionalGameView extends Activity implements IGameView {
 
 				@Override
 				public void onClick(View v) {
-					// TODO Auto-generated method stub
 					AlertDialog.Builder alert = new AlertDialog.Builder(
 							TraditionalGameView.this);
 
@@ -579,10 +579,11 @@ public class TraditionalGameView extends Activity implements IGameView {
 
 				@Override
 				public void onClick(View v) {
-					// TODO Auto-generated method stub
 					GameData.getInstance().setLevel(
 							GameData.getInstance().getLevel() + 1);
 
+					Log.e("8C>>>>>>>>>>>>>>", "Level up: "
+							+ GameData.getInstance().getLevel());
 					if (GameData.getInstance().getLevel() == 5
 							|| GameData.getInstance().getLevel() == 10) {
 						Intent nextLevel = new Intent(TraditionalGameView.this,
@@ -845,5 +846,8 @@ public class TraditionalGameView extends Activity implements IGameView {
 
 	public void updateTime() {
 		timeText.setText("" + Timer.getInstance().getTimer());
+		if (Timer.getInstance().getTimer() == 0) {
+			finishGame(0, 0);
+		}
 	}
 }

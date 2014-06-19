@@ -16,6 +16,7 @@ public class MapTradition implements IMap {
 		cells = new Cell[numberOfRows + 2][numberOfCols + 2];
 		this.numberOfCols = numberOfCols;
 		this.numberOfRows = numberOfRows;
+		this.totalTraps = totalTraps;
 	}
 
 	@Override
