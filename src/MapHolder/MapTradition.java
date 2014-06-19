@@ -3,12 +3,8 @@ package MapHolder;
 import java.util.Random;
 
 import CellPackage.Cell;
-import Timer.Timer;
 import android.content.Context;
 import android.util.Log;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.View.OnLongClickListener;
 
 public class MapTradition implements IMap {
 	private Cell cells[][];
@@ -27,63 +23,6 @@ public class MapTradition implements IMap {
 		for (int row = 0; row < numberOfRows + 2; row++) {
 			for (int column = 0; column < numberOfCols + 2; column++) {
 				cells[row][column] = new Cell(context);
-				// cells[row][column].setDefaults();
-
-				final int currentRow = row;
-				final int currentColumn = column;
-
-				cells[row][column].setOnClickListener(new OnClickListener() {
-
-					@Override
-					public void onClick(View arg0) {
-						// TODO Auto-generated method stub
-
-						onClickOnCellHandle(currentRow, currentColumn);
-					}
-				});
-
-				// add Long Click listener
-				// this is treated as right mouse click listener
-				cells[row][column]
-						.setOnLongClickListener(new OnLongClickListener() {
-							public boolean onLongClick(View view) {
-								// simulate a left-right (middle) click
-								// if it is a long click on an opened trap then
-								// open all surrounding blocks
-								return onLongClickOnCellHandle(currentRow,
-										currentColumn);
-							}
-						});
-			}
-		}
-
-	}
-
-	private void onClickOnCellHandle(int currentRow, int currentCol) {
-		if (!GameData.getInstance().isGameStart()) {
-			Timer.getInstance().startTimer();
-			GameData.getInstance().setGameStart(true);
-		}
-
-		if (!GameData.getInstance().isMapGen()) {
-			genMap(currentRow, currentCol);
-			GameData.getInstance().setMapGen(true);
-		}
-
-		if (!cells[currentRow][currentCol].isFlagged()) {
-			rippleUncover(currentRow, currentCol);
-
-			if (cells[currentRow][currentCol].hasTrap()) {
-				GameData.getInstance().setLives(
-						GameData.getInstance().getLives() - 1);
-				GameData.getInstance().setTrapsRemain(
-						GameData.getInstance().getTrapsRemain() - 1);
-				cells[currentRow][currentCol].OpenCell();
-				cells[currentRow][currentCol].setFlag(true);
-			}
-
-			if (checkGameWin(currentRow, currentCol)) {
-				GameData.getInstance().setWinGame(true);
 			}
 		}
 	}
@@ -94,116 +33,6 @@ public class MapTradition implements IMap {
 
 	public Cell getCellByIndex(int row, int col) {
 		return cells[row][col];
-	}
-
-	private boolean onLongClickOnCellHandle(int currentRow, int currentCol) {
-
-		if (!cells[currentRow][currentCol].isCovered()
-				&& (cells[currentRow][currentCol]
-						.getNumberOfTrapsInSurrounding() > 0)
-				&& !GameData.getInstance().isGameOver()) {
-			int nearbyFlaggedBlocks = 0;
-			for (int previousRow = -1; previousRow < 2; previousRow++) {
-				for (int previousColumn = -1; previousColumn < 2; previousColumn++) {
-					if (cells[currentRow + previousRow][currentCol
-							+ previousColumn].isFlagged()) {
-						nearbyFlaggedBlocks++;
-					}
-				}
-			}
-
-			// if flagged block count is equal to nearby trap count then open
-			// nearby blocks
-			if (nearbyFlaggedBlocks == cells[currentRow][currentCol]
-					.getNumberOfTrapsInSurrounding()) {
-				for (int previousRow = -1; previousRow < 2; previousRow++) {
-					for (int previousColumn = -1; previousColumn < 2; previousColumn++) {
-						// don't open flagged blocks
-						if (!cells[currentRow + previousRow][currentCol
-								+ previousColumn].isFlagged()) {
-							// open blocks till we get
-							// numbered block
-							rippleUncover(currentRow + previousRow, currentCol
-									+ previousColumn);
-
-							// did we clicked a trap
-							if (cells[currentRow + previousRow][currentCol
-									+ previousColumn].hasTrap()) {
-
-								cells[currentRow + previousRow][currentCol
-										+ previousColumn].OpenCell();
-								GameData.getInstance().setLives(
-										GameData.getInstance().getLives() - 1);
-								// livesText.setText("" + lives);
-								GameData.getInstance()
-										.setTrapsRemain(
-												GameData.getInstance()
-														.getTrapsRemain() - 1);
-								// trapText.setText("" + trapsRemain);
-								if (GameData.getInstance().getLives() <= 0) {
-									finishGame(0, 0);
-								}
-
-							}
-						}
-					}
-				}
-			}
-			return true;
-		}
-
-		// if clicked cells is enabled, clickable or flagged
-
-		flagAndDoubtHandle(currentRow, currentCol);
-		return true;
-	}
-
-	private void flagAndDoubtHandle(int currentRow, int currentColumn) {
-		// we got 3 situations
-		// 1. empty blocks to flagged
-		// 2. flagged to question mark
-		// 3. question mark to blank
-
-		if (cells[currentRow][currentColumn].isClickable()
-				&& (cells[currentRow][currentColumn].isEnabled() || cells[currentRow][currentColumn]
-						.isFlagged())) {
-			// case 1. set blank block to flagged
-			if (!cells[currentRow][currentColumn].isFlagged()
-					&& !cells[currentRow][currentColumn].isDoubted()) {
-				cells[currentRow][currentColumn].setFlagIcon(true);
-				cells[currentRow][currentColumn].setFlag(true);
-				GameData.getInstance().setTrapsRemain(
-						GameData.getInstance().getTrapsRemain() - 1); // reduce
-																		// trap
-																		// count
-			}
-			// case 2. set flagged to question mark
-			else if (!cells[currentRow][currentColumn].isDoubted()) {
-				cells[currentRow][currentColumn].setDoubt(true);
-				cells[currentRow][currentColumn].setFlagIcon(false);
-				cells[currentRow][currentColumn].setDoubtIcon(true);
-				cells[currentRow][currentColumn].setFlag(false);
-				GameData.getInstance().setTrapsRemain(
-						GameData.getInstance().getTrapsRemain() + 1); // increase
-																		// trap
-																		// count
-			}
-			// case 3. change to blank square
-			else {
-				cells[currentRow][currentColumn].clearAllIcons();
-				cells[currentRow][currentColumn].setDoubt(false);
-				// if it is flagged then increment trap count
-				if (cells[currentRow][currentColumn].isFlagged()) {
-					GameData.getInstance().setTrapsRemain(
-							GameData.getInstance().getTrapsRemain() + 1); // increase
-																			// trap
-																			// count
-				}
-				// remove flagged status
-				cells[currentRow][currentColumn].setFlag(false);
-			}
-
-		}
 	}
 
 	@Override
@@ -317,8 +146,6 @@ public class MapTradition implements IMap {
 					// check in all nearby blocks
 					for (int previousRow = -1; previousRow < 2; previousRow++) {
 						for (int previousColumn = -1; previousColumn < 2; previousColumn++) {
-							Log.e("8C>>>>>>>>>>>", "row " + row + previousRow
-									+ " - col " + column + previousColumn);
 							if (cells[row + previousRow][column
 									+ previousColumn].hasTrap()) {
 								// a trap was found so increment the counter
@@ -342,7 +169,36 @@ public class MapTradition implements IMap {
 
 	@Override
 	public void rippleUncover(int rowClicked, int columnClicked) {
-		// TODO Auto-generated method stub
+		if (cells[rowClicked][columnClicked].hasTrap()
+				|| cells[rowClicked][columnClicked].isFlagged()
+				|| cells[rowClicked][columnClicked].isDoubted()) {
+			return;
+		}
+
+		if (!cells[rowClicked][columnClicked].isClickable()) {
+			return;
+		}
+
+		cells[rowClicked][columnClicked].OpenCell();
+		if (cells[rowClicked][columnClicked].getNumberOfTrapsInSurrounding() != 0) {
+			return;
+		}
+
+		for (int row = 0; row < 3; row++) {
+			for (int column = 0; column < 3; column++) {
+				// check all the above checked conditions
+				// if met then open subsequent blocks
+				if (cells[rowClicked + row - 1][columnClicked + column - 1]
+						.isCovered()
+						&& (rowClicked + row - 1 > 0)
+						&& (columnClicked + column - 1 > 0)
+						&& (rowClicked + row - 1 < numberOfRows + 1)
+						&& (columnClicked + column - 1 < numberOfCols + 1)) {
+					rippleUncover(rowClicked + row - 1, columnClicked + column
+							- 1);
+				}
+			}
+		}
 
 	}
 
