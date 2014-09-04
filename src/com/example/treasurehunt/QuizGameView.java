@@ -6,7 +6,9 @@ import java.util.List;
 import java.util.Random;
 
 import CellPackage.Cell;
-import android.app.Activity;
+import MapHolder.GameData;
+import PrivateData.ConfigSizeData;
+import PrivateData.PrivateDataQuizGame;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -33,31 +35,25 @@ import android.widget.TableRow.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.treasurehunt.R;
-
 /*
  * The quiz level
  * 
  * @author group 8
  */
 
-public class QuizGameView extends Activity {
+public class QuizGameView extends AbstractGameView {
 
 	/*
 	 * Properties
 	 */
-	private TableLayout map;
-	private Cell cells[][];
-	private int numberOfRows = 0;
-	private int numberOfColumns = 0;
+
 	private int totalTraps = 0;
-	private int level = 1;
-	private int lives = 0;
+	// private int level = 1;
+	// private int lives = 0;
 	private int totalScore = 0;
 	private int step = 0;
 
-	private int cellWidth = 34;
-	private int cellPadding = 2;
+	private ConfigSizeData configCellSize = new ConfigSizeData();
 
 	// Tracking time
 	private Handler clock;
@@ -78,11 +74,6 @@ public class QuizGameView extends Activity {
 	private SharedPreferences QuizPrefs;
 	public static final String Quiz_PREFS = "ArithmeticFile";
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see android.app.Activity#onCreate(android.os.Bundle)
-	 */
 	@SuppressWarnings("deprecation")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -102,33 +93,36 @@ public class QuizGameView extends Activity {
 
 		try {
 			Bundle extras = getIntent().getExtras();
+
 			if (extras != null) {
-				String val1 = extras.getString("Level");
-				level = Integer.parseInt(val1);
-				val1 = extras.getString("Total Score");
-				totalScore = Integer.parseInt(val1);
-				val1 = extras.getString("Lives");
-				lives = Integer.parseInt(val1);
+				// String val1 = extras.getString("Level");
+				GameData.getInstance().levelUp();
+				// val1 = extras.getString("Total Score");
+				// totalScore = Integer.parseInt(val1);
+				// val1 = extras.getString("Lives");
+				// lives = Integer.parseInt(val1);
 
 			} else {
 				Toast.makeText(this, "Cannot load the game", Toast.LENGTH_SHORT)
 						.show();
-				Intent backToMainMenu = new Intent(QuizGameView.this, MainMenu.class);
+				Intent backToMainMenu = new Intent(QuizGameView.this,
+						MainMenu.class);
 				startActivity(backToMainMenu);
 			}
 		} catch (Exception e) {
 			Toast.makeText(this, "Cannot load the game", Toast.LENGTH_SHORT)
 					.show();
-			Intent backToMainMenu = new Intent(QuizGameView.this, MainMenu.class);
+			Intent backToMainMenu = new Intent(QuizGameView.this,
+					MainMenu.class);
 			startActivity(backToMainMenu);
 		}
 
 		initView();
-		quizControl(level);
+		quizControl();
 		startQuizGame();
 	}
 
-	private void initView() {
+	protected void initView() {
 
 		font = Typeface.createFromAsset(getBaseContext().getAssets(),
 				"fonts/FRANCHISE-BOLD.TTF");
@@ -141,20 +135,23 @@ public class QuizGameView extends Activity {
 		livesText = (TextView) findViewById(R.id.livesText);
 		livesText.setTypeface(font);
 
-		levelText.setText("Quiz " + level);
-		scoreText.setText("" + totalScore);
-		livesText.setText("" + lives);
+		setText();
 
 		mImgViewResult = (ImageView) findViewById(R.id.img_result);
 
-		numberOfRows = 16;
-		numberOfColumns = 30;
+		quizData = new PrivateDataQuizGame(16, 30);
 
 		clock = new Handler();
 	}
 
-	private void quizControl(int _level) {
-		switch (_level) {
+	protected void setText() {
+		levelText.setText("Quiz " + GameData.getInstance().getLevel());
+		scoreText.setText("" + GameData.getInstance().getTotalScore());
+		livesText.setText("" + GameData.getInstance().getLives());
+	}
+
+	private void quizControl() {
+		switch (GameData.getInstance().getLevel()) {
 		case 5:
 			setUpQuiz(300, 60);
 			break;
@@ -196,6 +193,8 @@ public class QuizGameView extends Activity {
 	 * @author 8A Tran Trong Viet
 	 */
 	protected void createMap() {
+		int numberOfRows = quizData.getNumberOfRows();
+		int numberOfColumns = quizData.getNumberOfColumns();
 
 		// We make more 2 row and column, the 0 row/column and the last one are
 		// not showed
@@ -269,7 +268,10 @@ public class QuizGameView extends Activity {
 	 * 
 	 * @author 8A Tran Trong Viet
 	 */
-	private void finishGame(int currentRow, int currentColumn) {
+	protected void finishGame(int currentRow, int currentColumn) {
+		int numberOfRows = quizData.getNumberOfRows();
+		int numberOfColumns = quizData.getNumberOfColumns();
+
 		stopTimer(); // stop timer
 		isQuizStart = false;
 
@@ -353,9 +355,11 @@ public class QuizGameView extends Activity {
 																	.toString();
 															// Do something with
 															// value!
-															setHighScore(value,
+															setHighScore(
+																	value,
 																	totalScore,
-																	level);
+																	GameData.getInstance()
+																			.getLevel());
 															popup.dismiss();
 														}
 													});
@@ -382,7 +386,8 @@ public class QuizGameView extends Activity {
 										@Override
 										public void onClick(View v) {
 											Intent backToMenu = new Intent(
-													QuizGameView.this, MainMenu.class);
+													QuizGameView.this,
+													MainMenu.class);
 											startActivity(backToMenu);
 										}
 									});
@@ -394,17 +399,18 @@ public class QuizGameView extends Activity {
 
 										@Override
 										public void onClick(View v) {
-											// TODO Auto-generated method stub
-											level++;
+											GameData.getInstance().levelUp();
 
 											Intent nextLevel = new Intent(
-													QuizGameView.this, TraditionalGameView.class);
-											nextLevel.putExtra("Level", ""
-													+ level);
-											nextLevel.putExtra("Total Score",
-													"" + totalScore);
-											nextLevel.putExtra("Lives", ""
-													+ lives);
+													QuizGameView.this,
+													TraditionalGameView.class);
+											// nextLevel.putExtra("Level", ""
+											// + GameData.getInstance()
+											// .getLevel());
+											// nextLevel.putExtra("Total Score",
+											// "" + totalScore);
+											// nextLevel.putExtra("Lives", ""
+											// + lives);
 											startActivity(nextLevel);
 											finish();
 										}
@@ -431,7 +437,10 @@ public class QuizGameView extends Activity {
 	 * 
 	 * @author 8A Tran Trong Viet
 	 */
-	private void winGame() {
+	protected void winGame() {
+		int numberOfRows = quizData.getNumberOfRows();
+		int numberOfColumns = quizData.getNumberOfColumns();
+
 		// reset all stuffs
 		stopTimer();
 		isQuizStart = false;
@@ -515,9 +524,11 @@ public class QuizGameView extends Activity {
 																	.toString();
 															// Do something with
 															// value!
-															setHighScore(value,
+															setHighScore(
+																	value,
 																	totalScore,
-																	level);
+																	GameData.getInstance()
+																			.getLives());
 															popup.dismiss();
 														}
 													});
@@ -544,7 +555,8 @@ public class QuizGameView extends Activity {
 										@Override
 										public void onClick(View v) {
 											Intent backToMenu = new Intent(
-													QuizGameView.this, MainMenu.class);
+													QuizGameView.this,
+													MainMenu.class);
 											startActivity(backToMenu);
 										}
 									});
@@ -557,18 +569,22 @@ public class QuizGameView extends Activity {
 										@Override
 										public void onClick(View v) {
 											// TODO Auto-generated method stub
-											level++;
+											GameData.getInstance().levelUp();
 											totalScore += 1000;
-											lives += 2;
+											GameData.getInstance().setLives(
+													GameData.getInstance()
+															.getLives() + 2);
 
 											Intent nextLevel = new Intent(
-													QuizGameView.this, TraditionalGameView.class);
-											nextLevel.putExtra("Level", ""
-													+ level);
-											nextLevel.putExtra("Total Score",
-													"" + totalScore);
-											nextLevel.putExtra("Lives", ""
-													+ lives);
+													QuizGameView.this,
+													TraditionalGameView.class);
+											// nextLevel.putExtra("Level", ""
+											// +
+											// GameData.getInstance().getLevel());
+											// nextLevel.putExtra("Total Score",
+											// "" + totalScore);
+											// nextLevel.putExtra("Lives", ""
+											// + lives);
 											startActivity(nextLevel);
 											finish();
 										}
@@ -592,12 +608,12 @@ public class QuizGameView extends Activity {
 
 	}
 
-	/*
-	 * Show map procedure
-	 * 
-	 * @author 8A Tran Trong Viet
-	 */
 	protected void showMap() {
+		int cellWidth = configCellSize.getCellWidth();
+		int cellPadding = configCellSize.getCellPadding();
+		int numberOfRows = quizData.getNumberOfRows();
+		int numberOfColumns = quizData.getNumberOfColumns();
+
 		// remember we will not show 0th and last Row and Columns
 		// they are used for calculation purposes only
 		for (int row = 1; row < numberOfRows + 1; row++) {
@@ -620,6 +636,9 @@ public class QuizGameView extends Activity {
 	}
 
 	private void genMap() {
+		int numberOfRows = quizData.getNumberOfRows();
+		int numberOfColumns = quizData.getNumberOfColumns();
+
 		genTraps();
 		setTheNumberOfSurroundingTrap();
 
@@ -645,6 +664,8 @@ public class QuizGameView extends Activity {
 	 * @param columnClicked the position of the first-clicked-cell
 	 */
 	private void genTraps() {
+		int numberOfRows = quizData.getNumberOfRows();
+		int numberOfColumns = quizData.getNumberOfColumns();
 
 		Random rand = new Random();
 		int trapRow, trapColumn;
@@ -663,8 +684,11 @@ public class QuizGameView extends Activity {
 	 * @author 8A Tran Trong Viet
 	 */
 	private void setTheNumberOfSurroundingTrap() {
+		int numberOfRows = quizData.getNumberOfRows();
+		int numberOfColumns = quizData.getNumberOfColumns();
 
 		int nearByTrapCount;
+
 		// count number of traps in surrounding blocks
 		for (int row = 0; row < numberOfRows + 2; row++) {
 			for (int column = 0; column < numberOfColumns + 2; column++) {
@@ -706,6 +730,9 @@ public class QuizGameView extends Activity {
 	 * @param columnClicked the column of the clicked position
 	 */
 	private void rippleUncover(int rowClicked, int columnClicked) {
+		int numberOfRows = quizData.getNumberOfRows();
+		int numberOfColumns = quizData.getNumberOfColumns();
+
 		if (cells[rowClicked][columnClicked].hasTrap()) {
 			return;
 		}
@@ -847,4 +874,10 @@ public class QuizGameView extends Activity {
 			}
 		}
 	};
+
+	@Override
+	protected void gameController() {
+		// TODO Auto-generated method stub
+
+	}
 }

@@ -13,11 +13,18 @@ public class GameData {
 	private boolean isGameFinish;
 
 	private GameData() {
-
+		this.level = 1;
+		setDefault();
 	}
 
 	public static GameData getInstance() {
 		return gameData;
+	}
+
+	public void setDefault() {
+		this.lives = 3;
+		this.trapsRemain = 0;
+		this.totalScore = 0;
 	}
 
 	public boolean isGameStart() {
@@ -36,12 +43,28 @@ public class GameData {
 		this.isMapGen = isMapGen;
 	}
 
+	public void increaseLives() {
+		this.lives++;
+	}
+
+	public void decreaseLives() {
+		this.lives--;
+	}
+
 	public int getLives() {
 		return lives;
 	}
 
 	public void setLives(int lives) {
 		this.lives = lives;
+	}
+
+	public void decreaseTrapsRemain() {
+		this.trapsRemain--;
+	}
+
+	public void increaseTrapsRemain() {
+		this.trapsRemain++;
 	}
 
 	public int getTrapsRemain() {
@@ -82,6 +105,14 @@ public class GameData {
 
 	public void setTotalScore(int totalScore) {
 		this.totalScore = totalScore;
+	}
+
+	public void levelUp() {
+		this.level++;
+	}
+
+	public void levelDown() {
+		this.level--;
 	}
 
 	public int getLevel() {

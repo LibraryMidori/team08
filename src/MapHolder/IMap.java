@@ -1,5 +1,6 @@
 package MapHolder;
 
+import CellPackage.Cell;
 import android.content.Context;
 
 public interface IMap {
@@ -15,8 +16,12 @@ public interface IMap {
 
 	boolean isNearTheClickedCell(int rowCheck, int columnCheck, int rowClicked,
 			int columnClicked);
-	
+
+	public Cell getCellByIndex(int row, int col);
+
 	public void winGame();
-	
+
 	public void finishGame(int currentRow, int currentCol);
+
+	public boolean checkGameWin(int currentRow, int currentCol);
 }

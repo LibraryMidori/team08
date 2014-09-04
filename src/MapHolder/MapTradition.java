@@ -143,7 +143,7 @@ public class MapTradition implements IMap {
 				// for each block find nearby trap count
 				nearByTrapCount = 0;
 				if ((row != 0) && (row != (numberOfRows + 1)) && (column != 0)
-						&& (column != (numberOfRows + 1))) {
+						&& (column != (numberOfCols + 1))) {
 					// check in all nearby blocks
 					for (int previousRow = -1; previousRow < 2; previousRow++) {
 						for (int previousColumn = -1; previousColumn < 2; previousColumn++) {

@@ -7,8 +7,8 @@ import java.util.List;
 import GameRule.SingletonSetupData;
 import MapHolder.GameData;
 import MapHolder.MapTradition;
+import PrivateData.PrivateDataQuizGame;
 import Timer.Timer;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -20,10 +20,8 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
-import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnLongClickListener;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
@@ -34,30 +32,7 @@ import android.widget.TableRow.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class TraditionalGameView extends Activity implements IGameView {
-
-	private TableLayout map;
-	private int numberOfRows = 0;
-	private int numberOfColumns = 0;
-
-	private MapTradition mapControl;
-
-	// Sound
-	private MediaPlayer mp;
-
-	// Pop up
-	Handler handler;
-
-	// Texts
-	Typeface font, font2;
-	TextView levelText, scoreText, timeText, livesText, finalScoreText,
-			finalTimeText, trapText;
-
-	// UI
-	ImageView mImgViewResult;
-
-	// Save Score
-	private SharedPreferences gamePrefs;
+public class TraditionalGameView extends AbstractGameView {
 	public static final String GAME_PREFS = "ArithmeticFile";
 
 	@Override
@@ -68,15 +43,8 @@ public class TraditionalGameView extends Activity implements IGameView {
 		try {
 			Bundle extras = getIntent().getExtras();
 			if (extras != null) {
-				String val1 = extras.getString("Level");
-				GameData.getInstance().setLevel(Integer.parseInt(val1));
-				val1 = extras.getString("Total Score");
-				GameData.getInstance().setTotalScore(Integer.parseInt(val1));
-				val1 = extras.getString("Lives");
-				GameData.getInstance().setLives(Integer.parseInt(val1));
-
+				GameData.getInstance().levelUp();
 			} else {
-
 				Toast.makeText(this, "Cannot load the game", Toast.LENGTH_SHORT)
 						.show();
 				Intent backToMainMenu = new Intent(TraditionalGameView.this,
@@ -94,34 +62,10 @@ public class TraditionalGameView extends Activity implements IGameView {
 		// Share preference of Game class
 		gamePrefs = getSharedPreferences(GAME_PREFS, 0);
 
-		gameController(GameData.getInstance().getLevel(), GameData
-				.getInstance().getTotalScore(), GameData.getInstance()
-				.getLives());
-		initView();
-		startNewGame();
+		createdGameView();
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.game, menu);
-		return true;
-	}
-
-	@Override
-	public void onBackPressed() {
-		if (GameData.getInstance().getLives() > 0
-				&& !GameData.getInstance().isGameFinish()) {
-			saveGameState(GameData.getInstance().getLevel(), GameData
-					.getInstance().getTotalScore(), GameData.getInstance()
-					.getLives());
-		}
-		finish();
-		super.onBackPressed();
-	}
-
-	private void initView() {
-
+	protected void initView() {
 		mp = MediaPlayer.create(TraditionalGameView.this, R.raw.flag);
 
 		map = (TableLayout) findViewById(R.id.Map);
@@ -142,300 +86,89 @@ public class TraditionalGameView extends Activity implements IGameView {
 		trapText = (TextView) findViewById(R.id.trapText);
 		trapText.setTypeface(font2);
 
-		levelText.setText("LEVEL " + GameData.getInstance().getLevel());
-		scoreText.setText("" + GameData.getInstance().getTotalScore());
-		livesText.setText("" + GameData.getInstance().getLives());
-		trapText.setText("" + GameData.getInstance().getTrapsRemain());
+		setText();
 
 		mImgViewResult = (ImageView) findViewById(R.id.img_result);
 
 	}
 
-	private void gameController(int _level, int _score, int _lives) {
+	protected void gameController() {
 		int maxTime = SingletonSetupData.getInstance().getMaxTime();
 		int minTraps = SingletonSetupData.getInstance().getMinTraps();
+		int _level = GameData.getInstance().getLevel();
 
 		// Default setting
 		GameData.getInstance().setGameOver(false);
 		GameData.getInstance().setGameStart(false);
 		GameData.getInstance().setMapGen(false);
 
-		numberOfRows = 16;
-		numberOfColumns = 30;
+		quizData = new PrivateDataQuizGame(16, 30);
 
 		switch (_level) {
 		case 1:
-			setUpGame(maxTime, minTraps, _score, _lives);
+			setUpGame(maxTime, minTraps);
 			break;
 		case 2:
-			setUpGame(maxTime, minTraps + _level, _score, _lives);
+			setUpGame(maxTime, minTraps + _level);
 			break;
 		case 3:
-			setUpGame(maxTime, minTraps + _level, _score, _lives);
+			setUpGame(maxTime, minTraps + _level);
 			break;
 		case 4:
-			setUpGame(maxTime - 60, minTraps + _level, _score, _lives);
+			setUpGame(maxTime - 60, minTraps + _level);
 			break;
 		case 5:
-			setUpGame(maxTime - 60, minTraps + _level, _score, _lives);
+			setUpGame(maxTime - 60, minTraps + _level);
 			break;
 		case 6:
-			setUpGame(maxTime - 60, minTraps + _level, _score, _lives);
+			setUpGame(maxTime - 60, minTraps + _level);
 			break;
 		case 7:
-			setUpGame(maxTime - 60 * 2, minTraps + _level, _score, _lives);
+			setUpGame(maxTime - 60 * 2, minTraps + _level);
 			break;
 		case 8:
-			setUpGame(maxTime - 60 * 2, minTraps + _level, _score, _lives);
+			setUpGame(maxTime - 60 * 2, minTraps + _level);
 			break;
 		case 9:
-			setUpGame(maxTime - 60 * 2, minTraps + _level, _score, _lives);
+			setUpGame(maxTime - 60 * 2, minTraps + _level);
 			break;
 		case 10:
-			setUpGame(maxTime - 60 * 3, minTraps + _level, _score, _lives);
+			setUpGame(maxTime - 60 * 3, minTraps + _level);
 			break;
 		case 11:
-			setUpGame(maxTime - 60 * 3, minTraps + _level, _score, _lives);
+			setUpGame(maxTime - 60 * 3, minTraps + _level);
 			break;
 		case 12:
-			setUpGame(maxTime - 60 * 3, minTraps + _level, _score, _lives);
+			setUpGame(maxTime - 60 * 3, minTraps + _level);
 			break;
 		case 13:
-			setUpGame(maxTime - 60 * 4, minTraps + _level, _score, _lives);
+			setUpGame(maxTime - 60 * 4, minTraps + _level);
 			break;
 		case 14:
-			setUpGame(maxTime - 60 * 4, minTraps + _level, _score, _lives);
+			setUpGame(maxTime - 60 * 4, minTraps + _level);
 			break;
 		case 15:
-			setUpGame(maxTime - 60 * 4, minTraps + _level, _score, _lives);
+			setUpGame(maxTime - 60 * 4, minTraps + _level);
 			break;
 		default:
 			break;
 		}
 	}
 
-	private void setUpGame(int playTime, int numberOfTraps, int score,
-			int _lives) {
+	private void setUpGame(int playTime, int numberOfTraps) {
+		int numberOfRows = quizData.getNumberOfRows();
+		int numberOfColumns = quizData.getNumberOfColumns();
+
 		mapControl = new MapTradition(numberOfRows, numberOfColumns,
 				numberOfTraps);
 		GameData.getInstance().setTrapsRemain(numberOfTraps);
-		GameData.getInstance().setTotalScore(score);
-		GameData.getInstance().setLives(_lives);
 	}
 
-	private void startNewGame() {
-		Timer.getInstance().setTimer(180);
-		createMap();
-		showMap();
-
-		GameData.getInstance().setGameOver(false);
-		GameData.getInstance().setGameStart(false);
-
-		timeText.setText("" + Timer.getInstance().getTimer());
-		Timer.getInstance().registed(this);
-
-	}
-
-	private void createMap() {
-		mapControl.createMap(this);
-		for (int row = 0; row < numberOfRows + 2; row++) {
-			for (int col = 0; col < numberOfColumns + 2; col++) {
-				final int currentRow = row;
-				final int currentCol = col;
-
-				mapControl.getCellByIndex(row, col).setOnClickListener(
-						new OnClickListener() {
-
-							@Override
-							public void onClick(View v) {
-								onClickOnCellHandle(currentRow, currentCol);
-							}
-						});
-
-				mapControl.getCellByIndex(row, col).setOnLongClickListener(
-						new OnLongClickListener() {
-
-							@Override
-							public boolean onLongClick(View v) {
-								return onLongClickOnCellHandle(currentRow,
-										currentCol);
-							}
-						});
-			}
-		}
-	}
-
-	private void onClickOnCellHandle(int currentRow, int currentColumn) {
-
-		if (!GameData.getInstance().isGameStart()) {
-			Timer.getInstance().startTimer();
-			GameData.getInstance().setGameStart(true);
-		}
-
-		if (!GameData.getInstance().isMapGen()) {
-			mapControl.genMap(currentRow, currentColumn);
-			GameData.getInstance().setMapGen(true);
-		}
-
-		if (!mapControl.getCellByIndex(currentRow, currentColumn).isFlagged()) {
-			mapControl.rippleUncover(currentRow, currentColumn);
-
-			if (mapControl.getCellByIndex(currentRow, currentColumn).hasTrap()) {
-				GameData.getInstance().setLives(
-						GameData.getInstance().getLives() - 1);
-				GameData.getInstance().setTrapsRemain(
-						GameData.getInstance().getTrapsRemain() - 1);
-				livesText.setText("" + GameData.getInstance().getLives());
-				trapText.setText("" + GameData.getInstance().getTrapsRemain());
-				mapControl.getCellByIndex(currentRow, currentColumn).OpenCell();
-				mapControl.getCellByIndex(currentRow, currentColumn).setFlag(
-						true);
-				if (GameData.getInstance().getLives() <= 0) {
-					finishGame(currentRow, currentColumn);
-					livesText.setText("0");
-				}
-			}
-
-			if (mapControl.checkGameWin(currentRow, currentColumn)) {
-				winGame();
-			}
-		}
-	}
-
-	private boolean onLongClickOnCellHandle(int currentRow, int currentColumn) {
-
-		if (!mapControl.getCellByIndex(currentRow, currentColumn).isCovered()
-				&& (mapControl.getCellByIndex(currentRow, currentColumn)
-						.getNumberOfTrapsInSurrounding() > 0)
-				&& !GameData.getInstance().isGameOver()) {
-			int nearbyFlaggedBlocks = 0;
-			for (int previousRow = -1; previousRow < 2; previousRow++) {
-				for (int previousColumn = -1; previousColumn < 2; previousColumn++) {
-					if (mapControl.getCellByIndex(currentRow + previousRow,
-							currentColumn + previousColumn).isFlagged()) {
-						nearbyFlaggedBlocks++;
-					}
-				}
-			}
-
-			// if flagged block count is equal to nearby trap count then open
-			// nearby blocks
-			if (nearbyFlaggedBlocks == mapControl.getCellByIndex(currentRow,
-					currentColumn).getNumberOfTrapsInSurrounding()) {
-				for (int previousRow = -1; previousRow < 2; previousRow++) {
-					for (int previousColumn = -1; previousColumn < 2; previousColumn++) {
-						// don't open flagged blocks
-						if (!mapControl.getCellByIndex(
-								currentRow + previousRow,
-								currentColumn + previousColumn).isFlagged()) {
-							// open blocks till we get
-							// numbered block
-							mapControl.rippleUncover(currentRow + previousRow,
-									currentColumn + previousColumn);
-
-							// did we clicked a trap
-							if (mapControl.getCellByIndex(
-									currentRow + previousRow,
-									currentColumn + previousColumn).hasTrap()) {
-
-								mapControl.getCellByIndex(
-										currentRow + previousRow,
-										currentColumn + previousColumn)
-										.OpenCell();
-								GameData.getInstance().setLives(
-										GameData.getInstance().getLives() - 1);
-								livesText.setText(""
-										+ GameData.getInstance().getLives());
-								GameData.getInstance()
-										.setTrapsRemain(
-												GameData.getInstance()
-														.getTrapsRemain() - 1);
-								trapText.setText(""
-										+ GameData.getInstance()
-												.getTrapsRemain());
-								if (GameData.getInstance().getLives() <= 0) {
-									livesText.setText("0");
-									finishGame(0, 0);
-								}
-
-							}
-						}
-					}
-				}
-			}
-			return true;
-		}
-
-		// if clicked cells is enabled, clickable or flagged
-
-		flagAndDoubtHandle(currentRow, currentColumn);
-		return true;
-	}
-
-	private void flagAndDoubtHandle(int currentRow, int currentColumn) {
-		// we got 3 situations
-		// 1. empty blocks to flagged
-		// 2. flagged to question mark
-		// 3. question mark to blank
-
-		if (mapControl.getCellByIndex(currentRow, currentColumn).isClickable()
-				&& (mapControl.getCellByIndex(currentRow, currentColumn)
-						.isEnabled() || mapControl.getCellByIndex(currentRow,
-						currentColumn).isFlagged())) {
-			mp.start();
-			// case 1. set blank block to flagged
-			if (!mapControl.getCellByIndex(currentRow, currentColumn)
-					.isFlagged()
-					&& !mapControl.getCellByIndex(currentRow, currentColumn)
-							.isDoubted()) {
-				mapControl.getCellByIndex(currentRow, currentColumn)
-						.setFlagIcon(true);
-				mapControl.getCellByIndex(currentRow, currentColumn).setFlag(
-						true);
-				GameData.getInstance().setTrapsRemain(
-						GameData.getInstance().getTrapsRemain() - 1);
-				trapText.setText("" + GameData.getInstance().getTrapsRemain());
-			}
-			// case 2. set flagged to question mark
-			else if (!mapControl.getCellByIndex(currentRow, currentColumn)
-					.isDoubted()) {
-				mapControl.getCellByIndex(currentRow, currentColumn).setDoubt(
-						true);
-				mapControl.getCellByIndex(currentRow, currentColumn)
-						.setFlagIcon(false);
-				mapControl.getCellByIndex(currentRow, currentColumn)
-						.setDoubtIcon(true);
-				mapControl.getCellByIndex(currentRow, currentColumn).setFlag(
-						false);
-				GameData.getInstance().setTrapsRemain(
-						GameData.getInstance().getTrapsRemain() + 1);
-				trapText.setText("" + GameData.getInstance().getTrapsRemain());
-			}
-			// case 3. change to blank square
-			else {
-				mapControl.getCellByIndex(currentRow, currentColumn)
-						.clearAllIcons();
-				mapControl.getCellByIndex(currentRow, currentColumn).setDoubt(
-						false);
-				// if it is flagged then increment trap count
-				if (mapControl.getCellByIndex(currentRow, currentColumn)
-						.isFlagged()) {
-					GameData.getInstance().setTrapsRemain(
-							GameData.getInstance().getTrapsRemain() + 1);
-					trapText.setText(""
-							+ GameData.getInstance().getTrapsRemain());
-				}
-				// remove flagged status
-				mapControl.getCellByIndex(currentRow, currentColumn).setFlag(
-						false);
-			}
-
-		}
-	}
-
-	private void showMap() {
+	protected void showMap() {
 		int cellWidth = SingletonSetupData.getInstance().getCellWidth();
 		int cellPadding = SingletonSetupData.getInstance().getCellPadding();
+		int numberOfRows = quizData.getNumberOfRows();
+		int numberOfColumns = quizData.getNumberOfColumns();
 
 		// remember we will not show 0th and last Row and Columns
 		// they are used for calculation purposes only
@@ -459,7 +192,7 @@ public class TraditionalGameView extends Activity implements IGameView {
 		}
 	}
 
-	private void winGame() {
+	protected void winGame() {
 		// reset all stuffs
 		mapControl.winGame();
 		Timer.getInstance().stopTimer();
@@ -631,7 +364,7 @@ public class TraditionalGameView extends Activity implements IGameView {
 		}
 	}
 
-	private void finishGame(int currentRow, int currentColumn) {
+	protected void finishGame(int currentRow, int currentColumn) {
 		Timer.getInstance().stopTimer(); // stop timer
 		GameData.getInstance().setGameStart(false);
 
@@ -703,7 +436,7 @@ public class TraditionalGameView extends Activity implements IGameView {
 											// input
 											final EditText input = new EditText(
 													TraditionalGameView.this);
-											input.setText("Playername");
+											input.setText("");
 											alert.setView(input);
 
 											alert.setPositiveButton(
@@ -748,6 +481,7 @@ public class TraditionalGameView extends Activity implements IGameView {
 
 										@Override
 										public void onClick(View v) {
+											GameData.getInstance().setDefault();
 											popup.dismiss();
 											Intent backToMenu = new Intent(
 													TraditionalGameView.this,
@@ -831,23 +565,7 @@ public class TraditionalGameView extends Activity implements IGameView {
 
 			}
 		} catch (NumberFormatException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-	}
-
-	private void saveGameState(int _level, int _score, int _lives) {
-		SharedPreferences.Editor gameStateEdit = gamePrefs.edit();
-
-		gameStateEdit.putString("saveGame", _level + " - " + _score + " - "
-				+ _lives);
-		gameStateEdit.commit();
-	}
-
-	public void updateTime() {
-		timeText.setText("" + Timer.getInstance().getTimer());
-		if (Timer.getInstance().getTimer() == 0) {
-			finishGame(0, 0);
 		}
 	}
 }

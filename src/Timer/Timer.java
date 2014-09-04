@@ -18,6 +18,13 @@ public class Timer {
 		return clockCounter;
 	}
 
+	public void decreaseTimer() {
+		this.timer--;
+		if (this.timer <= 0) {
+			this.timer = 0;
+		}
+	}
+
 	public int getTimer() {
 		return timer;
 	}
@@ -45,7 +52,7 @@ public class Timer {
 		@Override
 		public void run() {
 			long currentMilliseconds = System.currentTimeMillis();
-			setTimer(getTimer() - 1);
+			decreaseTimer();
 			notifyToObserver();
 
 			clock.postAtTime(this, currentMilliseconds);
