@@ -34,6 +34,7 @@ import android.widget.Toast;
 
 public class TraditionalGameView extends AbstractGameView {
 	public static final String GAME_PREFS = "ArithmeticFile";
+	private boolean one_way_lock = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -42,9 +43,7 @@ public class TraditionalGameView extends AbstractGameView {
 
 		try {
 			Bundle extras = getIntent().getExtras();
-			if (extras != null) {
-				GameData.getInstance().levelUp();
-			} else {
+			if (extras == null) {
 				Toast.makeText(this, "Cannot load the game", Toast.LENGTH_SHORT)
 						.show();
 				Intent backToMainMenu = new Intent(TraditionalGameView.this,
@@ -254,8 +253,11 @@ public class TraditionalGameView extends AbstractGameView {
 
 				@Override
 				public void onClick(View v) {
-					GameData.getInstance().setLevel(
-							GameData.getInstance().getLevel() + 1);
+					if (one_way_lock) {
+						return;
+					}
+
+					GameData.getInstance().levelUp();
 
 					Log.e("8C>>>>>>>>>>>>>>", "Level up: "
 							+ GameData.getInstance().getLevel());
@@ -263,35 +265,31 @@ public class TraditionalGameView extends AbstractGameView {
 							|| GameData.getInstance().getLevel() == 10) {
 						Intent nextLevel = new Intent(TraditionalGameView.this,
 								QuizGameView.class);
-						nextLevel.putExtra("Level", ""
-								+ GameData.getInstance().getLevel());
-						nextLevel.putExtra("Total Score", ""
-								+ GameData.getInstance().getTotalScore());
-						nextLevel.putExtra("Lives", ""
-								+ GameData.getInstance().getLives());
 						startActivity(nextLevel);
+						one_way_lock = true;
 						finish();
-					} else if (GameData.getInstance().getLevel() < 16) {
+						return;
+					}
+
+					if (GameData.getInstance().getLevel() < 16) {
 						Intent nextLevel = new Intent(TraditionalGameView.this,
 								TraditionalGameView.class);
-						nextLevel.putExtra("Level", ""
-								+ GameData.getInstance().getLevel());
-						nextLevel.putExtra("Total Score", ""
-								+ GameData.getInstance().getTotalScore());
-						nextLevel.putExtra("Lives", ""
-								+ GameData.getInstance().getLives());
 						startActivity(nextLevel);
+						one_way_lock = true;
 						finish();
-					} else {
-						Toast.makeText(TraditionalGameView.this,
-								"Congratulation, you win!!", Toast.LENGTH_SHORT)
-								.show();
-
-						Intent backToMainMenu = new Intent(
-								TraditionalGameView.this, MainMenu.class);
-						startActivity(backToMainMenu);
-						finish();
+						return;
 					}
+
+					Toast.makeText(TraditionalGameView.this,
+							"Congratulation, you win!!", Toast.LENGTH_SHORT)
+							.show();
+
+					Intent backToMainMenu = new Intent(
+							TraditionalGameView.this, MainMenu.class);
+					startActivity(backToMainMenu);
+					one_way_lock = true;
+					finish();
+					return;
 				}
 			});
 

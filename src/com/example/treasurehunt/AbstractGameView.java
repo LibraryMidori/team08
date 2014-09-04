@@ -68,7 +68,6 @@ public abstract class AbstractGameView extends Activity implements IGameView {
 
 		timeText.setText("" + Timer.getInstance().getTimer());
 		Timer.getInstance().registed(this);
-
 	}
 
 	protected abstract void winGame();
@@ -166,15 +165,12 @@ public abstract class AbstractGameView extends Activity implements IGameView {
 			mapControl.rippleUncover(currentRow, currentColumn);
 
 			if (mapControl.getCellByIndex(currentRow, currentColumn).hasTrap()) {
-				GameData.getInstance().setLives(
-						GameData.getInstance().getLives() - 1);
-				GameData.getInstance().setTrapsRemain(
-						GameData.getInstance().getTrapsRemain() - 1);
-				livesText.setText("" + GameData.getInstance().getLives());
-				trapText.setText("" + GameData.getInstance().getTrapsRemain());
+				GameData.getInstance().decreaseLives();
+				GameData.getInstance().decreaseTrapsRemain();
 				mapControl.getCellByIndex(currentRow, currentColumn).OpenCell();
 				mapControl.getCellByIndex(currentRow, currentColumn).setFlag(
 						true);
+				setText();
 				if (GameData.getInstance().getLives() <= 0) {
 					finishGame(currentRow, currentColumn);
 					livesText.setText("0");
@@ -227,17 +223,9 @@ public abstract class AbstractGameView extends Activity implements IGameView {
 										currentRow + previousRow,
 										currentColumn + previousColumn)
 										.OpenCell();
-								GameData.getInstance().setLives(
-										GameData.getInstance().getLives() - 1);
-								livesText.setText(""
-										+ GameData.getInstance().getLives());
-								GameData.getInstance()
-										.setTrapsRemain(
-												GameData.getInstance()
-														.getTrapsRemain() - 1);
-								trapText.setText(""
-										+ GameData.getInstance()
-												.getTrapsRemain());
+								GameData.getInstance().decreaseLives();
+								GameData.getInstance().decreaseTrapsRemain();
+								setText();
 								if (GameData.getInstance().getLives() <= 0) {
 									livesText.setText("0");
 									finishGame(0, 0);
@@ -278,10 +266,8 @@ public abstract class AbstractGameView extends Activity implements IGameView {
 						.setFlagIcon(true);
 				mapControl.getCellByIndex(currentRow, currentColumn).setFlag(
 						true);
-				GameData.getInstance().setTrapsRemain(
-						GameData.getInstance().getTrapsRemain() - 1);
-				trapText.setText("" + GameData.getInstance().getTrapsRemain());
-
+				GameData.getInstance().decreaseTrapsRemain();
+				setText();
 				return;
 			}
 
@@ -296,9 +282,8 @@ public abstract class AbstractGameView extends Activity implements IGameView {
 						.setDoubtIcon(true);
 				mapControl.getCellByIndex(currentRow, currentColumn).setFlag(
 						false);
-				GameData.getInstance().setTrapsRemain(
-						GameData.getInstance().getTrapsRemain() + 1);
-				trapText.setText("" + GameData.getInstance().getTrapsRemain());
+				GameData.getInstance().increaseTrapsRemain();
+				setText();
 				return;
 			}
 
@@ -310,9 +295,9 @@ public abstract class AbstractGameView extends Activity implements IGameView {
 			// if it is flagged then increment trap count
 			if (mapControl.getCellByIndex(currentRow, currentColumn)
 					.isFlagged()) {
-				GameData.getInstance().setTrapsRemain(
-						GameData.getInstance().getTrapsRemain() + 1);
-				trapText.setText("" + GameData.getInstance().getTrapsRemain());
+				GameData.getInstance().increaseTrapsRemain();
+
+				setText();
 			}
 			// remove flagged status
 			mapControl.getCellByIndex(currentRow, currentColumn).setFlag(false);

@@ -9,6 +9,7 @@ public class Timer {
 	private int timer;
 	private Handler clock;
 	private IGameView observer;
+	private boolean isRunning = false;
 
 	private Timer() {
 		clock = new Handler();
@@ -36,11 +37,13 @@ public class Timer {
 	public void startTimer() {
 		clock.removeCallbacks(updateTimeElasped);
 		clock.postDelayed(updateTimeElasped, 1000);
+		isRunning = true;
 	}
 
 	public void stopTimer() {
 		// disable call backs
 		clock.removeCallbacks(updateTimeElasped);
+		isRunning = false;
 	}
 
 	public void registed(IGameView observer) {
@@ -52,8 +55,10 @@ public class Timer {
 		@Override
 		public void run() {
 			long currentMilliseconds = System.currentTimeMillis();
-			decreaseTimer();
-			notifyToObserver();
+			if (isRunning) {
+				decreaseTimer();
+				notifyToObserver();
+			}
 
 			clock.postAtTime(this, currentMilliseconds);
 			// notify to call back after 1 seconds

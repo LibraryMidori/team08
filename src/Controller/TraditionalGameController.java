@@ -24,8 +24,7 @@ public class TraditionalGameController implements IGameController {
 
 	}
 
-	public IMap gameController(int _level,
-			PrivateDataQuizGame quizData) {
+	public IMap gameController(int _level, PrivateDataQuizGame quizData) {
 		int maxTime = SingletonSetupData.getInstance().getMaxTime();
 		int minTraps = SingletonSetupData.getInstance().getMinTraps();
 
