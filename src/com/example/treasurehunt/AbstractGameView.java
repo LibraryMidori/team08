@@ -267,7 +267,8 @@ public abstract class AbstractGameView extends Activity implements IGameView {
 				&& (mapControl.getCellByIndex(currentRow, currentColumn)
 						.isEnabled() || mapControl.getCellByIndex(currentRow,
 						currentColumn).isFlagged())) {
-			mp.start();
+			mp.start(); // Sound on
+
 			// case 1. set blank block to flagged
 			if (!mapControl.getCellByIndex(currentRow, currentColumn)
 					.isFlagged()
@@ -280,9 +281,12 @@ public abstract class AbstractGameView extends Activity implements IGameView {
 				GameData.getInstance().setTrapsRemain(
 						GameData.getInstance().getTrapsRemain() - 1);
 				trapText.setText("" + GameData.getInstance().getTrapsRemain());
+
+				return;
 			}
+
 			// case 2. set flagged to question mark
-			else if (!mapControl.getCellByIndex(currentRow, currentColumn)
+			if (!mapControl.getCellByIndex(currentRow, currentColumn)
 					.isDoubted()) {
 				mapControl.getCellByIndex(currentRow, currentColumn).setDoubt(
 						true);
@@ -295,25 +299,23 @@ public abstract class AbstractGameView extends Activity implements IGameView {
 				GameData.getInstance().setTrapsRemain(
 						GameData.getInstance().getTrapsRemain() + 1);
 				trapText.setText("" + GameData.getInstance().getTrapsRemain());
+				return;
 			}
+
 			// case 3. change to blank square
-			else {
-				mapControl.getCellByIndex(currentRow, currentColumn)
-						.clearAllIcons();
-				mapControl.getCellByIndex(currentRow, currentColumn).setDoubt(
-						false);
-				// if it is flagged then increment trap count
-				if (mapControl.getCellByIndex(currentRow, currentColumn)
-						.isFlagged()) {
-					GameData.getInstance().setTrapsRemain(
-							GameData.getInstance().getTrapsRemain() + 1);
-					trapText.setText(""
-							+ GameData.getInstance().getTrapsRemain());
-				}
-				// remove flagged status
-				mapControl.getCellByIndex(currentRow, currentColumn).setFlag(
-						false);
+			mapControl.getCellByIndex(currentRow, currentColumn)
+					.clearAllIcons();
+			mapControl.getCellByIndex(currentRow, currentColumn)
+					.setDoubt(false);
+			// if it is flagged then increment trap count
+			if (mapControl.getCellByIndex(currentRow, currentColumn)
+					.isFlagged()) {
+				GameData.getInstance().setTrapsRemain(
+						GameData.getInstance().getTrapsRemain() + 1);
+				trapText.setText("" + GameData.getInstance().getTrapsRemain());
 			}
+			// remove flagged status
+			mapControl.getCellByIndex(currentRow, currentColumn).setFlag(false);
 
 		}
 	}

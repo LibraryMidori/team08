@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import Controller.TraditionalGameController;
 import GameRule.SingletonSetupData;
 import MapHolder.GameData;
-import MapHolder.MapTradition;
 import PrivateData.PrivateDataQuizGame;
 import Timer.Timer;
 import android.app.AlertDialog;
@@ -89,12 +89,9 @@ public class TraditionalGameView extends AbstractGameView {
 		setText();
 
 		mImgViewResult = (ImageView) findViewById(R.id.img_result);
-
 	}
 
 	protected void gameController() {
-		int maxTime = SingletonSetupData.getInstance().getMaxTime();
-		int minTraps = SingletonSetupData.getInstance().getMinTraps();
 		int _level = GameData.getInstance().getLevel();
 
 		// Default setting
@@ -103,65 +100,10 @@ public class TraditionalGameView extends AbstractGameView {
 		GameData.getInstance().setMapGen(false);
 
 		quizData = new PrivateDataQuizGame(16, 30);
+		controller = new TraditionalGameController();
 
-		switch (_level) {
-		case 1:
-			setUpGame(maxTime, minTraps);
-			break;
-		case 2:
-			setUpGame(maxTime, minTraps + _level);
-			break;
-		case 3:
-			setUpGame(maxTime, minTraps + _level);
-			break;
-		case 4:
-			setUpGame(maxTime - 60, minTraps + _level);
-			break;
-		case 5:
-			setUpGame(maxTime - 60, minTraps + _level);
-			break;
-		case 6:
-			setUpGame(maxTime - 60, minTraps + _level);
-			break;
-		case 7:
-			setUpGame(maxTime - 60 * 2, minTraps + _level);
-			break;
-		case 8:
-			setUpGame(maxTime - 60 * 2, minTraps + _level);
-			break;
-		case 9:
-			setUpGame(maxTime - 60 * 2, minTraps + _level);
-			break;
-		case 10:
-			setUpGame(maxTime - 60 * 3, minTraps + _level);
-			break;
-		case 11:
-			setUpGame(maxTime - 60 * 3, minTraps + _level);
-			break;
-		case 12:
-			setUpGame(maxTime - 60 * 3, minTraps + _level);
-			break;
-		case 13:
-			setUpGame(maxTime - 60 * 4, minTraps + _level);
-			break;
-		case 14:
-			setUpGame(maxTime - 60 * 4, minTraps + _level);
-			break;
-		case 15:
-			setUpGame(maxTime - 60 * 4, minTraps + _level);
-			break;
-		default:
-			break;
-		}
-	}
+		mapControl = controller.gameController(_level, quizData);
 
-	private void setUpGame(int playTime, int numberOfTraps) {
-		int numberOfRows = quizData.getNumberOfRows();
-		int numberOfColumns = quizData.getNumberOfColumns();
-
-		mapControl = new MapTradition(numberOfRows, numberOfColumns,
-				numberOfTraps);
-		GameData.getInstance().setTrapsRemain(numberOfTraps);
 	}
 
 	protected void showMap() {
