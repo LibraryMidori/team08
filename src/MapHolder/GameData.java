@@ -13,7 +13,6 @@ public class GameData {
 	private boolean isGameFinish;
 
 	private GameData() {
-		this.level = 1;
 		setDefault();
 	}
 
@@ -25,6 +24,12 @@ public class GameData {
 		this.lives = 3;
 		this.trapsRemain = 0;
 		this.totalScore = 0;
+		this.level = 1;
+		this.isGameStart = false;
+		this.isMapGen = false;
+		this.isWinGame = false;
+		this.isGameOver = false;
+		this.isGameFinish = false;
 	}
 
 	public boolean isGameStart() {

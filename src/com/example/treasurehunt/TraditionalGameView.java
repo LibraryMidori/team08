@@ -50,6 +50,10 @@ public class TraditionalGameView extends AbstractGameView {
 						MainMenu.class);
 				startActivity(backToMainMenu);
 			}
+
+			if (GameData.getInstance().isGameOver()) {
+				GameData.getInstance().setDefault();
+			}
 		} catch (Exception e) {
 			Toast.makeText(this, "Cannot load the game", Toast.LENGTH_SHORT)
 					.show();
@@ -142,7 +146,7 @@ public class TraditionalGameView extends AbstractGameView {
 		GameData.getInstance().setTrapsRemain(0);
 		GameData.getInstance().setTotalScore(
 				GameData.getInstance().getTotalScore() + 1000);
-		scoreText.setText("" + GameData.getInstance().getTotalScore());
+		setText();
 
 		// disable all buttons
 		// set flagged all un-flagged blocks
@@ -421,7 +425,6 @@ public class TraditionalGameView extends AbstractGameView {
 
 										@Override
 										public void onClick(View v) {
-											GameData.getInstance().setDefault();
 											popup.dismiss();
 											Intent backToMenu = new Intent(
 													TraditionalGameView.this,

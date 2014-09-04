@@ -2,6 +2,7 @@ package com.example.treasurehunt;
 
 import java.io.IOException;
 
+import MapHolder.GameData;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -32,6 +33,7 @@ public class MainMenu extends Activity implements OnClickListener {
 		mp = MediaPlayer.create(MainMenu.this, R.raw.sound1);
 		mp.setLooping(true);
 		mp.start();
+		GameData.getInstance().setDefault();
 	}
 
 	@Override
