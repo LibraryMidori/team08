@@ -1,12 +1,12 @@
 package com.example.treasurehunt;
 
-import java.util.Random;
-
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.widget.Button;
+
+import java.util.Random;
 
 /*
  * The instance of this class is the cell in game
@@ -17,13 +17,13 @@ public class Cell extends Button {
 	/*
 	 * Properties
 	 */
-	private boolean isTrapped; // The cell is trap or not
-	private boolean isTreasure; // The cell is treasure or not
-	private boolean isFlagged; // The cell is flag
-	private boolean isDoubt; // The cell is marked as doubt
-	private boolean isCovered; // is cell covered yet
-	private boolean isClickable; // can cell accept click events
-	private int numberOfTrapInSurrounding; // number of traps in nearby cells
+	private boolean isTrapped; 				// The cell is trap or not
+	private boolean isTreasure; 			// The cell is treasure or not
+	private boolean isFlagged; 				// The cell is flag
+	private boolean isDoubt; 				// The cell is marked as doubt
+	private boolean isCovered; 				// is cell covered yet
+	private boolean isClickable; 			// can cell accept click events
+	private int numberOfTrapInSurrounding; 	// number of traps in nearby cells
 
 	/*
 	 * Constructor
@@ -74,7 +74,6 @@ public class Cell extends Button {
 		case 0:
 			this.setBackgroundResource(R.drawable.cell1);
 			break;
-
 		case 1:
 			this.setBackgroundResource(R.drawable.cell2);
 			break;
